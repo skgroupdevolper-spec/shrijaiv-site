@@ -12,6 +12,7 @@ import InquiryForm from '@/components/market/InquiryForm';
 import ReviewForm from '@/components/market/ReviewForm';
 import ProductCard from '@/components/market/ProductCard';
 import { Rating } from '@/components/market/Rating';
+import FavButton from '@/components/market/FavButton';
 import SmartLink from '@/components/ui/SmartLink';
 import { formatDate, waLink } from '@/lib/utils';
 import { safeArticleHtml } from '@/lib/sanitize';
@@ -44,6 +45,8 @@ export default async function ProductPage({ params }: Props) {
   if (!p) notFound();
   prisma.product.update({ where: { id: p.id }, data: { views: { increment: 1 } } }).catch(() => null);
   const user = await getCurrentUser();
+  const buyer = user?.role === 'BUYER' ? await prisma.buyerProfile.findUnique({ where: { userId: user.id }, select: { id: true } }) : null;
+  const fav = buyer ? !!(await prisma.favourite.findFirst({ where: { buyerId: buyer.id, productId: p.id } })) : false;
   const imgs = images(p.images);
   const specs = parse<{ label: string; value: string }[]>(p.specs, []);
   const certs = parse<string[]>(p.certifications, []);
@@ -87,7 +90,10 @@ export default async function ProductPage({ params }: Props) {
                 </span>
               ))}
             </div>
-            <p className="mt-4 font-display text-3xl font-semibold text-ink">{priceLabel(p)}</p>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="font-display text-3xl font-semibold text-ink">{priceLabel(p)}</p>
+              <FavButton productId={p.id} initial={fav} canSave={!!buyer} />
+            </div>
             {p.ratingCount > 0 && <Rating value={p.ratingAvg} count={p.ratingCount} size="md" className="mt-2" />}
             {p.summary && <p className="mt-4 text-[1.02rem] leading-relaxed text-ink/75">{p.summary}</p>}
             <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">

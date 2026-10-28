@@ -4,6 +4,7 @@ import { ok, fail, refreshSite } from '@/lib/api';
 import { requireStaff, hashPassword } from '@/lib/auth';
 import { RESOURCES, cleanData } from '@/lib/resources';
 import { slugify } from '@/lib/utils';
+import { audit } from '@/lib/marketplace/admin-hooks';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,19 +59,25 @@ export async function POST(req: Request, { params }: Ctx) {
     if (cfg.unique && body[cfg.unique]) body[cfg.unique] = body[cfg.unique] === 'home' ? 'home' : String(body[cfg.unique]).split('/').map(slugify).filter(Boolean).join('/');
     // nothing usable left (e.g. only symbols): give it a safe address instead of an error
     if (cfg.unique === 'slug' && body.title && !body.slug) body.slug = `${resource === 'pages' ? 'page' : 'post'}-${Date.now().toString(36)}`;
+    if (resource === 'plans' && typeof body.features === 'string') body.features = body.features.split(/\r?\n/).map((x: string) => x.trim()).filter(Boolean);
     const data = cleanData(cfg, body);
     if (resource === 'users') {
       const pw = String(body.password || '');
       if (pw.length < 8) return fail('Password must be at least 8 characters');
       data.email = String(data.email).toLowerCase().trim();
       data.passwordHash = await hashPassword(pw);
-      if (!['ADMIN', 'EDITOR', 'CUSTOMER'].includes(data.role)) data.role = 'CUSTOMER';
+      if (!['ADMIN', 'EDITOR', 'CUSTOMER', 'SELLER', 'BUYER'].includes(data.role)) data.role = 'CUSTOMER';
     }
     if (resource === 'subscribers') data.email = String(data.email).toLowerCase().trim();
     if (resource === 'pages' && data.blocks === undefined) data.blocks = '[]';
     if (resource === 'posts' && data.content === undefined) data.content = '';
+    if (resource === 'categories') { if (!data.slug) data.slug = slugify(data.name); if (data.parentId === '') data.parentId = null; }
+    if (resource === 'plans' && !data.slug) data.slug = slugify(data.name);
+    if (resource === 'coupons') data.code = String(data.code).toUpperCase().trim();
+    if (resource === 'redirects') data.from = '/' + String(data.from).replace(/^\/+/, '');
     const item = await (prisma as any)[cfg.model].create({ data, ...(cfg.select ? { select: cfg.select } : {}) });
     refreshSite();
+    audit({ id: s.sub, name: s.name }, 'create', resource, item.id, data.name || data.title || data.code || '').catch(() => null);
     // ?translate=editor: the post editor translates right away itself (shows progress)
     if (new URL(req.url).searchParams.get('translate') !== 'editor') await autoTranslate(resource, item.id);
     if (resource === 'posts' && item?.status === 'published' && item?.slug) {

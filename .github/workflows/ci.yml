@@ -96,6 +96,34 @@ jobs:
           code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/seller); echo "/seller anonymous -> $code (redirect to login)"; [ "$code" = "307" ]
           curl -sf -b seller.txt http://localhost:3000/api/me/notifications | grep -q '"items"'
           check "/register?as=seller" 200
+          # --- seller & buyer flows: product, requirement, inquiry, quote ---
+          PID=$(curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/products -H 'Content-Type: application/json' -d '{"name":"Organic Turmeric Powder","images":["/brand/coin.webp"],"priceMin":180,"priceMax":220,"priceUnit":"per kg","moq":"100 kg","summary":"High curcumin turmeric"}' | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")
+          echo "product created $PID"
+          curl -sf -b seller.txt http://localhost:3000/api/seller/products | grep -q 'Organic Turmeric'
+          code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/products/$PID); echo "/seller/products/ID -> $code"; [ "$code" = "200" ]
+          # admin approves the seller and the product (admin API, phase 6)
+          curl -sf -b cookies.txt -X PUT http://localhost:3000/api/admin/sellers/$(curl -sf -b cookies.txt "http://localhost:3000/api/admin/sellers" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))") -H 'Content-Type: application/json' -d '{"status":"approved","verified":true}' >/dev/null
+          curl -sf -b cookies.txt -X PUT http://localhost:3000/api/admin/products/$PID -H 'Content-Type: application/json' -d '{"status":"approved"}' >/dev/null
+          SLUG=$(curl -sf -b seller.txt http://localhost:3000/api/seller/products/$PID | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.slug))")
+          check "/products/$SLUG" 200
+          curl -s http://localhost:3000/products | grep -q 'Organic Turmeric' || { echo "::error title=Check failed::product in listing"; exit 1; }; echo "product listed"
+          curl -s "http://localhost:3000/sellers/green-farms" | grep -q 'Green Farms' || { echo "::error title=Check failed::seller showroom"; exit 1; }; echo "showroom ok"
+          # buyer posts a requirement, seller quotes, buyer accepts
+          RID=$(curl -sf -b buyer.txt -X POST http://localhost:3000/api/buyer/requirements -H 'Content-Type: application/json' -d '{"title":"Need 500 kg organic turmeric monthly","quantity":"500","unit":"kg","deliveryState":"Maharashtra"}' | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")
+          check "/requirements/$RID" 200
+          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/leads/$RID/quote -H 'Content-Type: application/json' -d '{"price":195,"priceUnit":"per kg","deliveryTime":"7 days","message":"Fresh lot available"}' | grep -q '"item"'
+          QID=$(curl -sf -b buyer.txt "http://localhost:3000/buyer/requirements/$RID" >/dev/null; curl -sf -b buyer.txt http://localhost:3000/api/buyer/requirements | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0]._count.quotes))"); echo "quotes on requirement: $QID"; [ "$QID" = "1" ]
+          # guest inquiry on the product + buyer inquiry
+          SID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/profile | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")
+          curl -sf -X POST http://localhost:3000/api/inquiries -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"productId\":\"$PID\",\"name\":\"Guest Buyer\",\"email\":\"guest@example.com\",\"phone\":\"9000000000\",\"message\":\"Please send your best price for 200 kg\"}" | grep -q '"refNo"'
+          curl -sf -b buyer.txt -X POST http://localhost:3000/api/inquiries -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"message\":\"Do you ship to Pune?\"}" | grep -q '"href":"/buyer/inquiries/'
+          IID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))")
+          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/inquiries/$IID/messages -H 'Content-Type: application/json' -d '{"body":"Yes, we ship all India."}' | grep -q '"item"'
+          code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/inquiries/$IID); echo "/seller/inquiries/ID -> $code"; [ "$code" = "200" ]
+          for pth in /seller/products /seller/inquiries /seller/leads /seller/reviews /seller/profile /seller/membership /seller/analytics /seller/ai /seller/settings; do code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          for pth in /buyer/requirements /buyer/requirements/new "/buyer/requirements/$RID" /buyer/inquiries /buyer/quotes /buyer/favourites /buyer/reviews /buyer/profile /buyer/settings; do code=$(curl -s -o /dev/null -w "%{http_code}" -b buyer.txt "http://localhost:3000$pth"); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          # buyer review on the seller
+          curl -sf -b buyer.txt -X POST http://localhost:3000/api/reviews -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"rating\":5,\"body\":\"Great quality turmeric, fast dispatch.\"}" | grep -q '"status"'
           # --- design system, calculator & SEO ---
           curl -s http://localhost:3000/ | grep -q 'aria-label="Post a requirement"' || { echo "::error title=Check failed::Post requirement button"; exit 1; }; echo "Post requirement button"
           curl -s http://localhost:3000/ | grep -q 'glass-ui' || { echo "::error title=Check failed::Glass design active"; exit 1; }; echo "Glass design active"

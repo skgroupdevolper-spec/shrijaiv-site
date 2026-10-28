@@ -24,10 +24,10 @@ export function Field({ label, hint, required, children, className }: { label: s
   );
 }
 
-export async function uploadToDashboard(files: FileList | File[]) {
+export async function uploadToDashboard(files: FileList | File[], url = '/api/seller/upload') {
   const fd = new FormData();
   Array.from(files).forEach((f) => fd.append('files', f));
-  const d = await dapi<{ items: { url: string; name: string }[] }>('/api/seller/upload', 'POST', fd);
+  const d = await dapi<{ items: { url: string; name: string }[] }>(url, 'POST', fd);
   return d.items;
 }
 

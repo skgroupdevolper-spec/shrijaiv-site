@@ -5,6 +5,7 @@ import { requireStaff, hashPassword } from '@/lib/auth';
 import { RESOURCES, cleanData } from '@/lib/resources';
 import { slugify } from '@/lib/utils';
 import { deleteStored } from '@/lib/upload';
+import { afterAdminUpdate, audit } from '@/lib/marketplace/admin-hooks';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,8 @@ export async function PUT(req: Request, { params }: Ctx) {
       if (!body[g.cfg.unique] && g.cfg.unique === 'slug' && body.title) body.slug = slugify(body.title) || `${g.resource === 'pages' ? 'page' : 'post'}-${Date.now().toString(36)}`;
       if (!body[g.cfg.unique]) return fail('Please enter a web address (slug)');
     }
+    if (g.resource === 'plans' && typeof body.features === 'string') body.features = body.features.split(/\r?\n/).map((x: string) => x.trim()).filter(Boolean);
+    if ((g.resource === 'subscriptions' || g.resource === 'coupons') && body.endsAt === '') body.endsAt = null;
     const data = cleanData(g.cfg, body, true);
     if (g.resource === 'users') {
       if (body.password) {
@@ -56,15 +59,19 @@ export async function PUT(req: Request, { params }: Ctx) {
         data.passwordHash = await hashPassword(String(body.password));
       }
       if (data.email) data.email = String(data.email).toLowerCase().trim();
-      if (data.role && !['ADMIN', 'EDITOR', 'CUSTOMER'].includes(data.role)) delete data.role;
+      if (data.role && !['ADMIN', 'EDITOR', 'CUSTOMER', 'SELLER', 'BUYER'].includes(data.role)) delete data.role;
       if (g.id === g.s.sub && (data.role && data.role !== 'ADMIN')) return fail('You cannot remove your own admin role');
       if (g.id === g.s.sub && data.active === false) return fail('You cannot disable your own account');
     }
     if (g.resource === 'applications' && data.status) {
       // keep progress in sync with status unless explicitly provided
     }
+    const before = await (prisma as any)[g.cfg.model].findUnique({ where: { id: g.id } }).catch(() => null);
+    if (g.resource === 'categories' && data.parentId === '') data.parentId = null;
+    if (g.resource === 'products' && data.categoryId === '') data.categoryId = null;
     const item = await (prisma as any)[g.cfg.model].update({ where: { id: g.id }, data, ...(g.cfg.select ? { select: g.cfg.select } : {}) });
     refreshSite();
+    await afterAdminUpdate(g.resource, g.id, before, data, { id: g.s.sub, name: g.s.name }).catch((e) => console.error('[admin hook]', (e as Error).message));
     // ?translate=editor: the post editor translates right away itself (shows progress)
     if (new URL(req.url).searchParams.get('translate') !== 'editor') await autoTranslate(g.resource, g.id);
     if (g.resource === 'posts' && item?.status === 'published' && item?.slug) {
@@ -91,6 +98,7 @@ export async function DELETE(_req: Request, { params }: Ctx) {
     const item = await (prisma as any)[g.cfg.model].delete({ where: { id: g.id } });
     if (g.resource === 'media' && item?.url) await deleteStored(item.url);
     refreshSite();
+    audit({ id: g.s.sub, name: g.s.name }, 'delete', g.resource, g.id, item?.name || item?.title || item?.companyName || '').catch(() => null);
     return ok();
   } catch (e: any) {
     return fail(e.message || 'Could not delete');

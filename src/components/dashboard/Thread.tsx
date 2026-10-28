@@ -10,7 +10,7 @@ import { formatDateTime, cn } from '@/lib/utils';
 
 type Msg = { id: string; senderRole: string; body: string; attachments?: string; createdAt: string };
 
-export default function Thread({ messages, me, postUrl, placeholder = 'Write a reply…', disabled, refreshSeconds = 15 }: { messages: Msg[]; me: 'seller' | 'buyer' | 'admin'; postUrl: string; placeholder?: string; disabled?: boolean; refreshSeconds?: number }) {
+export default function Thread({ messages, me, postUrl, placeholder = 'Write a reply…', disabled, refreshSeconds = 15, uploadUrl }: { messages: Msg[]; me: 'seller' | 'buyer' | 'admin'; postUrl: string; placeholder?: string; disabled?: boolean; refreshSeconds?: number; uploadUrl?: string }) {
   const router = useRouter();
   const [text, setText] = useState('');
   const [files, setFiles] = useState<string[]>([]);
@@ -42,7 +42,7 @@ export default function Thread({ messages, me, postUrl, placeholder = 'Write a r
     if (!list?.length) return;
     setUp(true);
     try {
-      const items = await uploadToDashboard(Array.from(list).slice(0, 5));
+      const items = await uploadToDashboard(Array.from(list).slice(0, 5), uploadUrl || (me === 'admin' ? '/api/admin/upload' : '/api/seller/upload'));
       setFiles((f) => [...f, ...items.map((i) => i.url)].slice(0, 5));
     } catch (err: any) {
       toast(err.message, 'error');

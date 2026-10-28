@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect, permanentRedirect } from 'next/navigation';
+import { prisma } from '@/lib/db';
 import { getPage, getPost, getPosts } from '@/lib/data';
 import { getLocalizedBundle } from '@/lib/settings';
 import { getLocale } from '@/lib/i18n/server';
@@ -82,7 +83,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CatchAll({ params }: Props) {
   const { slug } = await params;
   const r = await resolve(slug);
-  if (!r) notFound();
+  if (!r) {
+    // Admin → Redirects (old URLs)
+    const from = '/' + slug.map(decodeURIComponent).join('/');
+    const rd = await prisma.redirect.findFirst({ where: { from, active: true } }).catch(() => null);
+    if (rd) {
+      prisma.redirect.update({ where: { id: rd.id }, data: { hits: { increment: 1 } } }).catch(() => null);
+      if (rd.code === 302) redirect(rd.to);
+      permanentRedirect(rd.to);
+    }
+    notFound();
+  }
   const locale = await getLocale();
   const { site } = await getLocalizedBundle(locale);
   if (r.kind === 'page') return <BlockRenderer blocks={r.page.blocks} site={site} />;

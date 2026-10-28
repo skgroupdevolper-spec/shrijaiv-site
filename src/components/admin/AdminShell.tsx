@@ -35,21 +35,51 @@ import {
   Megaphone,
   Palette,
   DatabaseBackup,
+  Store,
+  ShoppingBag,
+  Package,
+  Star,
+  Flag,
+  Receipt,
+  BadgePercent,
+  SlidersHorizontal,
+  ScrollText,
 } from 'lucide-react';
 import { Toaster, toast } from './ui';
 import { cn, formatDateTime } from '@/lib/utils';
 
-type Counts = { newLeads: number; newApps: number; unreadMsgs: number; latestLeads: any[]; latestApps: any[]; latestMsgs: any[] };
+type Counts = { newLeads: number; newApps: number; unreadMsgs: number; latestLeads: any[]; latestApps: any[]; latestMsgs: any[]; pendingSellers: number; pendingProducts: number; newInquiries: number; pendingReviews: number; latest: any[]; unreadNotes: number };
 
 const NAV = [
   { group: '', items: [{ href: '/admin', label: 'Dashboard', icon: LayoutDashboard }] },
   {
+    group: 'Marketplace',
+    items: [
+      { href: '/admin/sellers', label: 'Sellers', icon: Store, badge: 'sellers' },
+      { href: '/admin/buyers', label: 'Buyers', icon: ShoppingBag },
+      { href: '/admin/products', label: 'Products', icon: Package, badge: 'products' },
+      { href: '/admin/categories', label: 'Categories', icon: FolderKanban },
+      { href: '/admin/requirements', label: 'Buy leads (RFQ)', icon: Megaphone },
+      { href: '/admin/inquiries', label: 'Inquiries', icon: Inbox, badge: 'inquiries' },
+      { href: '/admin/reviews', label: 'Reviews & ratings', icon: Star, badge: 'reviews' },
+      { href: '/admin/reports', label: 'Reports & flags', icon: Flag },
+    ],
+  },
+  {
+    group: 'Money',
+    items: [
+      { href: '/admin/plans', label: 'Membership plans', icon: Crown, adminOnly: true },
+      { href: '/admin/subscriptions', label: 'Subscriptions', icon: BadgeCheck, adminOnly: true },
+      { href: '/admin/payments', label: 'Payments & invoices', icon: Receipt, adminOnly: true },
+      { href: '/admin/coupons', label: 'Coupons', icon: BadgePercent, adminOnly: true },
+      { href: '/admin/marketplace', label: 'Marketplace settings', icon: SlidersHorizontal, adminOnly: true },
+    ],
+  },
+  {
     group: 'CRM',
     items: [
-      { href: '/admin/leads', label: 'Leads & enquiries', icon: Inbox, badge: 'newLeads' },
-      { href: '/admin/applications', label: 'Applications', icon: FolderKanban, badge: 'apps' },
-      { href: '/admin/customers', label: 'Customers', icon: Users },
-      { href: '/admin/subscribers', label: 'Subscribers', icon: Mail },
+      { href: '/admin/leads', label: 'Contact messages', icon: Mail, badge: 'newLeads' },
+      { href: '/admin/subscribers', label: 'Newsletter', icon: Users },
       { href: '/admin/chatbot', label: 'AI chatbot', icon: Bot, adminOnly: true },
     ],
   },
@@ -58,23 +88,22 @@ const NAV = [
     items: [
       { href: '/admin/pages', label: 'Pages', icon: FileText },
       { href: '/admin/posts', label: 'Blog posts', icon: Newspaper },
-      { href: '/admin/services', label: 'Services & prices', icon: BadgeCheck },
-      { href: '/admin/calculator', label: 'Cost calculator', icon: Calculator },
-      { href: '/admin/offer', label: 'Offer pop-up', icon: Megaphone },
       { href: '/admin/faqs', label: 'FAQs', icon: CircleHelp },
       { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
       { href: '/admin/partners', label: 'Partner logos', icon: Building },
+      { href: '/admin/offer', label: 'Offer pop-up', icon: Megaphone },
       { href: '/admin/media', label: 'Media library', icon: ImageIcon },
     ],
   },
   {
-    group: 'Appearance',
+    group: 'Appearance & SEO',
     items: [
       { href: '/admin/design', label: 'Design & style', icon: Palette, adminOnly: true },
       { href: '/admin/header', label: 'Header & menu', icon: PanelTop },
       { href: '/admin/footer', label: 'Footer', icon: PanelBottom },
       { href: '/admin/languages', label: 'Languages', icon: Languages },
-      { href: '/admin/settings', label: 'Site settings', icon: Settings, adminOnly: true },
+      { href: '/admin/redirects', label: 'Redirects', icon: ExternalLink, adminOnly: true },
+      { href: '/admin/settings', label: 'Site settings & SEO', icon: Settings, adminOnly: true },
       { href: '/admin/backup', label: 'Backup & move', icon: DatabaseBackup, adminOnly: true },
     ],
   },
@@ -82,10 +111,12 @@ const NAV = [
     group: 'Account',
     items: [
       { href: '/admin/users', label: 'Admin users', icon: ShieldCheck, adminOnly: true },
+      { href: '/admin/auditlog', label: 'Audit log', icon: ScrollText, adminOnly: true },
       { href: '/admin/profile', label: 'My profile', icon: CircleUser },
     ],
   },
 ];
+
 
 function beep() {
   try {
@@ -108,7 +139,7 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
   const [mobile, setMobile] = useState(false);
   const [counts, setCounts] = useState<Counts | null>(null);
   const [bell, setBell] = useState(false);
-  const prev = useRef<{ l: number; a: number; m: number } | null>(null);
+  const prev = useRef<{ l: number; a: number; m: number; n?: number } | null>(null);
 
   useEffect(() => setMobile(false), [pathname]);
 
@@ -135,7 +166,11 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
             beep();
           }
         }
-        prev.current = { l: d.newLeads, a: d.newApps, m: d.unreadMsgs };
+        if (p && (d.unreadNotes || 0) > (p.n || 0) && d.latest?.[0]) {
+          toast(`🔔 ${d.latest[0].title}`, 'info');
+          beep();
+        }
+        prev.current = { l: d.newLeads, a: d.newApps, m: d.unreadMsgs, n: d.unreadNotes || 0 };
         setCounts(d);
       } catch {}
     }
@@ -156,9 +191,13 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
     if (!k || !counts) return 0;
     if (k === 'newLeads') return counts.newLeads;
     if (k === 'apps') return counts.newApps + counts.unreadMsgs;
+    if (k === 'sellers') return counts.pendingSellers || 0;
+    if (k === 'products') return counts.pendingProducts || 0;
+    if (k === 'inquiries') return counts.newInquiries || 0;
+    if (k === 'reviews') return counts.pendingReviews || 0;
     return 0;
   };
-  const totalBell = (counts?.newLeads || 0) + (counts?.newApps || 0) + (counts?.unreadMsgs || 0);
+  const totalBell = (counts?.unreadNotes || 0) + (counts?.newLeads || 0) + (counts?.unreadMsgs || 0);
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -255,6 +294,16 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
                   </div>
                   <div className="max-h-[420px] overflow-y-auto thin-scroll">
                     {!totalBell && <p className="px-4 py-10 text-center text-sm text-gray-400">You are all caught up ✨</p>}
+                    {counts?.latest?.map((n) => (
+                      <Link key={n.id} href={n.href || '/admin'} onClick={() => { setBell(false); fetch('/api/admin/notifications', { method: 'PUT' }).catch(() => null); }} className={cn('flex gap-3 border-b border-gray-50 px-4 py-3 hover:bg-gray-50', !n.read && 'bg-emerald-50/50')}>
+                        <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700"><Bell className="h-4 w-4" /></span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold">{n.title}</span>
+                          {n.body && <span className="block truncate text-xs text-gray-500">{n.body}</span>}
+                          <span className="block text-[0.65rem] text-gray-400">{formatDateTime(n.createdAt)}</span>
+                        </span>
+                      </Link>
+                    ))}
                     {counts?.latestLeads.map((l) => (
                       <Link key={l.id} href="/admin/leads" onClick={() => setBell(false)} className="flex gap-3 border-b border-gray-50 px-4 py-3 hover:bg-gray-50">
                         <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-100 text-blue-600"><Inbox className="h-4 w-4" /></span>

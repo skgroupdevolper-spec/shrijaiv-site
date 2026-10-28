@@ -11,6 +11,7 @@ import InquiryForm from '@/components/market/InquiryForm';
 import ReviewForm from '@/components/market/ReviewForm';
 import ProductCard from '@/components/market/ProductCard';
 import { Rating } from '@/components/market/Rating';
+import FavButton from '@/components/market/FavButton';
 import { formatDate, waLink } from '@/lib/utils';
 import { safeArticleHtml } from '@/lib/sanitize';
 
@@ -32,6 +33,8 @@ export default async function SellerPage({ params }: Props) {
   if (!s) notFound();
   prisma.sellerProfile.update({ where: { id: s.id }, data: { views: { increment: 1 } } }).catch(() => null);
   const user = await getCurrentUser();
+  const buyer = user?.role === 'BUYER' ? await prisma.buyerProfile.findUnique({ where: { userId: user.id }, select: { id: true } }) : null;
+  const fav = buyer ? !!(await prisma.favourite.findFirst({ where: { buyerId: buyer.id, sellerId: s.id } })) : false;
   const certs: { name: string; number?: string }[] = (() => {
     try {
       const v = JSON.parse(s.certifications || '[]');
@@ -86,7 +89,8 @@ export default async function SellerPage({ params }: Props) {
                 </div>
                 <Rating value={s.ratingAvg} count={s.ratingCount} size="md" className="mt-2" />
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <FavButton sellerId={s.id} initial={fav} canSave={!!buyer} className="self-center" />
                 <a href="#inquiry" className="btn btn-gold">{t('Send inquiry')}</a>
                 {s.whatsapp && (
                   <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I found you on SHRIJAIV.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline">WhatsApp</a>
