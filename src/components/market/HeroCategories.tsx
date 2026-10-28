@@ -37,7 +37,7 @@ export default function HeroCategories({ items, title, allLabel, allCatsLabel }:
             const has = c.children.length > 0;
             const isOpen = open === c.id;
             return (
-              <li key={c.id} className={cn('shrink-0', !has && !open && 'min-h-0 flex-1')}>
+              <li key={c.id} className="shrink-0">
                 <div className={cn('group flex min-h-[42px] items-center rounded-2xl border border-ink/5 bg-white/85 pl-3.5 pr-1.5 text-[0.93rem] text-ink/85 shadow-sm transition hover:border-gold hover:shadow-md', isOpen && 'border-gold')}>
                   <SmartLink href={`/category/${c.slug}`} className="flex min-w-0 flex-1 items-center gap-2.5 py-2 group-hover:text-gold-deep">
                     <Visual c={c} />

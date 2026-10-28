@@ -364,10 +364,10 @@ export function PhotoBanner({ data }: P) {
               )}
             </div>
             {data.image && (
-              <div className="relative hidden min-h-[320px] items-center justify-center p-6 md:flex">
+              <div className="relative hidden items-center justify-center p-6 md:flex">
                 <span className="absolute inset-8 rounded-full bg-white/15 blur-2xl" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={data.image} alt="" className="tilt relative max-h-[340px] w-auto max-w-full rounded-[22px] object-contain shadow-2xl ring-4 ring-white/30" data-tilt="5" />
+                <img src={data.image} alt="" className="tilt relative max-h-[250px] w-auto max-w-full rounded-[22px] object-contain shadow-2xl ring-4 ring-white/30" data-tilt="5" />
               </div>
             )}
           </div>
