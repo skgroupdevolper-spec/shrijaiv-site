@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Seller</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+  
+  <!-- Header -->
+  <div class="header border-bottom">
+    <div class="top-bar d-flex justify-content-between p-2 bg-light">
+      
+      <div>
+        <a href="Customer support.html" class="me-3">Customer Support</a>
+        <a href="About Us.html" class="me-3">About Us</a>
+      </div>
+      <div>
+        <a href="Sign up.html" class="me-3">Sign up</a>
+        <a href="Login.html" class="me-3">Login</a>
+      </div>
+    </div>
+  
+    <nav class="navbar navbar-expand-lg navbar-light bg-white w-100" >
+      <div class="container-fluid">
+        <img class="logo" src="images/logo.png" alt="logo">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <ul class="navbar-nav text-center">
+            <li class="nav-item"><a class="nav-link" href="Index.html">Home</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="shopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+              <ul class="dropdown-menu" aria-labelledby="shopDropdown">
+                <li><a class="dropdown-item" href="file:///D:/SHRIJAIV%20Site/Seller.html">Seller</a></li>
+                <li><a class="dropdown-item" href="file:///D:/SHRIJAIV%20Site/Buyer.html">Buyer</a></li>
+              </ul>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="Become a seller.html">Become a Seller</a></li>
+            <li class="nav-item"><a class="nav-link" href="Become a buyer.html">Become a Buyer</a></li>
+            <li class="nav-item"><a class="nav-link" href="Contact us.html">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="Blog.html">Blog</a></li>
+          </ul>
+        </div>
+        <div class="d-flex align-items-center">
+          <a href="My Account.html" class="account">Account</a>
+          <img class="vector" src="images/Vector.png" />
+          <img class="vector2 ms-3" src="images/Vector2.png" />
+          <span class="number">93140 51605</span>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  
+  
+  <!-- Become  a seller -->
+ 
+
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Left Column: Join Us Form -->
+      <div class="col-md-8">
+        <!-- Details Section -->
+        <form >
+        <div class="form-section">
+          <h4>Put Your Details</h4>
+          <div class="mb-3">
+            
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="userType" id="supplier" value="supplier" onclick="toggleForm(this.value)" required>
+              <label class="form-check-label" for="supplier">I'm a supplier</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="userType" id="buyer" value="buyer" onclick="toggleForm(this.value)"  required>
+              <label class="form-check-label" for="buyer">I'm a buyer *</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Company/Individual Name *</label>
+            <input type="text" class="form-control" placeholder="Enter Company/Individual Name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Product List *</label>
+            <div class="d-flex flex-wrap product-checkbox">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" value="Organic Agriculture" id="organicAgriculture">
+                <label class="form-check-label" for="organicAgriculture">Organic Agriculture</label>
+              </div>
+              <div class="form-check mb-2 ms-3">
+                <input class="form-check-input" type="checkbox" value="Organic Beauty" id="organicBeauty">
+                <label class="form-check-label" for="organicBeauty">Organic Beauty</label>
+              </div>
+              <div class="form-check mb-2 ms-3">
+                <input class="form-check-input" type="checkbox" value="Organic Process Food" id="organicProcessFood">
+                <label class="form-check-label" for="organicProcessFood">Organic Process Food</label>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">I provide the following trade services *</label>
+            <input type="text" class="form-control" placeholder="Enter trade services" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Your Primary Business *</label>
+            <input type="text" class="form-control" placeholder="Enter your primary business" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Your Approx Annual Turnover: *</label>
+              <input type="text" class="form-control" placeholder="Enter turnover" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Year of Business Was Established *</label>
+              <input type="text" class="form-control" placeholder="Enter year" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Certifications Your Company Upload *</label>
+            <input type="file" class="form-control" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Enter Business Type</label>
+              <input type="text" class="form-control" placeholder="Enter business type">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Enter Turnover</label>
+              <input type="text" class="form-control" placeholder="Enter turnover">
+            </div>
+          </div>
+        </div>
+        <!-- Contact Section -->
+        <div class="form-section">
+          <h4>Contact Details</h4>
+          <div class="mb-3">
+            <label class="form-label">Your Name *</label>
+            <input type="text" class="form-control" placeholder="Enter your name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" placeholder="Enter your email" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" class="form-control" placeholder="Enter phone number" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Address *</label>
+              <input type="text" class="form-control" placeholder="Enter address" required>
+            </div>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="terms" required>
+            <label class="form-check-label" for="terms">I have read and agree to the <a href="policy.html">Terms &amp; Conditions</a> *</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </form>
+      <!-- Right Column: Seller List -->
+      <div class="col-md-4">
+        <div class="seller-list">
+          <h5>Seller List</h5>
+          <ul class="list-group list-group-flush">
+           
+            <li class="list-group-item">
+              <img class="side" src="images/blog-post-01-100x100.jpg.png">
+              <div class="heading-3-link-how-grocers-are-approaching">ARA</div>
+              <div class="link-november-3-2023 " style="font-size: 9px;">November 3, 2023</div>
+              <div class="link-november-3-2024" style="font-size: 12px; font-weight: bold;">Buyer From India </div>
+              <img style="width: 60.88px; height: 10px; position: relative; overflow: visible; top: -3px;left: -2px;" class="icon" src="Icon.png" />
+            </div>
+          </li>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+  
+  <div class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="images/logo.png" alt="Logo" class="logo">
+          <ul class="list-unstyled">
+            <li class="icon"><img src="images/Vector2.png"> 93140 51605</li>
+            <li class="icon1"><img src="images/email.png"> founder.infotech@gmail.com</li>
+            <li class="icon1"><img src="images/bx_map.png"> 276, FRONTIER COLONY, ADARSH NAGAR, JAIPUR</li>
+        </ul>
+        
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Our Category</h5>
+          <a class="link" href="#">Organic Agriculture</a>
+          <a class="link" href="#">Organic Beauty</a>
+          <a class="link" href="#">Dairy Products</a>
+          <a class="link" href="#">Fruits</a>
+          <a class="link" href="#">Vegetables</a>
+          <a class="link" href="#">Organic Processed Food</a>
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Quick Links</h5>
+          <a class="link" href="About Us.html">About</a>
+          <a class="link" href="Contact us.html">Contact</a>
+          <a class="link" href="Become a seller.html">Become a Seller</a>
+          <a class="link" href="Become a buyer.html">Become a Buyer</a>
+          <a  class="link"href="MemberShip.html">MemberShip</a>
+          <a class="link"href="policy.html">Privacy Policy</a>
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Join our Newsletter </h5>
+          <form class="newsletter-form">
+            <input class="email" type="email" placeholder="Enter email address" required>
+            <button class="send" type="submit">SEND</button>
+          </form>
+          <div class="social-icons mt-3">
+            <img src="images/facebook.png" alt="Facebook">
+            <img src="images/twiter.png" alt="Twitter">
+            <img src="images/insta.png" alt="Instagram">
+            <img src="images/linkdin.png" alt="LinkedIn">
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="copy">Copyright All rights reserved</div>
+  
+  <script src="java.js"></script>
+ 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"> </script>
+</body>
+</html>

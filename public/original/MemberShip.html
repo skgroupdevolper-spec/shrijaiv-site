@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memberrship</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+  
+  <!-- Header -->
+  <div class="header border-bottom">
+    <div class="top-bar d-flex justify-content-between p-2 bg-light">
+      
+      <div>
+        <a href="Customer support.html" class="me-3">Customer Support</a>
+        <a href="About Us.html" class="me-3">About Us</a>
+      </div>
+      <div>
+        <a href="Sign up.html" class="me-3">Sign up</a>
+        <a href="Login.html" class="me-3">Login</a>
+      </div>
+    </div>
+  
+    <nav class="navbar navbar-expand-lg navbar-light bg-white w-100" >
+      <div class="container-fluid">
+        <img class="logo" src="images/logo.png" alt="logo">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <ul class="navbar-nav text-center">
+            <li class="nav-item"><a class="nav-link" href="Index.html">Home</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="shopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+              <ul class="dropdown-menu" aria-labelledby="shopDropdown">
+                <li><a class="dropdown-item" href="file:///D:/SHRIJAIV%20Site/Seller.html">Seller</a></li>
+                <li><a class="dropdown-item" href="file:///D:/SHRIJAIV%20Site/Buyer.html">Buyer</a></li>
+              </ul>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="Become a seller.html">Become a Seller</a></li>
+            <li class="nav-item"><a class="nav-link" href="Become a buyer.html">Become a Buyer</a></li>
+            <li class="nav-item"><a class="nav-link" href="Contact us.html">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="Blog.html">Blog</a></li>
+          </ul>
+        </div>
+        <div class="d-flex align-items-center">
+          <a href="My Account.html" class="account">Account</a>
+          <img class="vector" src="images/Vector.png" />
+          <img class="vector2 ms-3" src="images/Vector2.png" />
+          <span class="number">93140 51605</span>
+        </div>
+      </div>
+    </nav>
+  </div>
+    
+<!--search -->
+    
+<div class="container search-container mt-4" style="margin-bottom: 20px;">
+  <div class="d-flex align-items-center justify-content-between">
+    <!-- Search Input -->
+    <div class="d-flex align-items-center flex-grow-1 me-3">
+      <input id="searchQuery" type="text" class="form-control" 
+             placeholder="Search for buyer or supplier...">
+      
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2">
+      <button class="btn" onclick="findSupplier()" style="background-color: #009A35; color: white; border: none;">Find Supplier</button>
+      <button class="btn" onclick="findBuyer()" style="background-color: #009A35; color: white; border: none;">Find Buyer</button>
+    </div>
+  </div>
+</div>
+
+
+
+  <!--body-->
+  <style>
+    
+    
+</style>
+
+<div class="container text-center py-5">
+    <h2 class="mb-4">Our Pricing</h2>
+    <div class="row g-4">
+        <!-- Silver Plan -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Silver Plan</h5>
+                    <h6 class="text-primary">$24 / 3 months</h6>
+                    <ul>
+                        <li>Inquiry max 50 a month</li>
+                        <li>One page Business profile</li>
+                    </ul>
+                    <a href="#" class="btn btn-custom">Choose Silver Plan</a>
+                </div>
+            </div>
+        </div>
+        <!-- Gold Plan -->
+        <div class="col-md-4">
+            <div class="card shadow border-warning">
+                <div class="card-body">
+                    <h5 class="card-title">👤 Gold Plan</h5>
+                    <h6 class="text-warning">$50 / 6 months</h6>
+                    <ul>
+                        <li>Inquiry max 100 a month</li>
+                        <li>Limited description supplier contact</li>
+                    </ul>
+                    <a href="#" class="btn btn-custom">Choose Gold Plan</a>
+                    <div class="badge bg-danger mt-2">Best!</div>
+                </div>
+            </div>
+        </div>
+        <!-- Platinum Plan -->
+        <div class="col-md-4">
+            <div class="card shadow border-secondary">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Platinum Plan</h5>
+                    <h6 class="text-secondary">$120 / 1 year</h6>
+                    <ul>
+                        <li>Unlimited inquiry</li>
+                        <li>Unlimited catalog product & highest search ranking</li>
+                    </ul>
+                    <a href="#" class="btn btn-custom">Choose Platinum Plan</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Free Plan Button -->
+    <div class="mt-4">
+        <a href="#" class="btn btn-custom">Try Free Plan</a>
+    </div>
+</div>
+
+
+ 
+      
+    
+    
+    
+  
+    
+   
+  
+ 
+  
+  
+  <!-- Footer -->
+  
+  <div class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="images/logo.png" alt="Logo" class="logo">
+          <ul class="list-unstyled">
+            <li class="icon"><img src="images/Vector2.png"> 93140 51605</li>
+            <li class="icon1"><img src="images/email.png"> founder.infotech@gmail.com</li>
+            <li class="icon1"><img src="images/bx_map.png"> 276, FRONTIER COLONY, ADARSH NAGAR, JAIPUR</li>
+        </ul>
+        
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Our Category</h5>
+          <a class="link" href="#">Organic Agriculture</a>
+          <a class="link" href="#">Organic Beauty</a>
+          <a class="link" href="#">Dairy Products</a>
+          <a class="link" href="#">Fruits</a>
+          <a class="link" href="#">Vegetables</a>
+          <a class="link" href="#">Organic Processed Food</a>
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Quick Links</h5>
+          <a class="link" href="About Us.html">About</a>
+          <a class="link" href="Contact us.html">Contact</a>
+          <a class="link" href="Become a seller.html">Become a Seller</a>
+          <a class="link" href="Become a buyer.html">Become a Buyer</a>
+          <a  class="link"href="MemberShip.html">MemberShip</a>
+          <a class="link"href="policy.html">Privacy Policy</a>
+        </div>
+        <div class="col-md-3">
+          <h5 class="h5">Join our Newsletter </h5>
+          <form class="newsletter-form">
+            <input class="email" type="email" placeholder="Enter email address" required>
+            <button class="send" type="submit">SEND</button>
+          </form>
+          <div class="social-icons mt-3">
+            <img src="images/facebook.png" alt="Facebook">
+            <img src="images/twiter.png" alt="Twitter">
+            <img src="images/insta.png" alt="Instagram">
+            <img src="images/linkdin.png" alt="LinkedIn">
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="copy">Copyright All rights reserved</div>
+  
+  <script src="java.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"> </script>
+</body>
+</html>
