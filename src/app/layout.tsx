@@ -52,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const info = localeInfo(locale);
   const c = site.colors;
   const vars = `:root{--brand-gold:${c.gold};--brand-gold-light:${c.goldLight};--brand-ink:${c.ink};--brand-sand:${c.sand};}`;
-  const orgSchema = { '@context': 'https://schema.org', '@type': 'ProfessionalService', name: site.name, url: SITE_URL, telephone: site.phone, email: site.emailVisa, image: site.logo || undefined, address: { '@type': 'PostalAddress', streetAddress: site.address, addressLocality: 'Dubai', addressCountry: 'AE' }, sameAs: Object.values(site.social || {}).filter(Boolean) };
+  const orgSchema = { '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: SITE_URL, telephone: site.phone, email: site.emailGeneral, image: site.logo || undefined, address: { '@type': 'PostalAddress', streetAddress: site.address, addressCountry: 'IN' }, sameAs: Object.values(site.social || {}).filter(Boolean) };
   return (
     <html lang={info.htmlLang} dir={info.dir} suppressHydrationWarning>
       <head>

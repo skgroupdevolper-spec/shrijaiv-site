@@ -43,7 +43,7 @@ export default function LeadForm({ defaultService, compact, dark }: { defaultSer
               <CircleCheck className="h-10 w-10" />
             </motion.span>
             <h3 className="mt-6 font-display text-3xl font-semibold">{t('Thank you!')}</h3>
-            <p className="mt-2 opacity-70">{t('Your enquiry has been received. A consultant will contact you within 24 hours (usually much sooner).')}</p>
+            <p className="mt-2 opacity-70">{t('Your message has been received. Our team will contact you within 24 hours (usually much sooner).')}</p>
             <button onClick={() => setState('idle')} className="mt-6 text-sm font-bold text-gold-deep underline underline-offset-4">
               {t('Send another enquiry')}
             </button>

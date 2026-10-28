@@ -10,7 +10,7 @@ export function siteUrl() {
 /** Stable secret key for this website (or INDEXNOW_KEY from .env) */
 export function indexNowKey() {
   if (process.env.INDEXNOW_KEY) return process.env.INDEXNOW_KEY;
-  const seed = process.env.JWT_SECRET || siteUrl() || 'goldenvisauae';
+  const seed = process.env.JWT_SECRET || siteUrl() || 'shrijaiv';
   return crypto.createHash('sha256').update('indexnow:' + seed).digest('hex').slice(0, 32);
 }
 

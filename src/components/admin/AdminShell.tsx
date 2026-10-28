@@ -198,14 +198,14 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
           );
         })}
       </nav>
-      <div className="border-t border-[#efe4cb] p-4">
+      <div className="border-t border-[#dcefe0] p-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-full text-sm font-bold text-[#2a1d05]" style={{ background: 'var(--gold-grad)' }}>{user.name.charAt(0)}</span>
+          <span className="grid h-9 w-9 place-items-center rounded-full text-sm font-bold text-[#ffffff]" style={{ background: 'var(--gold-grad)' }}>{user.name.charAt(0)}</span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-bold">{user.name}</p>
             <p className="truncate text-[0.7rem] text-gray-500">{user.role === 'ADMIN' ? 'Administrator' : 'Editor'}</p>
           </div>
-          <button onClick={logout} className="rounded-lg p-2 text-gray-400 hover:bg-[#fbf5e6] hover:text-gray-900" title="Logout">
+          <button onClick={logout} className="rounded-lg p-2 text-gray-400 hover:bg-[#eef8f0] hover:text-gray-900" title="Logout">
             <LogOut className="h-4 w-4" />
           </button>
         </div>

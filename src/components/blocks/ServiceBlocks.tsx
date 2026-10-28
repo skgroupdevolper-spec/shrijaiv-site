@@ -95,7 +95,7 @@ export async function ServiceHero({ data }: P) {
               <div className="fx-up mt-7 flex flex-wrap items-center gap-x-5 gap-y-2.5" style={{ ['--d' as any]: '.36s' }}>
                 {data.rating && (
                   <span className="inline-flex items-center gap-2 text-sm">
-                    <span className="inline-flex text-[#c9a24a]" aria-hidden>
+                    <span className="inline-flex text-[#009a35]" aria-hidden>
                       {[0, 1, 2, 3, 4].map((k) => (
                         <Star key={k} className="h-4 w-4 fill-current" />
                       ))}

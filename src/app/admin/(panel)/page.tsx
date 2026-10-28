@@ -34,7 +34,7 @@ export default async function Dashboard() {
     { label: 'Total leads', value: leadCount, sub: `${newLeads} new`, icon: Inbox, href: '/admin/leads', color: 'from-[#f3dfa6] to-[#c99a3c]' },
     { label: 'Applications', value: appCount, sub: `${activeApps} in progress`, icon: FolderKanban, href: '/admin/applications', color: 'from-[#e9cf8a] to-[#b8862f]' },
     { label: 'Customers', value: customers, sub: 'registered clients', icon: Users, href: '/admin/customers', color: 'from-[#f6e7bd] to-[#d4ab55]' },
-    { label: 'Blog posts', value: posts, sub: 'published articles', icon: Newspaper, href: '/admin/posts', color: 'from-[#ecd9a3] to-[#a87a26]' },
+    { label: 'Blog posts', value: posts, sub: 'published articles', icon: Newspaper, href: '/admin/posts', color: 'from-[#8fdba6] to-[#a87a26]' },
   ];
 
   return (

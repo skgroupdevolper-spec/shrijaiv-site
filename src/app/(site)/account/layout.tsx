@@ -17,10 +17,10 @@ export default async function AccountLayout({ children }: { children: React.Reac
       <div className="ink-panel theme-dark mx-2.5 sm:mx-4">
         <div className="container-x relative py-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <span className="grid h-14 w-14 place-items-center rounded-2xl font-display text-2xl font-semibold text-[#1a1406]" style={{ background: 'var(--gold-grad)' }}>{user.name.charAt(0).toUpperCase()}</span>
+            <span className="grid h-14 w-14 place-items-center rounded-2xl font-display text-2xl font-semibold text-[#ffffff]" style={{ background: 'var(--gold-grad)' }}>{user.name.charAt(0).toUpperCase()}</span>
             <div>
               <p className="eyebrow">Client portal</p>
-              <h1 className="font-display text-3xl md:text-4xl font-semibold text-white">Marhaba, {user.name.split(' ')[0]}</h1>
+              <h1 className="font-display text-3xl md:text-4xl font-semibold text-white">Namaste, {user.name.split(' ')[0]}</h1>
             </div>
           </div>
           <AccountNav isStaff={user.role !== 'CUSTOMER'} />

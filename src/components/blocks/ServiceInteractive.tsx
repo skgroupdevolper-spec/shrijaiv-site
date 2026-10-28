@@ -58,7 +58,7 @@ export function StatusWizard({ d }: { d: any }) {
         <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#8a6d2c]">{done ? d.resultEyebrow : fill(d.progress || 'Question {n} of {total}', { n: step + 1, total })}</p>
         <div className="flex gap-1.5" aria-hidden>
           {qs.map((_, i) => (
-            <span key={i} className={cn('h-1.5 w-8 rounded-full transition-colors duration-300', i < step || done ? 'bg-[#c9a24a]' : i === step ? 'bg-[#c9a24a]/45' : 'bg-black/[0.08]')} />
+            <span key={i} className={cn('h-1.5 w-8 rounded-full transition-colors duration-300', i < step || done ? 'bg-[#009a35]' : i === step ? 'bg-[#009a35]/45' : 'bg-black/[0.08]')} />
           ))}
         </div>
       </div>
@@ -257,7 +257,7 @@ export function DetailTabsView({ d }: { d: any }) {
     <div>
       <div role="tablist" className="dt-tabs grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-center">
         {items.map((it, k) => (
-          <button key={k} type="button" role="tab" aria-selected={k === i} onClick={() => setI(k)} className={cn('dt-tab flex min-w-0 items-center gap-2.5 rounded-2xl border px-4 py-2.5 text-start transition-all duration-200', k === i ? 'chip-active' : 'border-black/[0.08] bg-white hover:border-[#c9a24a]/70')}>
+          <button key={k} type="button" role="tab" aria-selected={k === i} onClick={() => setI(k)} className={cn('dt-tab flex min-w-0 items-center gap-2.5 rounded-2xl border px-4 py-2.5 text-start transition-all duration-200', k === i ? 'chip-active' : 'border-black/[0.08] bg-white hover:border-[#009a35]/70')}>
             <Icon name={it.icon || 'users'} className="h-4 w-4 shrink-0" />
             <span className="min-w-0">
               <span className="block text-sm font-semibold leading-tight">{it.title}</span>
@@ -304,10 +304,10 @@ export function DetailTabsView({ d }: { d: any }) {
             </div>
           </div>
           {(cur.extraTitle || cur.extra) && (
-            <aside className="relative self-start rounded-[22px] bg-gradient-to-b from-[#fffaf0] to-[#f7ecd2] p-5 ring-1 ring-[#c9a24a]/25 sm:p-6">
+            <aside className="relative self-start rounded-[22px] bg-gradient-to-b from-[#fffaf0] to-[#f7ecd2] p-5 ring-1 ring-[#009a35]/25 sm:p-6">
               {cur.extraTitle && <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[#8a6d2c]">{cur.extraTitle}</p>}
               {lines(cur.extra).map((x, k) => (
-                <p key={k} className={cn('text-[0.93rem] leading-relaxed text-[#2c2c2e]', k ? 'mt-3 border-t border-[#c9a24a]/20 pt-3' : 'mt-2')}>
+                <p key={k} className={cn('text-[0.93rem] leading-relaxed text-[#2c2c2e]', k ? 'mt-3 border-t border-[#009a35]/20 pt-3' : 'mt-2')}>
                   {D(x)}
                 </p>
               ))}
@@ -361,13 +361,13 @@ export function DocChecklistView({ d }: { d: any }) {
             const on = !!have[key(k)];
             return (
               <li key={k} style={{ ['--i' as any]: k }} className="doc-row">
-                <label className={cn('flex cursor-pointer items-start gap-3.5 rounded-2xl border px-4 py-3.5 transition-colors duration-200', on ? 'border-[#c9a24a]/60 bg-[#fffaf0]' : 'border-black/[0.07] bg-white hover:border-[#c9a24a]/50')}>
+                <label className={cn('flex cursor-pointer items-start gap-3.5 rounded-2xl border px-4 py-3.5 transition-colors duration-200', on ? 'border-[#009a35]/60 bg-[#fffaf0]' : 'border-black/[0.07] bg-white hover:border-[#009a35]/50')}>
                   <input type="checkbox" className="sr-only" checked={on} onChange={() => setHave((h) => ({ ...h, [key(k)]: !on }))} />
                   <span className={cn('mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg border transition-all duration-200', on ? 'scale-105 border-transparent text-[#2a1d05]' : 'border-black/20 text-transparent')} style={on ? { background: 'var(--gold-grad)' } : undefined}>
                     <Check className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className={cn('block text-[0.95rem] font-medium leading-snug', on && 'text-[#6e6e73] line-through decoration-[#c9a24a]/70')}>{D(x.title)}</span>
+                    <span className={cn('block text-[0.95rem] font-medium leading-snug', on && 'text-[#6e6e73] line-through decoration-[#009a35]/70')}>{D(x.title)}</span>
                     {x.sub && <span className="muted mt-0.5 block text-[0.83rem] leading-relaxed">{D(x.sub)}</span>}
                   </span>
                 </label>

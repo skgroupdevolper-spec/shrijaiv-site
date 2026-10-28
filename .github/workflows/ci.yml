@@ -43,26 +43,33 @@ jobs:
           check() { code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000$1"); echo "$1 -> $code"; [ "$code" = "$2" ]; }
           check / 200
           check /about 200
-          check /services 200
-          check /services/golden-visa 200
-          check /services/property-investor-visa 200
-          check /services/emirates-id 200
           check /contact 200
-          check /faqs 200
-          check /check-visa-status 200
-          check /official-sources 200
+          check /faq 200
+          check /how-it-works 200
+          check /become-a-seller 200
+          check /become-a-buyer 200
+          check /customer-support 200
+          check /terms 200
+          check /privacy 200
+          check /products 200
+          check /sellers 200
+          check /requirements 200
+          check /pricing 200
+          check /category/organic-agriculture 200
+          check /category/fruit 200
+          check /post-requirement 200
           check /blog 200
-          check /blog/uae-golden-visa-cost-price-breakdown-by-category 200
-          check /apply 200
+          check /blog/organic-certification-india-npop-pgs-guide 200
           check /login 200
+          check /register 200
           check /admin/login 200
           check /sitemap.xml 200
           check /robots.txt 200
           check /feed.xml 200
           check /does-not-exist 404
-          curl -s http://localhost:3000/sitemap.xml | grep -q '/services/golden-visa' || { echo "::error title=Check failed::Service pages in sitemap"; exit 1; }; echo "Service pages in sitemap"
+          curl -s http://localhost:3000/sitemap.xml | grep -q '/products' || { echo "::error title=Check failed::Marketplace pages in sitemap"; exit 1; }; echo "Marketplace pages in sitemap"
           curl -s http://localhost:3000/sitemap.xml | grep -q 'hreflang="hi"' || { echo "::error title=Check failed::hreflang in sitemap"; exit 1; }; echo "hreflang in sitemap"
-          curl -sf -X POST http://localhost:3000/api/leads -H 'Content-Type: application/json' -d '{"name":"CI Test","phone":"+971500000000","service":"UAE Golden Visa"}'
+          curl -sf -X POST http://localhost:3000/api/leads -H 'Content-Type: application/json' -d '{"name":"CI Test","phone":"+919876543210","service":"Selling on SHRIJAIV"}'
           echo
           curl -sf -c cookies.txt -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{"email":"admin@example.com","password":"CiPassword123","admin":true}'
           echo
@@ -81,13 +88,12 @@ jobs:
           curl -sf -b seller.txt http://localhost:3000/api/me/notifications | grep -q '"items"'
           check "/register?as=seller" 200
           # --- design system, calculator & SEO ---
-          curl -s http://localhost:3000/ | grep -q 'aria-label="Cost calculator"' || { echo "::error title=Check failed::Cost calculator button"; exit 1; }; echo "Cost calculator button"
+          curl -s http://localhost:3000/ | grep -q 'aria-label="Post a requirement"' || { echo "::error title=Check failed::Post requirement button"; exit 1; }; echo "Post requirement button"
           curl -s http://localhost:3000/ | grep -q 'glass-ui' || { echo "::error title=Check failed::Glass design active"; exit 1; }; echo "Glass design active"
           curl -s http://localhost:3000/ | grep -q 'hdr-island{-webkit-backdrop-filter' || { echo "::error title=Check failed::Glass blur rules"; exit 1; }; echo "Glass blur rules present"
           curl -s http://localhost:3000/ | grep -q 'class="mnav' || { echo "::error title=Check failed::Mobile nav bar"; exit 1; }; echo "Mobile nav bar"
           curl -s http://localhost:3000/ | grep -q 'application/ld+json' || { echo "::error title=Check failed::Structured data"; exit 1; }; echo "Structured data"
-          for pth in /admin/design /admin/calculator /admin/offer /admin/pages /admin/languages; do code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
-          curl -sf -b cookies.txt http://localhost:3000/api/admin/settings/fees | grep -q 'familyFileLow'
+          for pth in /admin/design /admin/offer /admin/pages /admin/languages; do code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
           curl -sf -b cookies.txt http://localhost:3000/api/admin/settings/offer | grep -q 'title'
           curl -sf -b cookies.txt http://localhost:3000/api/admin/settings/design | grep -q 'glass'
           # save a section style and check the scoped CSS is rendered
@@ -102,6 +108,7 @@ jobs:
           check /hi/about 200
           check /ur/blog 200
           check /ta/contact 200
+          check /hi/products 200
           curl -s http://localhost:3000/ur | grep -q 'dir="rtl"' || { echo "::error title=Check failed::Urdu page is right-to-left"; exit 1; }; echo "Urdu page is right-to-left"
           curl -s http://localhost:3000/hi | grep -qi 'hreflang' || { echo "::error title=Check failed::hreflang tags present"; exit 1; }; echo "hreflang tags present"
           curl -sf -b cookies.txt http://localhost:3000/api/admin/translations | grep -q '"locale":"hi"'
@@ -174,7 +181,7 @@ jobs:
           echo
           code=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:3000/api/auth/setup -H 'Content-Type: application/json' -d '{"name":"X","email":"x@example.com","password":"Another123"}'); echo "second setup -> $code"; [ "$code" = "403" ]
           curl -sf -b cookies.txt "http://localhost:3000/api/admin/pages?take=200" | grep -q '"slug":"about"'
-          curl -sf -X POST http://localhost:3000/api/leads -H 'Content-Type: application/json' -d '{"name":"PG Test","phone":"+971500000000","service":"UAE Golden Visa"}'
+          curl -sf -X POST http://localhost:3000/api/leads -H 'Content-Type: application/json' -d '{"name":"PG Test","phone":"+919876543210","service":"Selling on SHRIJAIV"}'
           curl -sf -b cookies.txt http://localhost:3000/api/admin/leads | grep -q "PG Test"
           # upload an image (stored in the database) and read it back
           printf '\x89PNG\r\n\x1a\n0000000000000' > test.png

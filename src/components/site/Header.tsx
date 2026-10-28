@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X, Phone, User, ArrowRight, Calculator, Check } from 'lucide-react';
+import { ChevronDown, Menu, X, Phone, User, ArrowRight, Megaphone, Check } from 'lucide-react';
 import type { HeaderSettings, SiteSettings } from '@/lib/defaults';
 import { cn } from '@/lib/utils';
 import Logo from './Logo';
@@ -11,7 +11,6 @@ import { useT, useLocalize } from './SiteProvider';
 import { splitLocale } from '@/lib/i18n/config';
 import SmartLink from '@/components/ui/SmartLink';
 import { Icon } from '@/components/ui/Icon';
-import { openCalculator } from '@/components/blocks/Interactive';
 
 type Me = { name: string; role: string } | null;
 export const MENU_EVENT = 'open-site-menu';
@@ -235,9 +234,9 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
                       </SmartLink>
                     )}
                     {mega.calculatorLabel && (
-                      <button type="button" onClick={() => { setDrop(null); openCalculator(); }} className="btn btn-outline btn-sm">
-                        <Calculator className="h-4 w-4" /> {mega.calculatorLabel}
-                      </button>
+                      <SmartLink href={mega.calculatorHref || '/post-requirement'} className="btn btn-outline btn-sm">
+                        <Megaphone className="h-4 w-4" /> {mega.calculatorLabel}
+                      </SmartLink>
                     )}
                   </div>
                 </div>

@@ -11,7 +11,7 @@ export function baseUrl() {
 /**
  * Site address for sitemap.xml / robots.txt / feed.xml.
  * Uses NEXT_PUBLIC_SITE_URL when set; otherwise the domain the request came in on
- * (e.g. https://goldenvisauae.ai), so Google never receives localhost links.
+ * (e.g. https://www.shrijaiv.com), so Google never receives localhost links.
  */
 export async function requestBaseUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) return baseUrl();

@@ -11,12 +11,12 @@ export default function PostCard({ post, priority }: { post: any; dark?: boolean
   const locale = useLocale();
   return (
     <SmartLink href={postPath(post.slug)} className={cn('card card-lift tilt group flex h-full flex-col overflow-hidden')}>
-      <div className="relative aspect-[1536/816] overflow-hidden bg-[#f3efe4]">
+      <div className="relative aspect-[1536/816] overflow-hidden bg-[#eaf5ec]">
         {post.cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={post.cover} alt={post.title} loading={priority ? 'eager' : 'lazy'} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
         ) : (
-          <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_20%,#fff8e4,#efe3c3)]">
+          <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_20%,#f0faf2,#cdeed6)]">
             <Coin className="h-20 w-20 opacity-80" />
           </div>
         )}

@@ -43,7 +43,7 @@ export type BlockSchema = {
   type: string;
   label: string;
   description: string;
-  group: 'Hero' | 'Content' | 'Marketing' | 'Dynamic' | 'Forms' | 'Advanced';
+  group: 'Marketplace' | 'Hero' | 'Content' | 'Marketing' | 'Dynamic' | 'Forms' | 'Advanced';
   fields: Field[];
   defaults: Record<string, any>;
 };

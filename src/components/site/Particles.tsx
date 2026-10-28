@@ -109,7 +109,7 @@ export default function Particles({ className = 'particles', density = 1, focus 
         const alpha = 0.1 + depth * 0.6;
         const size = p.s * (0.55 + depth * 1.35) * k;
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = depth > 0.62 ? '#c9a24a' : depth > 0.35 ? '#d8b86a' : '#e9d29b';
+        ctx.fillStyle = depth > 0.62 ? '#009a35' : depth > 0.35 ? '#d8b86a' : '#e9d29b';
         ctx.beginPath();
         ctx.arc(sx, sy, size, 0, Math.PI * 2);
         ctx.fill();
@@ -135,7 +135,7 @@ export default function Particles({ className = 'particles', density = 1, focus 
           y += (dy / (dist || 1)) * f * 26;
         }
         ctx.globalAlpha = d.a * (0.6 + 0.4 * Math.sin(t / 900 + d.r * 3));
-        ctx.fillStyle = '#c9a24a';
+        ctx.fillStyle = '#009a35';
         ctx.beginPath();
         ctx.arc(x, y, d.r, 0, Math.PI * 2);
         ctx.fill();

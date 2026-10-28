@@ -122,203 +122,114 @@ export const defaultSite: SiteSettings = {
 export const defaultHeader: HeaderSettings = {
   topbar: {
     enabled: true,
-    text: 'Property Golden Visa issued within 24 hours on the VIP fast track',
-    linkLabel: 'Check eligibility',
-    linkHref: '/apply',
+    text: 'Launch offer: every seller gets all features free and unlimited',
+    linkLabel: 'Start selling',
+    linkHref: '/register?as=seller',
   },
   menu: [
     { label: 'Home', href: '/' },
-    { label: 'Golden Visa', href: '/services/golden-visa' },
-    { label: 'Services', href: '/services' },
-    { label: 'Visa Check', href: '/check-visa-status' },
+    { label: 'Products', href: '/products' },
+    { label: 'Sellers', href: '/sellers' },
+    { label: 'Buy leads', href: '/requirements' },
+    { label: 'Pricing', href: '/pricing' },
     { label: 'About', href: '/about' },
     { label: 'Blog', href: '/blog' },
-    { label: 'FAQs', href: '/faqs' },
     { label: 'Contact', href: '/contact' },
   ],
-  cta: { label: 'Apply Now', href: '/apply' },
+  cta: { label: 'Post requirement', href: '/post-requirement' },
   showLogin: true,
   mega: {
     enabled: true,
-    attachTo: '/services',
-    eyebrow: 'Services',
-    title: 'Every step, one firm',
-    text: 'From eligibility opinion to Emirates ID collection — a single mandate, a named consultant, fixed fees.',
-    bullets: 'DET approved consultancy, Dubai\nFixed, written fees\n24-hour VIP fast track',
+    attachTo: '/products',
+    eyebrow: 'Categories',
+    title: 'Three organic worlds',
+    text: 'Certified organic produce, natural beauty and healthy packaged food — from verified Indian sellers.',
+    bullets: 'Verified GST, FSSAI & organic certificates\nDirect contact, no commission\n13 Indian languages',
     groups: [
       {
-        "title": "Residency & investment",
-        "links": [
-          {
-            "label": "UAE Golden Visa",
-            "href": "/services/golden-visa",
-            "icon": "crown"
-          },
-          {
-            "label": "Golden Visa Cost",
-            "href": "/services/golden-visa-cost",
-            "icon": "calculator"
-          },
-          {
-            "label": "Family & Dependant Visa",
-            "href": "/services/family-visa",
-            "icon": "users"
-          },
-          {
-            "label": "Property Investor Visa",
-            "href": "/services/property-investor-visa",
-            "icon": "building"
-          },
-          {
-            "label": "Property Revaluation",
-            "href": "/services/property-revaluation",
-            "icon": "trending"
-          },
-          {
-            "label": "DLD Trustee Services",
-            "href": "/services/dld-trustee-services",
-            "icon": "key"
-          }
-        ]
+        title: 'Organic Agriculture',
+        links: [
+          { label: 'Fruit', href: '/category/fruit' },
+          { label: 'Vegetables', href: '/category/vegetables' },
+          { label: 'Dairy Products', href: '/category/dairy-products' },
+          { label: 'Oil Seeds', href: '/category/oil-seeds' },
+          { label: 'Pulses', href: '/category/pulses' },
+          { label: 'Grains & Cereals', href: '/category/grains-cereals' },
+          { label: 'Spices & Herbs', href: '/category/spices-herbs' },
+          { label: 'All agriculture', href: '/category/organic-agriculture' },
+        ],
       },
       {
-        "title": "Business & processing",
-        "links": [
-          {
-            "label": "Business Setup",
-            "href": "/services/business-setup",
-            "icon": "briefcase"
-          },
-          {
-            "label": "PRO Services",
-            "href": "/services/pro-services",
-            "icon": "clipboard"
-          },
-          {
-            "label": "Amer Services",
-            "href": "/services/amer-services",
-            "icon": "landmark"
-          },
-          {
-            "label": "Medical & ID",
-            "href": "/services/medical-emirates-id",
-            "icon": "doctor"
-          },
-          {
-            "label": "Emirates ID",
-            "href": "/services/emirates-id",
-            "icon": "id"
-          },
-          {
-            "label": "ILOE Insurance",
-            "href": "/services/iloe-insurance",
-            "icon": "shield"
-          },
-          {
-            "label": "Newborn Baby Visa",
-            "href": "/services/newborn-visa",
-            "icon": "baby"
-          },
-          {
-            "label": "Maid & Nanny Visa",
-            "href": "/services/maid-visa",
-            "icon": "home"
-          }
-        ]
+        title: 'Organic Beauty',
+        links: [
+          { label: 'Cream & Moisturisers', href: '/category/cream-moisturisers' },
+          { label: 'Face Wash & Cleansers', href: '/category/face-wash-cleansers' },
+          { label: 'Hair Care', href: '/category/hair-care' },
+          { label: 'Soaps & Body Care', href: '/category/soaps-body-care' },
+          { label: 'Essential Oils', href: '/category/essential-oils' },
+          { label: 'All beauty', href: '/category/organic-beauty' },
+        ],
       },
       {
-        "title": "Documents & legal",
-        "links": [
-          {
-            "label": "Attestation",
-            "href": "/services/document-attestation",
-            "icon": "stamp"
-          },
-          {
-            "label": "Legal Translation",
-            "href": "/services/legal-translation",
-            "icon": "languages"
-          },
-          {
-            "label": "Power of Attorney",
-            "href": "/services/power-of-attorney",
-            "icon": "scale"
-          },
-          {
-            "label": "Wills & Testament",
-            "href": "/services/wills-testament",
-            "icon": "scroll"
-          }
-        ]
-      }
+        title: 'Organic Processed Food',
+        links: [
+          { label: 'Flours & Atta', href: '/category/flours-atta' },
+          { label: 'Snacks', href: '/category/snacks' },
+          { label: 'Sweeteners (Jaggery, Honey)', href: '/category/sweeteners' },
+          { label: 'Beverages & Tea', href: '/category/beverages-tea' },
+          { label: 'Edible Oils & Ghee', href: '/category/edible-oils-ghee' },
+          { label: 'All processed food', href: '/category/organic-processed-food' },
+        ],
+      },
     ],
-    calculatorLabel: 'Cost calculator',
-    calculatorHref: '#calculator',
-    allLabel: 'All services',
-    allHref: '/services',
+    calculatorLabel: 'Post a requirement',
+    calculatorHref: '/post-requirement',
+    allLabel: 'Browse all products',
+    allHref: '/products',
   },
 };
 
 export const defaultFooter: FooterSettings = {
-  about: 'A DET approved consultancy based in Dubai, operated by Brightlink Management Consultancy and founded by UAE industry experts with decades of experience.',
+  about: "India's organic B2B marketplace. Verified sellers of organic agriculture, beauty and processed food meet buyers directly — no commission, 13 Indian languages. Established 2024.",
   columns: [
     {
-      title: 'Services',
+      title: 'Marketplace',
       links: [
-        {
-          "label": "UAE Golden Visa",
-          "href": "/services/golden-visa"
-        },
-        {
-          "label": "Golden Visa Cost",
-          "href": "/services/golden-visa-cost"
-        },
-        {
-          "label": "Property Investor Visa",
-          "href": "/services/property-investor-visa"
-        },
-        {
-          "label": "Family & Dependant Visa",
-          "href": "/services/family-visa"
-        },
-        {
-          "label": "Business Setup",
-          "href": "/services/business-setup"
-        },
-        {
-          "label": "PRO Services",
-          "href": "/services/pro-services"
-        },
-        {
-          "label": "View all services",
-          "href": "/services"
-        }
+        { label: 'All products', href: '/products' },
+        { label: 'Organic Agriculture', href: '/category/organic-agriculture' },
+        { label: 'Organic Beauty', href: '/category/organic-beauty' },
+        { label: 'Organic Processed Food', href: '/category/organic-processed-food' },
+        { label: 'Verified sellers', href: '/sellers?verified=1' },
+        { label: 'Buy leads', href: '/requirements' },
+        { label: 'Post a requirement', href: '/post-requirement' },
       ],
     },
     {
       title: 'Company',
       links: [
         { label: 'About us', href: '/about' },
+        { label: 'How it works', href: '/how-it-works' },
+        { label: 'Become a seller', href: '/become-a-seller' },
+        { label: 'Become a buyer', href: '/become-a-buyer' },
+        { label: 'Membership plans', href: '/pricing' },
+        { label: 'Blog', href: '/blog' },
+        { label: 'FAQ', href: '/faq' },
+        { label: 'Customer support', href: '/customer-support' },
         { label: 'Contact', href: '/contact' },
-        { label: 'FAQs', href: '/faqs' },
-        { label: 'Apply now', href: '/apply' },
-        { label: 'Insights', href: '/blog' },
-        { label: 'Visa validity check', href: '/check-visa-status' },
-        { label: 'Official sources', href: '/official-sources' },
-        { label: 'Client login', href: '/login' },
+        { label: 'Sign in', href: '/login' },
       ],
     },
   ],
-  ctaTitle: 'Find out if you qualify',
-  ctaHighlight: 'in one conversation',
-  ctaButton: { label: 'Apply Now', href: '/apply' },
-  newsletter: { enabled: true, title: 'Newsletter', text: 'Policy changes, threshold updates and processing timelines — once a month, nothing else.' },
+  ctaTitle: 'Grow your organic business',
+  ctaHighlight: 'with all of India',
+  ctaButton: { label: 'Start selling — free', href: '/register?as=seller' },
+  newsletter: { enabled: true, title: 'Organic market updates', text: 'New buy leads, price trends and seller tips — twice a month, nothing else.' },
   copyright: '© {year} SHRIJAIV Organic. All rights reserved.',
-  disclaimer:
-    'Golden Visa UAE is operated by Brightlink Management Consultancy LLC, a private consultancy. We are not a government authority and are not affiliated with any UAE government entity. Government references: ICP, GDRFA, Dubai Land Department, Ministry of Justice. Final approval, processing times and visa decisions rest solely with the competent UAE authorities.',
+  disclaimer: 'SHRIJAIV Organic is an online marketplace that connects buyers and sellers. We do not sell products and are not a party to any transaction. Product information and organic claims are provided by sellers; the Verified badge confirms documents checked at the time of verification.',
   bottomLinks: [
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Terms & Conditions', href: '/terms' },
+    { label: 'Refund Policy', href: '/refund-policy' },
     { label: 'Disclaimer', href: '/disclaimer' },
   ],
 };
@@ -335,26 +246,13 @@ export const defaultSmtp: SmtpSettings = {
 };
 
 export const SERVICE_OPTIONS = [
-  "UAE Golden Visa",
-  "Golden Visa Cost",
-  "Property Investor Visa",
-  "Family & Dependant Visa",
-  "Business Setup",
-  "PRO Services",
-  "Amer Services",
-  "Property Revaluation",
-  "Attestation",
-  "Legal Translation",
-  "Power of Attorney",
-  "Wills & Testament",
-  "DLD Trustee Services",
-  "Medical & ID",
-  "Emirates ID",
-  "ILOE Insurance",
-  "Newborn Baby Visa",
-  "Maid & Nanny Visa",
-  "Visa validity check",
-  "Other"
+  'Selling on SHRIJAIV',
+  'Buying / sourcing help',
+  'Seller verification',
+  'Membership & payments',
+  'Partnership',
+  'Report a problem',
+  'Other',
 ];
 
 export const APPLICATION_STATUSES: { value: string; label: string; progress: number; color: string }[] = [
@@ -363,8 +261,7 @@ export const APPLICATION_STATUSES: { value: string; label: string; progress: num
   { value: 'documents_required', label: 'Documents Required', progress: 30, color: 'amber' },
   { value: 'processing', label: 'Processing', progress: 50, color: 'indigo' },
   { value: 'initial_approval', label: 'Initial Approval', progress: 65, color: 'violet' },
-  { value: 'medical_biometrics', label: 'Medical & Biometrics', progress: 80, color: 'cyan' },
-  { value: 'approved', label: 'Visa Approved', progress: 95, color: 'emerald' },
+  { value: 'approved', label: 'Approved', progress: 95, color: 'emerald' },
   { value: 'completed', label: 'Completed', progress: 100, color: 'green' },
   { value: 'rejected', label: 'Rejected', progress: 100, color: 'red' },
   { value: 'cancelled', label: 'Cancelled', progress: 0, color: 'zinc' },

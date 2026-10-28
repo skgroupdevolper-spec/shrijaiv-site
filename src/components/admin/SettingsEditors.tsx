@@ -108,8 +108,8 @@ export function HeaderEditor() {
                     },
                   ],
                 },
-                { name: 'calculatorLabel', label: 'Calculator button', type: 'text', half: true },
-                { name: 'calculatorHref', label: 'Calculator link', type: 'text', half: true },
+                { name: 'calculatorLabel', label: 'Second button (e.g. Post a requirement)', type: 'text', half: true },
+                { name: 'calculatorHref', label: 'Second button link', type: 'text', half: true },
                 { name: 'allLabel', label: '“All services” link text', type: 'text', half: true },
                 { name: 'allHref', label: '“All services” link', type: 'text', half: true },
               ]}
@@ -299,7 +299,7 @@ export function SiteSettingsEditor() {
                 { name: 'whatsapp', label: 'WhatsApp number (digits only, with country code)', type: 'text' },
                 { name: 'whatsappMessage', label: 'WhatsApp pre-filled message', type: 'text' },
                 { name: 'emailGeneral', label: 'General email', type: 'text' },
-                { name: 'emailVisa', label: 'Visa enquiries email', type: 'text' },
+                { name: 'emailVisa', label: 'Support email', type: 'text' },
                 { name: 'address', label: 'Office address', type: 'textarea' },
                 { name: 'poBox', label: 'P.O. Box', type: 'text' },
                 { name: 'hours', label: 'Opening hours', type: 'text' },
@@ -340,7 +340,7 @@ export function SiteSettingsEditor() {
               ))}
               <div className="rounded-2xl p-6" style={{ background: value.colors.ink }}>
                 <p style={{ color: value.colors.goldLight }} className="text-xs font-bold uppercase tracking-widest">Preview</p>
-                <p className="mt-2 text-2xl font-bold text-white">Your Golden Visa journey</p>
+                <p className="mt-2 text-2xl font-bold text-white">Organic Living, Simplified</p>
                 <span className="mt-4 inline-block rounded-full px-5 py-2 text-sm font-bold" style={{ background: value.colors.gold, color: value.colors.ink }}>
                   Apply now
                 </span>
@@ -425,7 +425,7 @@ export function SiteSettingsEditor() {
                     { name: 'secure', label: 'Use SSL (turn on for port 465)', type: 'boolean' },
                     { name: 'user', label: 'Username (full email address)', type: 'text' },
                     { name: 'pass', label: 'Password', type: 'text' },
-                    { name: 'from', label: 'From (e.g. Golden Visa UAE <visa@yourdomain.com>)', type: 'text' },
+                    { name: 'from', label: 'From (e.g. SHRIJAIV Organic <hello@shrijaiv.com>)', type: 'text' },
                   ]}
                   data={smtp.value}
                   onChange={smtp.setValue}

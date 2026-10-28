@@ -5,6 +5,7 @@ import { Stats, Cards, Split, Feature, Compare, Table, Costs, Routes, Quote, Cta
 import { Partners, Services, Related, Blog, Testimonials, Faq, Contact, Callback, LeadFormBlock, VisaStatus, CalculatorBlock } from './DynamicBlocks';
 import { IntroHero, Founder, TabsBlock, License, Office, Journey } from './CompanyBlocks';
 import { ServiceHero, StatusWizardBlock, Portals, Guide, FamilyCalcBlock, DetailTabs, ProcessSplit, DocChecklist, StepGuides, CtaSteps } from './ServiceBlocks';
+import { MarketHero, Categories, FeaturedProducts, FeaturedSellers, BuyLeads, Plans, HowItWorks, TrustStrip } from './MarketBlocks';
 import { blockCss, blockFonts, googleFontsUrl } from '@/lib/design';
 import { getSetting } from '@/lib/settings';
 
@@ -53,6 +54,14 @@ const MAP: Record<string, (p: { data: any; site: SiteSettings }) => any> = {
   docChecklist: DocChecklist,
   stepGuides: StepGuides,
   ctaSteps: CtaSteps,
+  marketHero: MarketHero,
+  categories: Categories,
+  featuredProducts: FeaturedProducts,
+  featuredSellers: FeaturedSellers,
+  buyLeads: BuyLeads,
+  plans: Plans,
+  howItWorks: HowItWorks,
+  trustStrip: TrustStrip,
 };
 
 export default async function BlockRenderer({ blocks, site }: { blocks: Block[]; site: SiteSettings }) {

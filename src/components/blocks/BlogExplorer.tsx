@@ -57,7 +57,7 @@ export default function BlogExplorer({ items, flush }: { items: Item[]; flush?: 
             }}
             placeholder={t('Search articles')}
             aria-label={t('Search articles')}
-            className="h-12 w-full rounded-full border border-black/10 bg-white/90 ps-11 pe-11 text-sm shadow-sm outline-none transition focus:border-[#c9a24a] focus:ring-4 focus:ring-[#c9a24a]/15"
+            className="h-12 w-full rounded-full border border-black/10 bg-white/90 ps-11 pe-11 text-sm shadow-sm outline-none transition focus:border-[#009a35] focus:ring-4 focus:ring-[#009a35]/15"
           />
           {q && (
             <button type="button" onClick={() => setQ('')} aria-label={t('Clear')} className="absolute end-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-black/50 hover:bg-black/5">
@@ -80,7 +80,7 @@ export default function BlogExplorer({ items, flush }: { items: Item[]; flush?: 
             onClick={() => pick(key)}
             className={cn(
               'inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
-              cat === key ? 'border-transparent bg-[#141109] text-white shadow' : 'border-black/10 bg-white/80 text-[#3a3226] hover:border-[#c9a24a]/60 hover:bg-white',
+              cat === key ? 'border-transparent bg-[#141109] text-white shadow' : 'border-black/10 bg-white/80 text-[#3a3226] hover:border-[#009a35]/60 hover:bg-white',
             )}
           >
             {c.label}

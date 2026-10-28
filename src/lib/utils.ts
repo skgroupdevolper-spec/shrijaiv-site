@@ -71,7 +71,7 @@ export function makeRef() {
   const d = new Date();
   const y = d.getFullYear().toString().slice(2);
   const rnd = Math.random().toString(36).slice(2, 7).toUpperCase();
-  return `RGV-${y}${String(d.getMonth() + 1).padStart(2, '0')}-${rnd}`;
+  return `SJV-${y}${String(d.getMonth() + 1).padStart(2, '0')}-${rnd}`;
 }
 
 export function isExternal(href?: string) {

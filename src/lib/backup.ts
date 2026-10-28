@@ -58,7 +58,7 @@ export async function createBackup(): Promise<Buffer> {
   for (const rel of await listFiles(UPLOAD_ROOT)) {
     files.push({ path: rel, data: (await fs.readFile(path.join(UPLOAD_ROOT, rel))).toString('base64') });
   }
-  const json = JSON.stringify({ app: 'goldenvisauae', version: 1, createdAt: new Date().toISOString(), tables, files });
+  const json = JSON.stringify({ app: 'shrijaiv', version: 1, createdAt: new Date().toISOString(), tables, files });
   return zlib.gzipSync(Buffer.from(json), { level: 9 });
 }
 
@@ -69,7 +69,7 @@ export async function restoreBackup(gz: Buffer) {
   } catch {
     throw new Error('This is not a website backup file.');
   }
-  if (!['goldenvisauae', 'rak-golden-visa'].includes(data?.app) || !data.tables) throw new Error('This is not a website backup file.');
+  if (!['shrijaiv', 'goldenvisauae'].includes(data?.app) || !data.tables) throw new Error('This is not a website backup file.');
 
   const order = ordered();
   const prep = (m: Model, row: any) => {

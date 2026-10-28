@@ -10,7 +10,7 @@ export async function generateMetadata() {
 
 export default function LoginPage() {
   return (
-    <AuthShell title="Welcome back" subtitle="Sign in to track your Golden Visa application.">
+    <AuthShell title="Welcome back" subtitle="Sign in to your buyer or seller dashboard.">
       <Suspense>
         <LoginForm />
       </Suspense>

@@ -54,7 +54,25 @@ async function buildSitemap(base: string): Promise<MetadataRoute.Sitemap> {
       entry(path, langs, p.updatedAt, p.slug === 'home' ? 1 : legal ? 0.3 : 0.8, p.slug === 'home' || p.slug.includes('blog') || p.slug.includes('news') ? 'daily' : legal ? 'monthly' : 'weekly', p.ogImage);
     }
     for (const p of posts) entry(postPath(p.slug), postLangs.get(p.id) || ['en'], p.updatedAt, 0.7, 'weekly', p.cover);
-    if (langs.length) entry('/apply', langs, new Date(), 0.6, 'monthly');
+    // marketplace
+    const now = new Date();
+    for (const path of ['/products', '/sellers', '/requirements', '/pricing', '/post-requirement']) entry(path, langs, now, 0.8, 'daily');
+    const [cats, products, sellers, reqs] = await Promise.all([
+      prisma.category.findMany({ where: { active: true }, select: { slug: true, updatedAt: true, image: true } }),
+      prisma.product.findMany({ where: { status: 'approved', seller: { status: 'approved' } }, select: { slug: true, updatedAt: true, images: true }, orderBy: { updatedAt: 'desc' }, take: 5000 }),
+      prisma.sellerProfile.findMany({ where: { status: 'approved' }, select: { slug: true, updatedAt: true, logo: true }, take: 5000 }),
+      prisma.requirement.findMany({ where: { status: 'open' }, select: { id: true, updatedAt: true }, take: 2000 }),
+    ]);
+    for (const c of cats) entry(`/category/${c.slug}`, langs, c.updatedAt, 0.7, 'daily', c.image);
+    for (const p of products) {
+      let img: string | null = null;
+      try {
+        img = JSON.parse(p.images || '[]')[0] || null;
+      } catch {}
+      entry(`/products/${p.slug}`, langs, p.updatedAt, 0.6, 'weekly', img);
+    }
+    for (const sl of sellers) entry(`/sellers/${sl.slug}`, langs, sl.updatedAt, 0.6, 'weekly', sl.logo);
+    for (const r of reqs) entry(`/requirements/${r.id}`, ['en'], r.updatedAt, 0.4, 'daily');
     return out;
   } catch {
     return [{ url: base }];

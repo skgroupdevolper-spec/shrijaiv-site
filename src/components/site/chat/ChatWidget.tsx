@@ -145,7 +145,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
   }
 
   const side = cfg.position === 'start' ? 'start-4 lg:start-6 bottom-[168px] lg:bottom-[80px]' : 'end-4 lg:end-6 bottom-[164px] lg:bottom-[92px]';
-  const suggestions = [t('What does the Golden Visa cost?'), t('Can I sponsor my family?'), t('Talk to a consultant')];
+  const suggestions = [t('Find organic turmeric sellers'), t('How do I become a seller?'), t('Talk to your team')];
 
   return (
     <div className={`fixed z-[60] flex flex-col gap-3 ${side} ${cfg.position === 'start' ? 'items-start' : 'items-end'}`}>
@@ -198,7 +198,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
 
           <p className="flex items-start gap-1.5 border-t border-black/5 bg-white px-4 pt-2 text-[0.68rem] leading-snug text-black/50">
             <ShieldCheck className="mt-px h-3.5 w-3.5 shrink-0" />
-            {t('Please do not share passport, Emirates ID or card numbers. Chats are saved so our team can help you.')}
+            {t('Please do not share Aadhaar, PAN, bank or card numbers. Chats are saved so our team can help you.')}
           </p>
           <form
             className="flex items-center gap-2 bg-white px-3 pb-3 pt-2"
@@ -222,7 +222,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
             </span>
             <span>
               <span className="block font-semibold text-black/90">{t('Hi! 👋 Can I help you?')}</span>
-              <span className="mt-0.5 block text-xs leading-snug text-black/55">{t('Ask me about visas, costs or documents — I reply instantly.')}</span>
+              <span className="mt-0.5 block text-xs leading-snug text-black/55">{t('Ask me about products, sellers, buy leads or plans — I reply instantly.')}</span>
             </span>
           </button>
           <button type="button" onClick={closeTeaser} aria-label={t('Close')} className="absolute end-2 top-2 grid h-6 w-6 place-items-center rounded-full text-black/40 hover:bg-black/5 hover:text-black/70">

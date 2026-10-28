@@ -1,4 +1,4 @@
-import { CalendarDays, Clock, ChevronRight, Phone, Home, Eye } from 'lucide-react';
+import { CalendarDays, Clock, ChevronRight, Home, Eye } from 'lucide-react';
 import type { SiteSettings } from '@/lib/defaults';
 import { formatDate, readingTime, POST_BASE } from '@/lib/utils';
 import PostCard from '@/components/blocks/PostCard';
@@ -129,21 +129,21 @@ export default function PostView({ post, related, site, lang = 'en-GB', url }: {
         <aside className="space-y-5 self-start lg:sticky lg:top-28">
           <div className="ink-panel theme-dark p-7">
             <p className="eyebrow">
-              <T>Free assessment</T>
+              <T>Marketplace</T>
             </p>
             <h3 className="mt-3 font-display text-2xl font-semibold text-white">
-              <T>Check your Golden Visa eligibility</T>
+              <T>Browse organic products</T>
             </h3>
             <p className="mt-3 text-sm text-white/65">
-              <T>A senior consultant reviews your profile and replies the same working day.</T>
+              <T>Verified organic sellers across India — compare prices, MOQ and send inquiries directly.</T>
             </p>
             <div className="mt-6 grid gap-2.5">
-              <SmartLink href="whatsapp" className="btn btn-gold btn-sm">
-                <SocialIcon name="whatsapp" className="h-4 w-4" /> <T>WhatsApp us</T>
+              <SmartLink href="/products" className="btn btn-gold btn-sm">
+                <T>Browse products</T>
               </SmartLink>
-              <a href={`tel:${site.phone}`} className="btn btn-ghost-light btn-sm">
-                <Phone className="h-4 w-4" /> <span className="ltr">{site.phoneDisplay}</span>
-              </a>
+              <SmartLink href="/post-requirement" className="btn btn-ghost-light btn-sm">
+                <T>Post a requirement</T>
+              </SmartLink>
             </div>
           </div>
           <div className="card p-6">

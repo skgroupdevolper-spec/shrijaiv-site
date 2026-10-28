@@ -1,13 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ArrowUp, X, Phone, House, LayoutGrid, Calculator, Menu } from 'lucide-react';
+import { ArrowUp, X, Phone, House, LayoutGrid, Megaphone, Menu } from 'lucide-react';
 import type { SiteSettings } from '@/lib/defaults';
 import { SocialIcon } from '@/components/ui/Icon';
 import { resolveHref } from '@/components/ui/href';
 import SmartLink from '@/components/ui/SmartLink';
 import { splitLocale } from '@/lib/i18n/config';
-import { openCalculator } from '@/components/blocks/Interactive';
 import { useT } from './SiteProvider';
 import { MENU_EVENT } from './Header';
 
@@ -50,13 +49,13 @@ export default function Floating({ site }: { site: SiteSettings }) {
 
   return (
     <>
-      {/* calculator tab on the side (desktop) */}
-      <button type="button" onClick={openCalculator} className="glass fixed end-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 rounded-s-2xl px-2.5 py-4 text-[0.72rem] font-medium text-[#1d1d1f] transition hover:pe-4 lg:flex" aria-label={t('Cost calculator')}>
-        <span className="grid h-9 w-9 place-items-center rounded-xl text-[#1a1406]" style={{ background: 'var(--gold-grad)' }}>
-          <Calculator className="h-4 w-4" />
+      {/* "Post a requirement" tab on the side (desktop) */}
+      <SmartLink href="/post-requirement" className="glass fixed end-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 rounded-s-2xl px-2.5 py-4 text-[0.72rem] font-medium text-[#1d1d1f] transition hover:pe-4 lg:flex" ariaLabel={t('Post a requirement')}>
+        <span className="grid h-9 w-9 place-items-center rounded-xl text-white" style={{ background: 'var(--gold-grad)' }}>
+          <Megaphone className="h-4 w-4" />
         </span>
-        <span className="[writing-mode:vertical-rl] rotate-180 tracking-wide">{t('Cost calculator')}</span>
-      </button>
+        <span className="[writing-mode:vertical-rl] rotate-180 tracking-wide">{t('Post a requirement')}</span>
+      </SmartLink>
 
       {site.showWhatsappButton && (
         <div className="fixed bottom-[96px] end-4 z-50 flex flex-col items-end gap-3 lg:bottom-6 lg:end-6">
@@ -65,7 +64,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
               <button onClick={() => { closeBubble(); setPanel(false); }} className="absolute end-3 top-3 grid h-7 w-7 place-items-center rounded-full text-[#8e8e93] hover:bg-black/5" aria-label={t('Close')}>
                 <X className="h-4 w-4" />
               </button>
-              <p className="font-display text-[0.98rem] font-semibold">{t('Talk to a consultant')}</p>
+              <p className="font-display text-[0.98rem] font-semibold">{t('Talk to our team')}</p>
               <p className="muted mt-1 text-xs leading-relaxed">{t('Typically replies within 5 minutes')}{site.hours ? `, ${site.hours}` : ''}.</p>
               <div className="mt-4 grid gap-2">
                 <a href={wa} target="_blank" rel="noopener noreferrer" onClick={closeBubble} className="btn btn-sm bg-[#25D366] text-white">
@@ -77,7 +76,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
               </div>
             </div>
           )}
-          <button type="button" onClick={() => { setPanel((v) => !v); closeBubble(); }} aria-label={t('Talk to a consultant')} className="relative grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_14px_34px_-10px_rgba(37,211,102,.75)] transition-transform hover:scale-105 active:scale-95">
+          <button type="button" onClick={() => { setPanel((v) => !v); closeBubble(); }} aria-label={t('Talk to our team')} className="relative grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_14px_34px_-10px_rgba(37,211,102,.75)] transition-transform hover:scale-105 active:scale-95">
             <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366]/30 [animation-duration:2.8s]" />
             <SocialIcon name="whatsapp" className="relative h-7 w-7" />
           </button>
@@ -96,16 +95,16 @@ export default function Floating({ site }: { site: SiteSettings }) {
             <House className="h-[21px] w-[21px]" />
             <span>{t('Home')}</span>
           </SmartLink>
-          <SmartLink href="/services" className={active('/services') ? 'is-active' : ''}>
+          <SmartLink href="/products" className={active('/products') || active('/category') ? 'is-active' : ''}>
             <LayoutGrid className="h-[21px] w-[21px]" />
-            <span>{t('Services')}</span>
+            <span>{t('Products')}</span>
           </SmartLink>
-          <button type="button" onClick={openCalculator} className="mnav-cta" aria-label={t('Cost calculator')}>
+          <SmartLink href="/post-requirement" className="mnav-cta" ariaLabel={t('Post a requirement')}>
             <i>
-              <Calculator className="h-5 w-5" />
+              <Megaphone className="h-5 w-5" />
             </i>
-            <span>{t('Calculator')}</span>
-          </button>
+            <span>{t('Post')}</span>
+          </SmartLink>
           <a href={wa} target="_blank" rel="noopener noreferrer">
             <SocialIcon name="whatsapp" className="h-[21px] w-[21px] text-[#25D366]" />
             <span>{t('WhatsApp')}</span>

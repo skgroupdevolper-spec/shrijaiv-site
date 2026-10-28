@@ -1,14 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FilePlus, UserCog, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, UserCog, LogOut, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function AccountNav({ isStaff }: { isStaff?: boolean }) {
   const p = usePathname();
   const items = [
     { href: '/account', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/apply', label: 'New application', icon: FilePlus },
     { href: '/account/profile', label: 'Profile', icon: UserCog },
   ];
   async function logout() {

@@ -6,7 +6,7 @@ import { APPLICATION_STATUSES } from '@/lib/defaults';
 import { StatusBadge, Progress } from '@/components/ui/Status';
 import { cn, formatDate, formatDateTime } from '@/lib/utils';
 
-const FLOW = ['submitted', 'under_review', 'processing', 'initial_approval', 'medical_biometrics', 'approved', 'completed'];
+const FLOW = ['submitted', 'under_review', 'processing', 'initial_approval', 'approved', 'completed'];
 
 export default function ApplicationDetail({ id }: { id: string }) {
   const [app, setApp] = useState<any>(null);

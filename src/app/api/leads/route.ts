@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     sendMail({
       to: email,
       subject: 'We received your enquiry',
-      html: `<p>Dear ${escapeHtml(name)},</p><p>Thank you for contacting us. One of our Golden Visa consultants will get back to you within 24 hours.</p><p>Kind regards,<br/>The Golden Visa UAE team</p>`,
+      html: `<p>Dear ${escapeHtml(name)},</p><p>Thank you for contacting us. Our team will get back to you within 24 hours.</p><p>Kind regards,<br/>The SHRIJAIV Organic team</p>`,
     });
   }
   return ok({ ok: true, id: lead.id });

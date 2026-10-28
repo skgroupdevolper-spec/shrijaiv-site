@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FilePlus, MessageCircle, FileText, Clock } from 'lucide-react';
+import { ArrowRight, MessageCircle, FileText, Clock } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { getSetting } from '@/lib/settings';
@@ -38,12 +38,12 @@ export default async function AccountPage() {
       <div className="rounded-[2rem] bg-white p-6 md:p-8 ring-1 ring-ink/5">
         <div className="flex items-center justify-between gap-4">
           <h2 className="font-display text-3xl font-semibold text-ink">My applications</h2>
-          <Link href="/apply" className="btn btn-gold btn-sm"><FilePlus className="h-4 w-4" /> New</Link>
+          
         </div>
         {apps.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-ink/60">You have not submitted any applications yet.</p>
-            <Link href="/apply" className="btn btn-gold mt-6">Start your Golden Visa application <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/products" className="btn btn-gold mt-6">Browse the marketplace <ArrowRight className="h-4 w-4" /></Link>
           </div>
         ) : (
           <div className="mt-6 grid gap-4">
