@@ -1,6 +1,6 @@
 import SmartLink from '@/components/ui/SmartLink';
 import { BadgeCheck, MapPin } from 'lucide-react';
-import { images, priceLabel } from '@/lib/marketplace/data';
+import { images, priceLabel } from '@/lib/marketplace/format';
 import { Rating } from './Rating';
 import { Coin } from '@/components/site/Logo';
 import { cn } from '@/lib/utils';
