@@ -9,6 +9,7 @@ export type MarketplaceSettings = {
   approval: { sellers: boolean; products: boolean; requirements: boolean; reviews: boolean }; // true = admin approves first
   allowGuestInquiry: boolean; // visitors can send an inquiry without an account
   allowGuestRequirement: boolean; // visitors can post a requirement (creates a buyer account)
+  allowGuestReview: boolean; // visitors can rate and review with their name and email (no account)
   showBuyerContactToSeller: boolean; // when false, contact details are hidden until the seller has a plan with inquiries
   currency: string;
   gstPercent: number; // GST added on plan invoices
@@ -25,6 +26,7 @@ export const defaultMarketplace: MarketplaceSettings = {
   approval: { sellers: true, products: true, requirements: false, reviews: true },
   allowGuestInquiry: true,
   allowGuestRequirement: true,
+  allowGuestReview: true,
   showBuyerContactToSeller: true,
   currency: 'INR',
   gstPercent: 18,

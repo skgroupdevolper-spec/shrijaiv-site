@@ -83,6 +83,7 @@ export default function MarketplaceSettings() {
             <Row label="Buyer requirements need approval"><Toggle checked={m.approval.requirements} onChange={(v) => setM({ ...m, approval: { ...m.approval, requirements: v } })} /></Row>
             <Row label="Reviews need approval"><Toggle checked={m.approval.reviews} onChange={(v) => setM({ ...m, approval: { ...m.approval, reviews: v } })} /></Row>
             <Row label="Guests can send inquiries" hint="without an account (name, email, mobile)"><Toggle checked={m.allowGuestInquiry} onChange={(v) => setM({ ...m, allowGuestInquiry: v })} /></Row>
+            <Row label="Visitors can rate & review" hint="with name and email, no account needed (reviews still follow the approval switch above)"><Toggle checked={m.allowGuestReview} onChange={(v) => setM({ ...m, allowGuestReview: v })} /></Row>
             <Row label="Show buyer contact to sellers without a plan" hint="only matters when paid plans are on"><Toggle checked={m.showBuyerContactToSeller} onChange={(v) => setM({ ...m, showBuyerContactToSeller: v })} /></Row>
           </Card>
           <Card title="Lists" className="mb-5">

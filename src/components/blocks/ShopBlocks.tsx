@@ -12,6 +12,7 @@ import { getI18n } from '@/lib/i18n/server';
 import { formatDate, cn } from '@/lib/utils';
 import ShopSlider from '@/components/market/ShopSlider';
 import ShopSearch from '@/components/market/ShopSearch';
+import HeroCategories, { type HeroCat } from '@/components/market/HeroCategories';
 import { Rating } from '@/components/market/Rating';
 
 type P = { data: any; site: SiteSettings };
@@ -38,39 +39,17 @@ export async function ShopHero({ data, site }: P) {
     list = [...roots, ...subs];
   }
   list = list.slice(0, limit);
+  const lite = (c: (typeof all)[number]) => ({ id: c.id, slug: c.slug, name: c.name, icon: c.icon, image: c.image, count: c.count });
+  const heroCats: HeroCat[] = list.map((c) => ({ ...lite(c), children: c.children.map(lite) }));
   const slides = (Array.isArray(data.slides) ? data.slides : []).filter((s: any) => s && (s.image || s.title));
   return (
     <section id={data.anchor || undefined} className="theme-light relative pt-[7.6rem] sm:pt-[8.2rem]">
       <div className="hero-aurora" />
-      <div className="container-x relative">
+      <div className="hdr-width relative">
         <div className="grid items-stretch gap-5 lg:grid-cols-[290px_1fr]">
           {/* popular categories — same height as the search + slider column */}
           <aside className="fx-up glass relative hidden flex-col overflow-hidden rounded-[26px] p-3 lg:flex" style={{ ['--d' as any]: '.05s' }}>
-            <SmartLink href="/products" className="flex items-center justify-between px-3 py-2 font-display text-[1.12rem] font-semibold text-ink">
-              <span className="inline-flex items-center gap-2"><Icon name="boxes" className="h-5 w-5 text-gold-deep" /> {data.sidebarTitle || t('Popular categories')}</span>
-              <ChevronRight className="h-4 w-4 text-ink/40" />
-            </SmartLink>
-            <ul className="hero-cats mt-1 flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
-              {list.map((c) => (
-                <li key={c.id} className="min-h-0 flex-1">
-                  <SmartLink href={`/category/${c.slug}`} className="group flex h-full min-h-[40px] items-center justify-between rounded-2xl border border-ink/5 bg-white/85 px-3.5 text-[0.93rem] text-ink/85 shadow-sm transition hover:-translate-y-px hover:border-gold hover:text-gold-deep hover:shadow-md">
-                    <span className="inline-flex min-w-0 items-center gap-2.5">
-                      {c.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={c.image} alt="" className="h-6 w-6 object-contain" />
-                      ) : (
-                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-gold/10"><Icon name={c.icon || 'leaf'} className="h-3.5 w-3.5 text-gold-deep" /></span>
-                      )}
-                      <span className="truncate">{c.name}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-xs text-ink/35">{c.count ? c.count : ''}<ChevronRight className="h-4 w-4" /></span>
-                  </SmartLink>
-                </li>
-              ))}
-            </ul>
-            <SmartLink href="/products" className="mt-2 flex items-center justify-center gap-1.5 rounded-2xl bg-ink px-3 py-2.5 text-sm font-bold text-white transition hover:bg-gold-deep">
-              {t('All categories')} <ArrowRight className="h-4 w-4" />
-            </SmartLink>
+            <HeroCategories items={heroCats} title={data.sidebarTitle || t('All Category')} allLabel={t('All')} />
           </aside>
           {/* search + slider */}
           <div className="min-w-0">

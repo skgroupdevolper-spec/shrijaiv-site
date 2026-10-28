@@ -5,6 +5,7 @@ import { getI18n } from '@/lib/i18n/server';
 import { getProduct, listProducts, images, priceLabel } from '@/lib/marketplace/data';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { getMarketplace } from '@/lib/marketplace/settings';
 import { absUrl } from '@/lib/seo';
 import ListingHeader from '@/components/market/ListingHeader';
 import Gallery from '@/components/market/Gallery';
@@ -238,7 +239,7 @@ export default async function ProductPage({ params }: Props) {
               )}
               <div className="mt-6 border-t border-ink/5 pt-6">
                 <h3 className="mb-3 font-semibold text-ink">{t('Write a review')}</h3>
-                <ReviewForm sellerId={s.id} productId={p.id} user={user && user.role === 'BUYER' ? { name: user.name } : null} />
+                <ReviewForm sellerId={s.id} productId={p.id} user={user && user.role === 'BUYER' ? { name: user.name } : null} guests={(await getMarketplace()).allowGuestReview} />
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { Star, LoaderCircle, CircleCheck } from 'lucide-react';
 import { useT } from '@/components/site/SiteProvider';
 import SmartLink from '@/components/ui/SmartLink';
 
-export default function ReviewForm({ sellerId, productId, user }: { sellerId: string; productId?: string; user?: { name: string } | null }) {
+export default function ReviewForm({ sellerId, productId, user, guests = true }: { sellerId: string; productId?: string; user?: { name: string } | null; guests?: boolean }) {
   const t = useT();
   const [rating, setRating] = useState(5);
   const [hover, setHover] = useState(0);
@@ -26,7 +26,7 @@ export default function ReviewForm({ sellerId, productId, user }: { sellerId: st
     }
     setLoading(false);
   }
-  if (!user)
+  if (!user && !guests)
     return (
       <p className="rounded-2xl bg-ink/5 px-4 py-3 text-sm text-ink/65">
         <SmartLink href="/login" className="font-bold text-gold-deep">{t('Sign in as a buyer')}</SmartLink> {t('to write a review.')}
@@ -48,12 +48,21 @@ export default function ReviewForm({ sellerId, productId, user }: { sellerId: st
         ))}
         <span className="ml-2 text-sm text-ink/60">{rating}/5</span>
       </div>
+      {!user && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <input name="name" required placeholder={t('Your name')} className="field" autoComplete="name" />
+          <input name="email" type="email" required placeholder={t('Email (not shown publicly)')} className="field" autoComplete="email" />
+        </div>
+      )}
       <input name="title" placeholder={t('Title (optional)')} className="field" />
       <textarea name="body" required minLength={10} rows={4} placeholder={t('How was the product quality, packaging, communication and delivery?')} className="field" />
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-      <button disabled={loading} className="btn btn-gold">
-        {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {t('Submit review')}
-      </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button disabled={loading} className="btn btn-gold">
+          {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {t('Submit review')}
+        </button>
+        {!user && <p className="text-xs text-ink/50">{t('Have an account?')} <SmartLink href="/login" className="font-bold text-gold-deep">{t('Sign in')}</SmartLink> {t('for a verified-buyer badge.')}</p>}
+      </div>
     </form>
   );
 }
