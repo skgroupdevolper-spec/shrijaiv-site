@@ -20,7 +20,7 @@ function Visual({ c, small }: { c: { icon: string | null; image: string | null }
  * Category list beside the home slider. Items with sub-categories show an arrow that folds
  * them out; items without one go straight to the category. The title arrow folds the whole list.
  */
-export default function HeroCategories({ items, title, allLabel }: { items: HeroCat[]; title: string; allLabel: string }) {
+export default function HeroCategories({ items, title, allLabel, allCatsLabel }: { items: HeroCat[]; title: string; allLabel: string; allCatsLabel: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   return (
@@ -72,7 +72,7 @@ export default function HeroCategories({ items, title, allLabel }: { items: Hero
         </ul>
       )}
       <SmartLink href="/products" className="mt-2 flex items-center justify-center gap-1.5 rounded-2xl bg-ink px-3 py-2.5 text-sm font-bold text-white transition hover:bg-gold-deep">
-        {allLabel} <ArrowRight className="h-4 w-4" />
+        {allCatsLabel} <ArrowRight className="h-4 w-4" />
       </SmartLink>
     </>
   );

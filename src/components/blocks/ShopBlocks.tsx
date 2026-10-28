@@ -49,7 +49,7 @@ export async function ShopHero({ data, site }: P) {
         <div className="grid items-stretch gap-5 lg:grid-cols-[290px_1fr]">
           {/* popular categories — same height as the search + slider column */}
           <aside className="fx-up glass relative hidden flex-col overflow-hidden rounded-[26px] p-3 lg:flex" style={{ ['--d' as any]: '.05s' }}>
-            <HeroCategories items={heroCats} title={data.sidebarTitle || t('All Category')} allLabel={t('All')} />
+            <HeroCategories items={heroCats} title={data.sidebarTitle || t('All Category')} allLabel={t('All')} allCatsLabel={t('All categories')} />
           </aside>
           {/* search + slider */}
           <div className="min-w-0">
