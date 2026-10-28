@@ -110,12 +110,10 @@ import {
   Store,
   ShoppingBag,
   Megaphone,
-  BadgeCheck,
   Tractor,
   Recycle,
   Boxes,
   Factory,
-  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react';
 
