@@ -350,7 +350,7 @@ export function SiteSettingsEditor() {
               </div>
               <Btn
                 variant="outline"
-                onClick={() => setValue({ ...value, colors: { gold: '#C8A255', goldLight: '#E9D5A6', ink: '#0A1222', sand: '#F7F2E9' } })}
+                onClick={() => setValue({ ...value, colors: { gold: '#009A35', goldLight: '#8FDBA6', ink: '#0B1A10', sand: '#F3FAF4' } })}
               >
                 Reset to default colours
               </Btn>
@@ -363,6 +363,12 @@ export function SiteSettingsEditor() {
               { name: 'description', label: 'Default meta description', type: 'textarea' },
               { name: 'keywords', label: 'Keywords (comma separated)', type: 'text' },
               { name: 'ogImage', label: 'Default social share image (1200×630)', type: 'image' },
+              { name: '_an', label: 'Analytics & tracking (paste the IDs — no code needed)', type: 'heading' },
+              { name: 'gaId', label: 'Google Analytics 4 measurement ID', type: 'text', placeholder: 'G-XXXXXXXXXX', half: true },
+              { name: 'gtmId', label: 'Google Tag Manager container ID', type: 'text', placeholder: 'GTM-XXXXXXX', half: true },
+              { name: 'metaPixelId', label: 'Meta (Facebook) Pixel ID', type: 'text', half: true },
+              { name: 'clarityId', label: 'Microsoft Clarity project ID', type: 'text', half: true },
+              { name: '_sc', label: 'Search engines', type: 'heading' },
               { name: 'googleVerification', label: 'Google Search Console verification code', type: 'text', help: 'Search Console → Add property → HTML tag → copy only the content="…" value. Then submit /sitemap.xml there so Google indexes new posts fast.' },
               { name: 'bingVerification', label: 'Bing Webmaster verification code (optional)', type: 'text', help: 'New posts are sent to Bing automatically (IndexNow).' },
             ])}

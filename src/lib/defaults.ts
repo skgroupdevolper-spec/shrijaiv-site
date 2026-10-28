@@ -27,7 +27,7 @@ export type SiteSettings = {
   showPreloader: boolean;
   headScripts: string;
   bodyScripts: string;
-  seo: { titleTemplate: string; defaultTitle: string; description: string; keywords: string; ogImage: string; googleVerification?: string; bingVerification?: string };
+  seo: { titleTemplate: string; defaultTitle: string; description: string; keywords: string; ogImage: string; googleVerification?: string; bingVerification?: string; gaId?: string; gtmId?: string; metaPixelId?: string; clarityId?: string; indexNowKey?: string };
 };
 
 export type MegaMenu = {
@@ -116,6 +116,10 @@ export const defaultSite: SiteSettings = {
     ogImage: '/images/hero-skyline.jpg',
     googleVerification: '',
     bingVerification: '',
+    gaId: '',
+    gtmId: '',
+    metaPixelId: '',
+    clarityId: '',
   },
 };
 

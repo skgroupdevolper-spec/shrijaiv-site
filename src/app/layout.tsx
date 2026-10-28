@@ -9,6 +9,8 @@ import { getLocale } from '@/lib/i18n/server';
 import { localeInfo } from '@/lib/i18n/config';
 import { NextIntlClientProvider } from 'next-intl';
 import { BACKDROP_CSS } from '@/lib/backdrop-css';
+import Analytics from '@/components/site/Analytics';
+import PwaRegister from '@/components/site/PwaRegister';
 
 // Always render with live data from the database (admin changes appear instantly)
 export const dynamic = 'force-dynamic';
@@ -41,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#FFFFFF',
+  themeColor: '#009A35',
   width: 'device-width',
   initialScale: 1,
 };
@@ -58,9 +60,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <style dangerouslySetInnerHTML={{ __html: vars + BACKDROP_CSS }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <Analytics seo={site.seo} />
       </head>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        {site.seo.gtmId && <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${site.seo.gtmId}`} height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} /></noscript>}
+        <PwaRegister />
       </body>
     </html>
   );

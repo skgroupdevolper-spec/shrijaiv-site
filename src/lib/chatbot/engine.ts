@@ -20,12 +20,38 @@ const g = globalThis as unknown as { __chatKnow?: { at: number; text: string; po
 /** Facts about the marketplace for the assistant: site settings, categories and plans (filled in as the marketplace grows) */
 async function marketplaceFacts(): Promise<{ text: string }> {
   const site: any = await getSetting('site');
+  const [cats, plans, mp] = await Promise.all([
+    prisma.category.findMany({ where: { active: true }, select: { id: true, name: true, slug: true, parentId: true } }).catch(() => []),
+    prisma.plan.findMany({ where: { active: true }, orderBy: { order: 'asc' }, select: { name: true, price: true, period: true, maxProducts: true, maxInquiries: true, verifiedBadge: true } }).catch(() => []),
+    (await import('@/lib/marketplace/settings')).getMarketplace(),
+  ]);
+  const roots = cats.filter((c) => !c.parentId);
+  const catText = roots.map((r) => `${r.name} (/category/${r.slug}): ${cats.filter((c) => c.parentId === r.id).map((c) => c.name).join(', ')}`).join('\n');
+  const planText = mp.paidPlans ? plans.map((p) => `${p.name}: ${p.price ? `₹${p.price}/${p.period}` : 'free'} — ${p.maxProducts < 0 ? 'unlimited' : p.maxProducts} products, ${p.maxInquiries < 0 ? 'unlimited' : p.maxInquiries} buyer contacts/month${p.verifiedBadge ? ', Verified badge' : ''}`).join('\n') : 'Right now every seller feature is FREE and unlimited (launch period). Plans: ' + plans.map((p) => p.name).join(', ') + ' will apply later. Pricing page: /pricing';
   const lines = [
-    `ABOUT: ${site?.name || 'SHRIJAIV Organic'} — ${site?.tagline || 'Organic Living, Simplified'}. India's organic B2B marketplace: buyers post requirements and send inquiries; verified sellers list products and reply with quotes.`,
-    'CATEGORIES: Organic Agriculture (fruit, vegetables, dairy, oil seeds, pulses, grains, spices), Organic Beauty (creams, face wash, oils, soaps), Organic Processed Food (snacks, flours, sweeteners, beverages).',
-    'HOW IT WORKS: 1) Register free as a buyer or seller. 2) Sellers add products; buyers search or post a requirement. 3) Inquiries and quotes are exchanged in the dashboard chat, by email and WhatsApp. 4) Buyers rate sellers after a deal.',
+    `ABOUT: ${site?.name || 'SHRIJAIV Organic'} — ${site?.tagline || 'Organic Living, Simplified'}. India's organic B2B marketplace (established 2024): buyers post requirements and send inquiries; verified sellers list products and reply with quotes. No commission on deals. 13 Indian languages.`,
+    `CATEGORIES:\n${catText}`,
+    'HOW IT WORKS: 1) Register free as a buyer (/register?as=buyer) or seller (/register?as=seller). 2) Sellers add products in their dashboard (/seller); buyers search (/products), browse sellers (/sellers) or post a requirement (/post-requirement). 3) Inquiries and quotes are exchanged in the dashboard chat, by email and WhatsApp. 4) Buyers rate sellers after a deal. Verified badge = GST, FSSAI and organic certificates checked by our team.',
+    `MEMBERSHIP PLANS:\n${planText}`,
+    `CONTACT: phone ${site?.phoneDisplay || site?.phone || ''}, email ${site?.emailGeneral || ''}, hours ${site?.hours || ''}. Support page: /customer-support · FAQ: /faq`,
   ];
   return { text: lines.join('\n') };
+}
+
+/** Live products and sellers that match the visitor's message (names + links for the assistant to recommend) */
+async function liveMatches(text: string): Promise<string> {
+  const words = terms(text).filter((w) => w.length > 2).slice(0, 6);
+  if (!words.length) return '';
+  const or = (f: string) => words.map((w) => ({ [f]: { contains: w } }));
+  const [products, sellers] = await Promise.all([
+    prisma.product.findMany({ where: { status: 'approved', seller: { status: 'approved' }, OR: [...or('name'), ...or('tags'), ...or('summary')] }, take: 6, orderBy: [{ featured: 'desc' }, { views: 'desc' }], select: { name: true, slug: true, priceMin: true, priceMax: true, priceUnit: true, moq: true, seller: { select: { companyName: true, state: true, verified: true } } } }).catch(() => []),
+    prisma.sellerProfile.findMany({ where: { status: 'approved', OR: [...or('companyName'), ...or('about'), ...or('state'), ...or('city'), { products: { some: { status: 'approved', OR: or('name') } } }] }, take: 5, orderBy: [{ verified: 'desc' }, { ratingAvg: 'desc' }], select: { companyName: true, slug: true, state: true, city: true, verified: true, businessType: true } }).catch(() => []),
+  ]);
+  const lines: string[] = [];
+  if (products.length) lines.push('MATCHING PRODUCTS (recommend with the link):\n' + products.map((p) => `- ${p.name} by ${p.seller.companyName}${p.seller.verified ? ' (Verified)' : ''}${p.seller.state ? `, ${p.seller.state}` : ''}: ${p.priceMin != null ? `₹${p.priceMin}${p.priceMax && p.priceMax !== p.priceMin ? `–₹${p.priceMax}` : ''} ${p.priceUnit || ''}` : 'price on request'}${p.moq ? `, MOQ ${p.moq}` : ''} → /products/${p.slug}`).join('\n'));
+  if (sellers.length) lines.push('MATCHING SELLERS:\n' + sellers.map((s) => `- ${s.companyName}${s.verified ? ' (Verified)' : ''} — ${s.businessType || 'seller'}${s.city || s.state ? `, ${[s.city, s.state].filter(Boolean).join(', ')}` : ''} → /sellers/${s.slug}`).join('\n'));
+  if (!lines.length) lines.push('MATCHING PRODUCTS: none found for these words — suggest /products search or posting a requirement at /post-requirement.');
+  return lines.join('\n');
 }
 
 async function knowledge() {
@@ -144,8 +170,9 @@ export async function handleMessage(input: { sessionId?: string; visitorId?: str
 
   const k = await knowledge();
   const posts = await relatedPosts(text, input.locale, k);
+  const live = await liveMatches(text);
   const convo = history.slice(-10).map((m) => `${m.role === 'user' ? 'VISITOR' : 'ASSISTANT'}: ${m.text}`).join('\n');
-  const prompt = `KNOWLEDGE:\n${k.text}\n\nARTICLES:\n${posts.map((p) => `[${p.title}] /blog/${p.slug}\n${p.body}`).join('\n\n') || '—'}\n\nCONVERSATION SO FAR:\n${convo}${idNote}\n\nWrite the assistant's next reply.`;
+  const prompt = `KNOWLEDGE:\n${k.text}\n\n${live}\n\nARTICLES:\n${posts.map((p) => `[${p.title}] /blog/${p.slug}\n${p.body}`).join('\n\n') || '—'}\n\nCONVERSATION SO FAR:\n${convo}${idNote}\n\nWrite the assistant's next reply.`;
 
   let out: any;
   try {

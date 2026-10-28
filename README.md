@@ -6,24 +6,25 @@ Design: white canvas, forest ink, organic green (`#009A35`) with a gold accent, 
 
 ---
 
-## 1. What is included (status)
+## 1. What is included
 
 | Area | Status |
 |---|---|
-| Public website, page builder (44 section types), blog, FAQs, testimonials, partners, media, header/footer/menu editors, design editor (colours, fonts, glass, animations) | ✅ from the base |
-| Client accounts, login/register/forgot password, portal, admin ↔ client chat | ✅ from the base (being split into Seller / Buyer dashboards) |
-| Admin panel: leads, subscribers, users, settings, SMTP, SEO, tracking, backup/restore | ✅ |
-| Languages (13 Indian languages, RTL Urdu, hreflang, translation memory, Google/Gemini/Claude/DeepL engines) | ✅ |
-| AI assistant (chat widget; provider, model, key, limits set in admin) | ✅ |
-| Marketplace: categories, products, seller showrooms, buyer requirements (RFQ), inquiries, quotes, reviews & ratings | 🔜 Phase 2–5 |
-| Separate Seller and Buyer dashboards | 🔜 Phase 4–5 |
-| Membership plans (monthly / quarterly / yearly / lifetime / custom), **Paid plans ON/OFF master switch** (OFF = everything free & unlimited), auto-renewal, Razorpay (UPI, cards, net banking, wallets) | 🔜 Phase 7 |
-| PWA (install as app), push notifications, 3D/glass polish | 🔜 Phase 9 |
-| SEO: schema.org, sitemap for every language, Search Console / GA4 / GTM IDs from admin, IndexNow | ✅ base, extended in Phase 10 |
+| Public marketplace: home (3D hero + search + live counters), categories tree, products with filters/sort, product pages (gallery, specs, inquiry, reviews, schema.org), seller showrooms, buy leads (requirements), pricing, how-it-works, about, contact, support, FAQ, blog, legal pages | ✅ |
+| Separate **Seller dashboard**: products (photos, price range, MOQ, specs, certifications, SEO, AI writer), inquiries inbox + chat, buy leads + quotes, reviews & replies, company profile + verification documents, analytics, AI tools, membership & invoices, settings | ✅ |
+| Separate **Buyer dashboard**: post/edit/close requirements, compare & accept quotes, inquiries + chat, favourites, reviews, profile, settings | ✅ |
+| **Admin** (full control): sellers (approve / verify / feature / suspend / delete, documents, manual plan activation), buyers, products, categories, requirements, inquiries (step into any conversation), reviews moderation, reports, plans, coupons, subscriptions, payments & invoices, redirects, audit log, CSV exports | ✅ |
+| **Paid plans master switch** (OFF = everything free & unlimited; ON = plan limits), plans monthly / quarterly / yearly / lifetime / custom, trials, **auto-renewal**, Razorpay (UPI, cards, net banking, wallets, EMI) + webhook, GST invoices, coupons, bank-transfer mode, renewal reminders & expiry | ✅ |
+| Notifications: email (SMTP) + in-app bell for sellers, buyers and admins on every event (inquiry, reply, quote, review, approval, payment) | ✅ |
+| 13 Indian languages (EN, HI, UR rtl, BN, TA, TE, MR, GU, KN, ML, PA, OR, AS), auto-translation of site content, hreflang sitemap | ✅ |
+| AI assistant (chat widget with live product/seller search; provider, model, keys & limits in admin), seller AI tools (describe, about, translate) | ✅ |
+| Design: glass UI, 3D particles & tilt cards, reveal animations, mobile bottom bar, PWA (installable, offline page), page builder with 44+ sections incl. 8 marketplace sections, design editor | ✅ |
+| SEO: per-page/product/seller meta, Product/Organization/FAQ schema, sitemap (all languages, products, sellers, categories), robots, RSS, IndexNow, redirects, GA4 / GTM / Meta Pixel / Clarity / Search Console IDs from admin | ✅ |
+| Backup & restore (whole site in one file), security headers, rate limits, audit log | ✅ |
 
-The AI Auto Publisher of the base project was removed on purpose — blog posts are written by the admin (rich editor, drafts, scheduling, SEO). The shared AI client lives in `src/lib/ai`.
+Not yet: automatic translation of *seller-written* product text into the 12 other languages (the UI and all site content are translated; product text shows in the seller's language), web-push notifications, and a global dark mode (colours are editable in Admin → Design).
 
----
+The AI Auto Publisher of the base project was removed on purpose — blog posts are written by the admin. The shared AI client lives in `src/lib/ai`.
 
 ## 2. Run it on your computer
 
@@ -100,5 +101,6 @@ Set `DATABASE_URL="mysql://USER:PASS@localhost:3306/DB"` (or a `postgresql://` U
 1. Admin → **My profile**: change the admin email and password.
 2. Admin → **Site settings**: logo, contact details, social links, SMTP email, Search Console / GA4 / GTM IDs.
 3. Admin → **Languages**: enable the languages you want and pick the translation engine.
-4. Admin → **AI assistant**: add an API key and switch the chat on.
-5. Admin → **Plans & payments**: Razorpay keys, plans, and the Paid plans ON/OFF switch.
+4. Admin → **Marketplace settings → AI assistant**: add an API key; then Admin → **AI chatbot**: switch the chat on.
+5. Admin → **Marketplace settings → Plans & payments**: Razorpay keys (and the webhook URL `/api/webhooks/razorpay`), then **Membership plans**, then flip the **Paid plans** switch when you are ready.
+6. Admin → **Categories**: adjust the category tree; Admin → **Pages**: edit every section of every page.
