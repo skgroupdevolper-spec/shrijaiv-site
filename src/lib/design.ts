@@ -49,7 +49,7 @@ export type DesignSettings = {
     menuSize: number;
     menuUppercase: boolean;
   };
-  footer: { style: 'dark' | 'glass' | 'light'; bg: string; text: string; heading: string; bgImage: string; logoHeight: number; watermark: boolean };
+  footer: { style: 'dark' | 'glass' | 'light' | 'green'; bg: string; text: string; heading: string; bgImage: string; logoHeight: number; watermark: boolean };
   customCss: string;
 };
 
@@ -70,12 +70,12 @@ export const defaultDesign: DesignSettings = {
     sticky: true,
     shrink: true,
     glow: true,
-    topbarBg: '#FFFFFF',
-    topbarText: '#3A3A3C',
+    topbarBg: '#009A35',
+    topbarText: '#FFFFFF',
     menuSize: 14.5,
     menuUppercase: false,
   },
-  footer: { style: 'light', bg: '#FAFAFA', text: '', heading: '', bgImage: '', logoHeight: 40, watermark: false },
+  footer: { style: 'green', bg: '', text: '', heading: '', bgImage: '', logoHeight: 52, watermark: false },
   customCss: '',
 };
 

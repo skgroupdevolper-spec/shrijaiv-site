@@ -11,30 +11,51 @@ const rich = (heading, content, narrow = true) => b('richtext', { theme: 'light'
 
 const CTA = b('cta', { theme: 'dark', heading: 'Grow your organic business', accent: 'with India', lead: 'Join thousands of buyers and verified sellers. Registration is free — start in two minutes.', primary: { label: 'Become a seller', href: '/register?as=seller' }, secondary: { label: 'Become a buyer', href: '/register?as=buyer' } });
 
+const IMG = '/images/site';
+const sampleProducts = (names) => names.map((n, i) => ({ image: `${IMG}/product-${(i % 5) + 1}.png`, title: n, rating: 5 - (i % 3), meta: 'Price on request', link: { href: '/products' } }));
+const sampleProducts2 = (names) => names.map((n, i) => ({ image: `${IMG}/product${(i % 10) + 1}.png`, title: n, rating: 5 - (i % 2), meta: 'Price on request', link: { href: '/products' } }));
+const wantedSamples = [
+  { title: 'Organic Turmeric Powder', extra: 'Buyer From Rajasthan', body: 'Buyer is interested in receiving quotations for 500 kg monthly, NPOP certified, 5% curcumin.', meta: 'Jan 14, 2025', image: `${IMG}/banner-3.png`, link: { href: '/post-requirement' } },
+  { title: 'A2 Gir Cow Ghee', extra: 'Buyer From Maharashtra', body: 'Buyer is interested in receiving quotations for 1 litre jars, private label, 2,000 units.', meta: 'Jan 14, 2025', image: `${IMG}/banner-1.png`, link: { href: '/post-requirement' } },
+  { title: 'Cold-pressed Groundnut Oil', extra: 'Buyer From Gujarat', body: 'Buyer is interested in receiving quotations for 15 kg tins, wood-pressed, monthly supply.', meta: 'Jan 14, 2025', image: `${IMG}/banner-2.png`, link: { href: '/post-requirement' } },
+  { title: 'Organic Millets (Ragi, Jowar)', extra: 'Buyer From Karnataka', body: 'Buyer is interested in receiving quotations for 5 ton lots for a packaged-food brand.', meta: 'Jan 14, 2025', image: `${IMG}/banner-4.png`, link: { href: '/post-requirement' } },
+];
+const wantedWide = [
+  { title: 'Herbal Face Wash (private label)', extra: 'Buyer From Delhi', body: 'Buyer is interested in receiving quotations for contract manufacturing, MOQ 1,000 units.', meta: 'Jan 14, 2025', image: `${IMG}/banner-6.webp`, link: { href: '/post-requirement' } },
+  { title: 'Organic Jaggery Powder', extra: 'Buyer From Uttar Pradesh', body: 'Buyer is interested in receiving quotations for 2 tons monthly for a beverage company.', meta: 'Jan 14, 2025', image: `${IMG}/banner-7.webp`, link: { href: '/post-requirement' } },
+];
+
 const home = {
   slug: 'home',
   title: 'Home',
   metaTitle: "SHRIJAIV Organic | India's Organic B2B Marketplace for Buyers & Sellers",
   metaDescription: 'Connect with verified organic sellers and buyers across India: organic agriculture, organic beauty and organic processed food. Post requirements, get quotes and grow your organic business.',
   blocks: [
-    b('marketHero', {
-      theme: 'light',
-      badge: "India's largest organic B2B marketplace",
-      title: 'Organic Living,',
-      titleAccent: 'Simplified.',
-      lead: 'Find verified organic farmers, manufacturers and brands — or post what you need and let sellers come to you. Free for buyers and sellers.',
-      chipsLabel: 'Popular:',
-      chips: 'Organic turmeric\nA2 ghee\nOrganic jaggery\nCold-pressed oils\nMillets\nHerbal face wash',
-      primary: { label: 'Start selling — free', href: '/register?as=seller' },
-      secondary: { label: 'Post a requirement', href: '/post-requirement' },
-      counters: true,
-      particles: true,
+    b('shopHero', {
+      sidebarTitle: 'All Category',
+      sidebarItems: 10,
+      searchPlaceholder: 'Search for buyer or supplier...',
+      supplierLabel: 'Find Supplier',
+      buyerLabel: 'Find Buyer',
+      interval: 6,
+      slides: [
+        { image: `${IMG}/slider-02.webp`, badge: 'Buyer', title: 'Get the best quality products at the lowest prices', text: 'We have prepared special offers for you on organic products. Don\'t miss these opportunities…', link: { label: 'View More', href: '/products' } },
+        { image: `${IMG}/slider-01.webp`, badge: 'Seller', title: 'Sell organic. Reach all of India.', text: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — zero commission.', link: { label: 'Start selling', href: '/register?as=seller' } },
+        { image: `${IMG}/slider-02.webp`, badge: 'Buyer', title: 'Post what you need — sellers come to you', text: 'Describe the product, quantity and delivery location. Verified sellers send quotes to your dashboard.', link: { label: 'Post a requirement', href: '/post-requirement' } },
+      ],
     }),
-    b('trustStrip', { items: 'Verified organic sellers\nDirect buyer–seller contact\nNo commission on deals\n13 Indian languages' }),
-    b('categories', { theme: 'sand', label: 'Browse', heading: 'Shop by', accent: 'category', lead: 'Three organic worlds, hundreds of products — from farm produce to natural beauty and healthy packaged food.', showSub: true, cta: { label: 'All products', href: '/products' } }),
-    b('featuredProducts', { theme: 'light', label: 'Marketplace', heading: 'Fresh from', accent: 'organic sellers', limit: 8, sort: 'new', cta: { label: 'All products', href: '/products' }, emptyText: 'Products from sellers will appear here. Are you an organic producer? List yours free today.' }),
+    b('productRow', { theme: 'light', heading: 'Organic Agricultural Product Buyer', limit: 8, layout: 'row', samples: true, cta: { label: 'View all', href: '/products' }, items: sampleProducts(['Fresh Vegetables Basket', 'Baby Food Combo', 'Green Tea & Snacks', 'Fresh Fish', 'Organic Dry Fruits', 'Dairy Pack', 'Premium Oats', 'Herbal Tea']) }),
+    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'cards', limit: 4, samples: true, images: `${IMG}/banner-3.png\n${IMG}/banner-1.png\n${IMG}/banner-2.png\n${IMG}/banner-4.png`, cta: { label: 'View all', href: '/requirements' }, items: wantedSamples }),
+    b('adBanner', { image: `${IMG}/ad-wide.webp`, alt: 'SHRIJAIV Organic — grocery marketplace', link: { label: '', href: '/become-a-seller' }, narrow: true }),
+    b('productRow', { theme: 'light', heading: 'Organic Agricultural Product Buyer', limit: 12, layout: 'grid', samples: true, cta: { label: 'View all', href: '/products' }, items: sampleProducts2(['Apple Juice', 'Mouthwash', 'Orange Juice', 'Muskmelon', 'Margherita Pizza', 'Herbal Rinse', 'Apple Juice', 'Pizza Base', 'Muskmelon', 'Simply Orange', 'Apple Juice', 'Fresh Melon']) }),
+    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'wide', limit: 2, samples: true, images: `${IMG}/banner-6.webp\n${IMG}/banner-7.webp\n${IMG}/banner-5.png`, cta: { label: 'View all', href: '/requirements' }, items: wantedWide }),
+    b('regions', { theme: 'light', heading: 'Suppliers By Region', limit: 14, cta: { label: 'View all', href: '/sellers' } }),
+    b('trustLogos', { theme: 'light', heading: '1.2 million businesses trust us', cta: { label: 'View all', href: '/sellers' }, images: `${IMG}/logo1.png\n${IMG}/logo2.png\n${IMG}/logo3.png\n${IMG}/logo4.png\n${IMG}/logo5.png\n${IMG}/logo6.png` }),
+    b('adBanner', { image: `${IMG}/ad-wide.webp`, alt: 'SHRIJAIV Organic', link: { label: '', href: '/become-a-buyer' }, narrow: true }),
+    b('testimonials', { theme: 'light', heading: 'What our customers say', limit: 6 }),
+    b('categories', { theme: 'sand', label: 'Browse', heading: 'Shop by', accent: 'category', showSub: true, cta: { label: 'All products', href: '/products' } }),
     b('howItWorks', {
-      theme: 'sand',
+      theme: 'light',
       label: 'Simple',
       heading: 'How',
       accent: 'SHRIJAIV works',
@@ -46,13 +67,8 @@ const home = {
       sellerSteps: 'Create your showroom — logo, story, certifications and location\nAdd products — photos, prices, MOQ and specifications (AI helps you write)\nReceive inquiries — by email, WhatsApp and in your dashboard\nQuote on buy leads — answer buyer requirements and win new customers',
       sellerLink: { label: 'Create seller account', href: '/register?as=seller' },
     }),
-    b('featuredSellers', { theme: 'light', label: 'Trusted', heading: 'Verified', accent: 'organic sellers', lead: 'Our team checks GST, FSSAI and organic certificates before a seller earns the Verified badge.', limit: 6, cta: { label: 'All sellers', href: '/sellers' } }),
-    b('buyLeads', { theme: 'sand', label: 'Buy leads', heading: 'Buyers are', accent: 'looking for', lead: 'Fresh requirements from retailers, brands, exporters and restaurants.', limit: 4, cta: { label: 'All buy leads', href: '/requirements' }, cta2: { label: 'Post your requirement', href: '/post-requirement' } }),
-    b('stats', { theme: 'light', variant: 'dark', heading: 'Organic India, connected', items: [{ value: '28', label: 'States & UTs covered' }, { value: '13', label: 'Indian languages' }, { value: '0%', label: 'Commission on deals' }, { value: '24h', label: 'Average first reply' }] }),
-    b('testimonials', { theme: 'sand', label: 'Community', heading: 'What buyers and', accent: 'sellers say', limit: 6 }),
-    b('plans', { theme: 'light', label: 'Membership', heading: 'Simple', accent: 'membership plans', lead: 'Start free. Upgrade when you need more products, more buyer contacts or a Verified badge.', freeLead: 'Every feature is free and unlimited for all sellers during our launch.', freeBanner: true }),
+    b('plans', { theme: 'sand', label: 'Membership', heading: 'Our', accent: 'Pricing', lead: 'Start free. Upgrade when you need more products, more buyer contacts or a Verified badge.', freeLead: 'Every feature is free and unlimited for all sellers during our launch.', freeBanner: true }),
     b('faq', { theme: 'light', layout: 'split', label: 'Questions', heading: 'Frequently asked', accent: 'questions', group: 'home', helpTitle: 'Still have a question?', helpText: 'Our team answers on WhatsApp and email, in your language.' }),
-    b('blog', { theme: 'sand', label: 'Learn', heading: 'From the', accent: 'organic journal', limit: 3, cta: { label: 'All articles', href: '/blog' } }),
     CTA,
   ],
 };
@@ -61,17 +77,16 @@ const about = {
   slug: 'about',
   title: 'About us',
   metaTitle: 'About SHRIJAIV Organic — Organic Living, Simplified',
-  metaDescription: "SHRIJAIV Organic is India's organic B2B marketplace, founded in 2024 to connect organic farmers, manufacturers and brands with buyers across the country.",
+  metaDescription: 'Shrijaiv is an LLP registered with the Industry Department of the State of Rajasthan, India — promoting organic foods and linking organic producers to markets.',
   blocks: [
-    ph('Organic living,', 'Founded in 2024, SHRIJAIV Organic connects the people who grow and make organic products with the businesses that need them — directly, transparently and in every Indian language.', { titleAccent: 'simplified.', eyebrow: 'About us', crumb: 'About us' }),
-    b('split', { theme: 'light', label: 'Our story', heading: 'Built for', accent: "India's organic economy", lead: 'Organic farmers and small producers make excellent products but struggle to reach buyers beyond their district. Buyers, in turn, cannot tell certified organic from clever packaging. SHRIJAIV sits in the middle: a verified marketplace where both sides meet directly, with no commission and no middlemen.', points: 'Verification of GST, FSSAI and organic certificates\nDirect contact — the deal is yours, we take nothing\nBuilt in India for Indian languages and payment habits', image: '', badgeValue: '2024', badgeLabel: 'Established', primary: { label: 'Become a seller', href: '/register?as=seller' } }),
-    b('cards', { theme: 'sand', layout: 'icons', columns: '3', label: 'Values', heading: 'What we', accent: 'stand for', items: [
-      { icon: 'verified', title: 'Trust first', body: 'Verified badges, real reviews and clear certifications — so buyers can order with confidence.' },
-      { icon: 'handshake', title: 'Direct & fair', body: 'Buyers and sellers talk directly. Prices, terms and delivery are agreed between them, not dictated by us.' },
-      { icon: 'languages', title: 'Every Indian language', body: 'Hindi, Urdu, Tamil, Bengali, Marathi and more — the marketplace and our assistant speak your language.' },
-      { icon: 'sprout', title: 'Good for the soil', body: 'More demand for certified organic produce means more farmers can afford to stay organic.' },
-      { icon: 'rocket', title: 'Small businesses grow', body: 'A single farmer, FPO or home brand gets the same showroom and tools as a large exporter.' },
-      { icon: 'support', title: 'Real support', body: 'Our team helps with listings, verification and disputes — on WhatsApp, email and phone.' },
+    b('photoBanner', { image: `${IMG}/about-hero.webp`, eyebrow: 'SHRIJAIV Organic · Est. 2024', title: 'About Us', lead: 'Shrijaiv an LLP registered with Industry Department of State of Rajasthan, India.' }),
+    b('blobSplit', { theme: 'light', image: `${IMG}/about-2024.png`, imageAlt: 'Established 2024', heading: 'Who we are', lead: 'Shrijaiv is an LLP with a limited liability of 2.00 lacs, registered with the Industry Department of State of Rajasthan, India. Though registered recently as MSME its promoters are engaged in the development of receipts for organic processed foods, motivated producers of organic foods, organic grains, organic vegetables and organic fruits for the public.', primary: { label: 'Contact Now', href: '/contact' } }),
+    b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/do.png`, imageAlt: 'What we do', heading: 'What we do?', lead: 'Shrijaiv, an LLP registered with the Industry Department of the State of Rajasthan, India, is engaged in:', points: 'Promotion of organic foods.\nMotivating producers of organic foods by enhancing their knowledge for the production of organic products and linking them to organic markets.\nResearch and development of organic processed products.\nEducating the general populace about the benefits of using organic products.', primary: { label: 'Call Now', href: 'phone' } }),
+    b('team', { theme: 'sand', items: [{ image: `${IMG}/teammember.jpeg`, title: 'Raunaq Sharma', meta: 'Director', body: 'Our Director RAUNAQ Sharma is a graduate with degree of Bachelor of Science in Hotel Management, Catering and Nutrition is well versed with the human need of the foods available and nutrition required. Also, as MBA in finance he has served as financial consultant with renowned firms. His experience in Finance and Hospitality industry has catapulted the firm\'s regulation as well as appetite for consumption of new ideas for serving the populace with respect to them.' }] }),
+    b('iconTrio', { theme: 'light', heading: 'How It Works', items: [
+      { image: `${IMG}/about-icon1.png`, title: 'Verified organic sellers', body: 'GST, FSSAI and organic certificates checked by our team before the Verified badge is awarded.' },
+      { image: `${IMG}/about-icon2.png`, title: 'Direct buyer–seller contact', body: 'Inquiries, quotes and chat go straight between you — no middlemen, no commission.' },
+      { image: `${IMG}/about-icon3.png`, title: 'Grow with India', body: 'Buy leads from every state, 13 Indian languages, and tools that help small producers sell big.' },
     ] }),
     b('stats', { theme: 'light', variant: 'dark', heading: 'SHRIJAIV in numbers', items: [{ value: '3', label: 'Organic worlds: agriculture, beauty, food' }, { value: '28', label: 'States & union territories' }, { value: '13', label: 'Languages' }, { value: '0%', label: 'Commission' }] }),
     b('cards', { theme: 'sand', layout: 'steps', columns: '2', label: 'Verification', heading: 'How a seller gets the', accent: 'Verified badge', items: [
@@ -90,7 +105,7 @@ const contact = {
   metaTitle: 'Contact SHRIJAIV Organic',
   metaDescription: 'Talk to the SHRIJAIV team about selling, buying, verification or partnerships. WhatsApp, email and phone support in your language.',
   blocks: [
-    ph('We are here', 'Questions about selling, buying, verification or a partnership? Write to us in any Indian language — we reply within one working day.', { titleAccent: 'to help.', eyebrow: 'Contact', crumb: 'Contact us' }),
+    ph('We are here', 'Questions about selling, buying, verification or a partnership? Write to us in any Indian language — we reply within one working day.', { titleAccent: 'to help.', eyebrow: 'Contact', crumb: 'Contact us', primary: { label: 'Call 93140 51605', href: 'phone' }, secondary: { label: 'WhatsApp', href: 'whatsapp' } }),
     b('contact', { theme: 'light', formTitle: 'Send us a message', formText: 'Tell us how we can help. For product inquiries, please contact the seller directly from their showroom.', formBadge: 'Reply within 24h', topics: 'Selling on SHRIJAIV\nBuying / sourcing help\nSeller verification\nMembership & payments\nPartnership\nReport a problem\nOther', consent: true, showMap: false, points: 'Support in 13 Indian languages\nReal people, not bots (but our AI assistant never sleeps)\nWhatsApp, email and phone' }),
     b('faq', { theme: 'sand', layout: 'stack', heading: 'Before you write', group: 'support' }),
   ],
@@ -266,6 +281,9 @@ export const faqRecords = [
 ];
 
 export const testimonialRecords = [
+  { name: 'Helen Guo', role: '@HelenGuo_', country: 'Jaipur', rating: 5, text: 'Been using SHRIJAIV for months. Good for re-engagement — and you can get creative with your listings and messaging.', avatar: `${IMG}/testi1.png` },
+  { name: 'John Doe', role: '@JohnDoe', country: 'Delhi', rating: 5, text: 'Excellent service! The team was very professional, and the experience exceeded my expectations.', avatar: `${IMG}/testi2.png` },
+  { name: 'Sarah Lee', role: '@SarahLee', country: 'Mumbai', rating: 5, text: 'Amazing platform! It has completely changed how we interact with customers and boosted our sales.', avatar: `${IMG}/testi3.png` },
   { name: 'Ramesh Patel', role: 'Organic farmer (FPO)', country: 'Gujarat', rating: 5, text: 'Within two weeks of listing our groundnut oil we had buyers from three states. No commission, direct calls. This is what farmers needed.' },
   { name: 'Priya Nair', role: 'Founder, natural skincare brand', country: 'Kerala', rating: 5, text: 'The showroom looks better than our own website and the Hindi translation brought us buyers from the north we never reached before.' },
   { name: 'Mohammed Irfan', role: 'Wholesale buyer', country: 'Hyderabad', rating: 5, text: 'I post one requirement and get five quotes by the evening. Comparing MOQ and delivery in one screen saves me days.' },
@@ -274,10 +292,10 @@ export const testimonialRecords = [
   { name: 'Lakshmi Iyer', role: 'Exporter', country: 'Tamil Nadu', rating: 5, text: 'Buy leads from brands looking for private-label products are gold for an exporter. Worth every rupee of the Growth plan.' },
 ];
 
-export const partnerRecords = [];
+export const partnerRecords = [1, 2, 3, 4, 5, 6].map((i) => ({ name: `Partner ${i}`, logo: `${IMG}/logo${i}.png`, order: i, active: true }));
 export const serviceRecords = [];
 
-const post = (slug, title, excerpt, content, category, tags, daysAgo) => ({ slug, title, excerpt, content, cover: '', category, tags, author: 'SHRIJAIV Team', status: 'published', metaTitle: null, metaDescription: excerpt, publishedAt: new Date(Date.now() - daysAgo * 86_400_000).toISOString() });
+const post = (slug, title, excerpt, content, category, tags, daysAgo) => ({ slug, title, excerpt, content, cover: `${IMG}/blog-post-0${(daysAgo % 3) + 1}.webp`, category, tags, author: 'SHRIJAIV Team', status: 'published', metaTitle: null, metaDescription: excerpt, publishedAt: new Date(Date.now() - daysAgo * 86_400_000).toISOString() });
 
 export const posts = [
   post('organic-certification-india-npop-pgs-guide', 'Organic certification in India: NPOP, PGS-India and what buyers should check', 'NPOP, PGS-India, USDA Organic, EU Organic — what each certificate covers, who issues it, and how to verify a seller\'s claim in two minutes.', `

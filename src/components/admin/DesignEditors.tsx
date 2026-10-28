@@ -26,7 +26,7 @@ export const HEADER_DESIGN_FIELDS: Field[] = [
 ];
 
 export const FOOTER_DESIGN_FIELDS: Field[] = [
-  { name: 'style', label: 'Footer style', type: 'select', options: o(['light', 'Light (clean)'], ['glass', 'Glass'], ['dark', 'Black']) },
+  { name: 'style', label: 'Footer style', type: 'select', options: o(['green', 'Green gradient (SHRIJAIV)'], ['light', 'Light (clean)'], ['glass', 'Glass'], ['dark', 'Black']) },
   { name: 'bg', label: 'Background colour', type: 'color', half: true },
   { name: 'text', label: 'Text colour', type: 'color', half: true },
   { name: 'heading', label: 'Column title colour', type: 'color', half: true },

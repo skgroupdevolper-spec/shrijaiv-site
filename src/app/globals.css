@@ -292,6 +292,13 @@ p { text-wrap: pretty; }
 .site-footer a:hover { color: #000; }
 .ftr-dark .site-footer { background: var(--ftr-bg, #0b0b0c); color: rgba(255, 255, 255, 0.62); border-top: 0; }
 .ftr-glass .site-footer { background: rgba(255, 255, 255, 0.6); }
+/* green gradient footer (original SHRIJAIV look) */
+.ftr-green .site-footer { background: linear-gradient(100deg, #f4f8f3 0%, #cfe9d6 28%, #6cc48a 100%); border-top: 0; color: #0b1a10; }
+.ftr-green .site-footer h4 { color: #0b1a10; padding-bottom: 8px; border-bottom: 2px solid #0b1a10; display: inline-block; }
+.ftr-green .site-footer a:hover { color: var(--brand-gold); }
+.ftr-green .ftr-bottom { background: #009a35; color: #fff; border-top: 0; margin: 0 -1px -1px; }
+.ftr-green .ftr-bottom a { color: #fff; }
+.ftr-green .ftr-social { background: #fff; border-color: transparent; }
 .ftr-dark .site-footer h4 { color: var(--ftr-head, var(--brand-gold-light)); }
 .ftr-dark .site-footer a:hover { color: #fff; }
 .ftr-dark .site-footer .ftr-strong { color: #fff; }

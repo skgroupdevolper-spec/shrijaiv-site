@@ -298,7 +298,7 @@ export function VisaStatusForm({ d }: { d: any }) {
 }
 
 /* ------------------------------------------------------------------ reviews with "show more" */
-export function ReviewGrid({ items, limit }: { items: { id: string; name: string; role?: string | null; country?: string | null; text: string; rating: number }[]; limit: number }) {
+export function ReviewGrid({ items, limit }: { items: { id: string; name: string; role?: string | null; country?: string | null; text: string; rating: number; avatar?: string | null }[]; limit: number }) {
   const t = useT();
   const [all, setAll] = useState(false);
   const [phone, setPhone] = useState(false);
@@ -318,9 +318,17 @@ export function ReviewGrid({ items, limit }: { items: { id: string; name: string
               </span>
             </div>
             <blockquote className="mt-5 flex-1 text-[0.98rem] leading-relaxed">{r.text}</blockquote>
-            <figcaption className="mt-6 border-t border-black/[0.06] pt-5">
-              <p className="font-display text-sm font-semibold">{r.name}</p>
-              {(r.role || r.country) && <p className="muted mt-0.5 text-xs">{[r.role === 'Google review' ? t('Google review') : r.role, r.country].filter(Boolean).join(', ')}</p>}
+            <figcaption className="mt-6 flex items-center gap-3 border-t border-black/[0.06] pt-5">
+              {r.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={r.avatar} alt="" loading="lazy" className="h-11 w-11 rounded-full object-cover ring-2 ring-white shadow" />
+              ) : (
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-gold/15 font-display text-base font-semibold text-gold-deep">{r.name.charAt(0)}</span>
+              )}
+              <span className="min-w-0">
+                <p className="font-display text-sm font-semibold">{r.name}</p>
+                {(r.role || r.country) && <p className="muted mt-0.5 text-xs">{[r.role === 'Google review' ? t('Google review') : r.role, r.country].filter(Boolean).join(', ')}</p>}
+              </span>
             </figcaption>
           </figure>
         ))}

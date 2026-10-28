@@ -254,7 +254,7 @@ export async function Testimonials({ data }: P) {
     <Section data={data} fallback="sand">
       <div className="container-x">
         <Head label={data.label} heading={data.heading} accent={data.accent} lead={data.lead} />
-        <GoogleBadge />
+        {data.googleBadge && <GoogleBadge />}
         <ReviewGrid items={JSON.parse(JSON.stringify(items))} limit={Number(data.limit) || 6} />
       </div>
     </Section>

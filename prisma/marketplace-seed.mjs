@@ -3,13 +3,13 @@
 
 export const CATEGORIES = [
   {
-    name: 'Organic Agriculture', slug: 'organic-agriculture', icon: 'wheat', featured: true,
+    name: 'Organic Agriculture', slug: 'organic-agriculture', icon: 'wheat', featured: true, image: '/images/site/category2.png',
     children: [
-      { name: 'Fruit', slug: 'fruit', icon: 'apple' },
-      { name: 'Vegetables', slug: 'vegetables', icon: 'carrot' },
-      { name: 'Dairy Products', slug: 'dairy-products', icon: 'milk' },
-      { name: 'Oil Seeds', slug: 'oil-seeds', icon: 'droplets' },
-      { name: 'Pulses', slug: 'pulses', icon: 'bean' },
+      { name: 'Fruit', slug: 'fruit', icon: 'apple', image: '/images/site/category5.png' },
+      { name: 'Vegetables', slug: 'vegetables', icon: 'carrot', image: '/images/site/category9.png' },
+      { name: 'Dairy Products', slug: 'dairy-products', icon: 'milk', image: '/images/site/category6.png' },
+      { name: 'Oil Seeds', slug: 'oil-seeds', icon: 'droplets', image: '/images/site/category7.png' },
+      { name: 'Pulses', slug: 'pulses', icon: 'bean', image: '/images/site/category8.png' },
       { name: 'Grains & Cereals', slug: 'grains-cereals', icon: 'wheat' },
       { name: 'Spices & Herbs', slug: 'spices-herbs', icon: 'leaf' },
       { name: 'Dry Fruits & Nuts', slug: 'dry-fruits-nuts', icon: 'nut' },
@@ -18,10 +18,10 @@ export const CATEGORIES = [
     ],
   },
   {
-    name: 'Organic Beauty', slug: 'organic-beauty', icon: 'sparkles', featured: true,
+    name: 'Organic Beauty', slug: 'organic-beauty', icon: 'sparkles', featured: true, image: '/images/site/category3.png',
     children: [
-      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', icon: 'droplet' },
-      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', icon: 'smile' },
+      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', icon: 'droplet', image: '/images/site/category10.png' },
+      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', icon: 'smile', image: '/images/site/category11.png' },
       { name: 'Hair Care', slug: 'hair-care', icon: 'scissors' },
       { name: 'Soaps & Body Care', slug: 'soaps-body-care', icon: 'bath' },
       { name: 'Essential Oils', slug: 'essential-oils', icon: 'flower' },
@@ -29,7 +29,7 @@ export const CATEGORIES = [
     ],
   },
   {
-    name: 'Organic Processed Food', slug: 'organic-processed-food', icon: 'cookie', featured: true,
+    name: 'Organic Processed Food', slug: 'organic-processed-food', icon: 'cookie', featured: true, image: '/images/site/category4.png',
     children: [
       { name: 'Flours & Atta', slug: 'flours-atta', icon: 'package' },
       { name: 'Snacks', slug: 'snacks', icon: 'cookie' },
@@ -43,21 +43,21 @@ export const CATEGORIES = [
 ];
 
 export const PLANS = [
-  { slug: 'free', name: 'Free', price: 0, period: 'lifetime', maxProducts: 5, maxInquiries: 10, maxQuotes: 5, maxImages: 3, featuredSlots: 0, verifiedBadge: false, priorityRank: 0, analytics: false, aiTools: false, features: ['5 products', '10 buyer contacts / month', '5 quotes / month', 'Basic showroom'], order: 0 },
-  { slug: 'starter', name: 'Starter', price: 999, period: 'monthly', maxProducts: 25, maxInquiries: 50, maxQuotes: 30, maxImages: 6, featuredSlots: 1, verifiedBadge: true, priorityRank: 1, analytics: true, aiTools: true, features: ['25 products', '50 buyer contacts / month', '30 quotes / month', 'Verified badge', '1 featured product', 'Analytics & AI tools'], order: 1 },
-  { slug: 'growth', name: 'Growth', price: 2499, period: 'monthly', maxProducts: 100, maxInquiries: -1, maxQuotes: -1, maxImages: 10, featuredSlots: 5, verifiedBadge: true, priorityRank: 2, analytics: true, aiTools: true, features: ['100 products', 'Unlimited buyer contacts', 'Unlimited quotes', 'Verified badge', '5 featured products', 'Priority in search', 'Analytics & AI tools'], highlight: true, order: 2 },
-  { slug: 'enterprise', name: 'Enterprise', price: 19999, period: 'yearly', maxProducts: -1, maxInquiries: -1, maxQuotes: -1, maxImages: 15, featuredSlots: 20, verifiedBadge: true, priorityRank: 3, analytics: true, aiTools: true, features: ['Unlimited products', 'Unlimited buyer contacts & quotes', 'Verified badge', '20 featured products', 'Top priority in search', 'Dedicated support'], order: 3 },
+  { slug: 'free', name: 'Free Plan', price: 0, period: 'lifetime', maxProducts: 5, maxInquiries: 10, maxQuotes: 5, maxImages: 3, featuredSlots: 0, verifiedBadge: false, priorityRank: 0, analytics: false, aiTools: false, features: ['5 products', '10 buyer contacts / month', '5 quotes / month', 'Basic showroom'], order: 0 },
+  { slug: 'silver', name: 'Silver Plan', price: 1999, period: 'quarterly', maxProducts: 25, maxInquiries: 50, maxQuotes: 30, maxImages: 6, featuredSlots: 1, verifiedBadge: true, priorityRank: 1, analytics: true, aiTools: true, features: ['Inquiry max 50 a month', 'One page Business profile', '25 products', 'Verified badge', 'Analytics & AI tools'], order: 1 },
+  { slug: 'gold', name: 'Gold Plan', price: 3499, period: 'custom', periodDays: 180, maxProducts: 100, maxInquiries: 100, maxQuotes: -1, maxImages: 10, featuredSlots: 5, verifiedBadge: true, priorityRank: 2, analytics: true, aiTools: true, features: ['Inquiry max 100 a month', 'Limited description supplier contact', '100 products', 'Unlimited quotes', '5 featured products', 'Priority in search'], highlight: true, order: 2 },
+  { slug: 'platinum', name: 'Platinum Plan', price: 5999, period: 'yearly', maxProducts: -1, maxInquiries: -1, maxQuotes: -1, maxImages: 15, featuredSlots: 20, verifiedBadge: true, priorityRank: 3, analytics: true, aiTools: true, features: ['Unlimited inquiry', 'Unlimited catalog product & highest search ranking', 'Verified badge', '20 featured products', 'Dedicated support'], order: 3 },
 ];
 
 export async function seedMarketplace(prisma) {
   let created = 0;
   for (let i = 0; i < CATEGORIES.length; i++) {
     const c = CATEGORIES[i];
-    const parent = await prisma.category.upsert({ where: { slug: c.slug }, update: {}, create: { slug: c.slug, name: c.name, icon: c.icon, featured: !!c.featured, order: i } });
+    const parent = await prisma.category.upsert({ where: { slug: c.slug }, update: { image: c.image || undefined }, create: { slug: c.slug, name: c.name, icon: c.icon, image: c.image || null, featured: !!c.featured, order: i } });
     if (parent.createdAt.getTime() > Date.now() - 5000) created++;
     for (let j = 0; j < c.children.length; j++) {
       const ch = c.children[j];
-      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: {}, create: { slug: ch.slug, name: ch.name, icon: ch.icon, parentId: parent.id, order: j } });
+      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: { image: ch.image || undefined }, create: { slug: ch.slug, name: ch.name, icon: ch.icon, image: ch.image || null, parentId: parent.id, order: j } });
       if (row.createdAt.getTime() > Date.now() - 5000) created++;
     }
   }
