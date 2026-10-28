@@ -6,7 +6,7 @@ import { Eye, Pencil, Trash2, EyeOff, Upload } from 'lucide-react';
 import { dapi } from '@/lib/dashboard/api';
 import { toast, confirmDialog } from '@/components/admin/ui';
 import { StatusPill } from '@/components/dashboard/fields';
-import { images, priceLabel } from '@/lib/marketplace/data';
+import { images, priceLabel } from '@/lib/marketplace/format';
 import { formatDate } from '@/lib/utils';
 
 const TABS = [['', 'All'], ['approved', 'Live'], ['pending', 'Pending'], ['draft', 'Drafts'], ['hidden', 'Hidden'], ['rejected', 'Rejected']];
