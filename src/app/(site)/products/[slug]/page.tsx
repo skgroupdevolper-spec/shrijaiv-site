@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag } from 'lucide-react';
+import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
 import { getProduct, listProducts, images, priceLabel } from '@/lib/marketplace/data';
 import { getCurrentUser } from '@/lib/auth';
@@ -152,6 +152,35 @@ export default async function ProductPage({ params }: Props) {
               </div>
               <span className="text-sm font-bold text-gold-deep">{t('Showroom')} →</span>
             </SmartLink>
+
+            {/* Verified supplier details — like the info box on the original product page */}
+            <div className="glass mt-5 overflow-hidden rounded-[22px] ring-1 ring-ink/5">
+              <div className="flex items-center gap-2 bg-gold px-5 py-3 text-sm font-bold text-white">
+                <BadgeCheck className="h-4 w-4" /> {s.verified ? t('Verified supplier details') : t('Supplier details')}
+              </div>
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-2.5 p-5 text-sm sm:grid-cols-2">
+                {[
+                  [Building2, t('Business type'), s.businessType ? s.businessType.charAt(0).toUpperCase() + s.businessType.slice(1) : null],
+                  [CalendarDays, t('Year established'), s.yearEstablished],
+                  [Users, t('Employees'), s.employees],
+                  [FileCheck2, t('GST'), s.gstNumber ? (s.verified ? t('Verified') : t('Submitted')) : null],
+                  [FileCheck2, t('FSSAI'), s.fssaiNumber ? (s.verified ? t('Verified') : t('Submitted')) : null],
+                  [MapPin, t('Location'), [s.city, s.state].filter(Boolean).join(', ') || null],
+                  [ShieldCheck, t('Certifications'), certs.length ? certs.join(', ') : null],
+                  [Clock, t('Response time'), t('Usually within 24 hours')],
+                ]
+                  .filter((r) => r[2])
+                  .map(([I, k, v]: any) => (
+                    <div key={k} className="flex items-start gap-2">
+                      <I className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
+                      <div className="min-w-0">
+                        <dt className="text-[0.66rem] font-bold uppercase tracking-wider text-ink/45">{k}</dt>
+                        <dd className="truncate font-semibold text-ink">{v}</dd>
+                      </div>
+                    </div>
+                  ))}
+              </dl>
+            </div>
           </div>
         </div>
 
@@ -233,6 +262,10 @@ export default async function ProductPage({ params }: Props) {
                 </div>
               </div>
             )}
+            <SmartLink href="/pricing" className="tilt card card-lift block overflow-hidden" data-tilt="4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/site/ad-square.png" alt={t('Advertise your organic business on SHRIJAIV')} className="aspect-square w-full object-cover" />
+            </SmartLink>
           </div>
         </div>
       </section>

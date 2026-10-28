@@ -8,6 +8,7 @@ import { readdirSync, readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { seedMarketplace } from './marketplace-seed.mjs';
+import { seedDemo } from './demo-seed.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -48,6 +49,8 @@ async function main() {
 
   // 3) Marketplace: categories, plans, settings (idempotent)
   await seedMarketplace(prisma);
+  // 3b) Demo sellers / products / buy leads (only while the marketplace is empty; skip with DEMO_DATA=0)
+  if (process.env.DEMO_DATA !== '0') await seedDemo(prisma);
 
   // 4) Website content — only into an empty database (or with --force)
   const pageCount = await prisma.page.count();
