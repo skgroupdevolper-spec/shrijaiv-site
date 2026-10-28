@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 const LANGS: [string, string][] = [
   ['en', 'English'],
   ['hi', 'Hindi'],
-  ['ur', 'Urdu'],
   ['bn', 'Bengali'],
   ['ta', 'Tamil'],
   ['te', 'Telugu'],

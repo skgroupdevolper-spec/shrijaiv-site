@@ -1,12 +1,11 @@
 // Website languages. English is the main language (URLs without prefix).
-// Other languages live under /hi, /ur, /ta ... e.g. /hi/about-us
+// Other languages live under /hi, /ta ... e.g. /hi/about-us
 
-export type Locale = 'en' | 'hi' | 'ur' | 'bn' | 'ta' | 'te' | 'mr' | 'gu' | 'kn' | 'ml' | 'pa' | 'or' | 'as';
+export type Locale = 'en' | 'hi' | 'bn' | 'ta' | 'te' | 'mr' | 'gu' | 'kn' | 'ml' | 'pa' | 'or' | 'as';
 
 export const LOCALES: { code: Locale; name: string; native: string; dir: 'ltr' | 'rtl'; flag: string; google: string; deepl?: string; htmlLang: string }[] = [
   { code: 'en', name: 'English', native: 'English', dir: 'ltr', flag: '🇮🇳', google: 'en', deepl: 'EN-GB', htmlLang: 'en' },
   { code: 'hi', name: 'Hindi', native: 'हिन्दी', dir: 'ltr', flag: '🇮🇳', google: 'hi', htmlLang: 'hi' },
-  { code: 'ur', name: 'Urdu', native: 'اردو', dir: 'rtl', flag: '🇮🇳', google: 'ur', htmlLang: 'ur' },
   { code: 'bn', name: 'Bengali', native: 'বাংলা', dir: 'ltr', flag: '🇮🇳', google: 'bn', htmlLang: 'bn' },
   { code: 'ta', name: 'Tamil', native: 'தமிழ்', dir: 'ltr', flag: '🇮🇳', google: 'ta', htmlLang: 'ta' },
   { code: 'te', name: 'Telugu', native: 'తెలుగు', dir: 'ltr', flag: '🇮🇳', google: 'te', htmlLang: 'te' },

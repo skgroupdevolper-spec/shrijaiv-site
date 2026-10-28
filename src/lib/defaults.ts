@@ -147,7 +147,7 @@ export const defaultHeader: HeaderSettings = {
     eyebrow: 'Categories',
     title: 'Three organic worlds',
     text: 'Certified organic produce, natural beauty and healthy packaged food — from verified Indian sellers.',
-    bullets: 'Verified GST, FSSAI & organic certificates\nDirect contact, no commission\n13 Indian languages',
+    bullets: 'Verified GST, FSSAI & organic certificates\nDirect contact, no commission\n12 Indian languages',
     groups: [
       {
         title: 'Organic Agriculture',
@@ -193,7 +193,7 @@ export const defaultHeader: HeaderSettings = {
 };
 
 export const defaultFooter: FooterSettings = {
-  about: "India's organic B2B marketplace. Verified sellers of organic agriculture, beauty and processed food meet buyers directly — no commission, 13 Indian languages. Established 2024.",
+  about: "India's organic B2B marketplace. Verified sellers of organic agriculture, beauty and processed food meet buyers directly — no commission, 12 Indian languages. Established 2024.",
   columns: [
     {
       title: 'Marketplace',
@@ -294,6 +294,6 @@ export const defaultTranslation: TranslationSettings = {
   geminiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
   autoTranslate: true,
-  enabled: ['en', 'hi', 'ur', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as'],
+  enabled: ['en', 'hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as'],
   showSwitcher: true,
 };

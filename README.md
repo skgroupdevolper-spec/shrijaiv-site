@@ -2,7 +2,7 @@
 
 **Organic Living, Simplified.** A multi-vendor marketplace in **Next.js 15** that connects buyers and verified sellers of organic agriculture, organic beauty and organic processed-food products across India.
 
-Design: white canvas, forest ink, organic green (`#009A35`) with a gold accent, glass header, 3D hero, tilt cards, mobile bottom navigation, app-like transitions. 13 Indian languages (English, Hindi, Urdu RTL, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese) with automatic translation.
+Design: white canvas, forest ink, organic green (`#009A35`) with a gold accent, glass header, 3D hero, tilt cards, mobile bottom navigation, app-like transitions. 12 Indian languages (English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese) with automatic translation.
 
 ---
 
@@ -16,7 +16,7 @@ Design: white canvas, forest ink, organic green (`#009A35`) with a gold accent, 
 | **Admin** (full control): sellers (approve / verify / feature / suspend / delete, documents, manual plan activation), buyers, products, categories, requirements, inquiries (step into any conversation), reviews moderation, reports, plans, coupons, subscriptions, payments & invoices, redirects, audit log, CSV exports | ✅ |
 | **Paid plans master switch** (OFF = everything free & unlimited; ON = plan limits), plans monthly / quarterly / yearly / lifetime / custom, trials, **auto-renewal**, Razorpay (UPI, cards, net banking, wallets, EMI) + webhook, GST invoices, coupons, bank-transfer mode, renewal reminders & expiry | ✅ |
 | Notifications: email (SMTP) + in-app bell for sellers, buyers and admins on every event (inquiry, reply, quote, review, approval, payment) | ✅ |
-| 13 Indian languages (EN, HI, UR rtl, BN, TA, TE, MR, GU, KN, ML, PA, OR, AS), auto-translation of site content, hreflang sitemap | ✅ |
+| 12 Indian languages (EN, HI, BN, TA, TE, MR, GU, KN, ML, PA, OR, AS), auto-translation of site content, hreflang sitemap | ✅ |
 | AI assistant (chat widget with live product/seller search; provider, model, keys & limits in admin), seller AI tools (describe, about, translate) | ✅ |
 | Design: glass UI, 3D particles & tilt cards, reveal animations, mobile bottom bar, PWA (installable, offline page), page builder with 44+ sections incl. 8 marketplace sections, design editor | ✅ |
 | SEO: per-page/product/seller meta, Product/Organization/FAQ schema, sitemap (all languages, products, sellers, categories), robots, RSS, IndexNow, redirects, GA4 / GTM / Meta Pixel / Clarity / Search Console IDs from admin | ✅ |

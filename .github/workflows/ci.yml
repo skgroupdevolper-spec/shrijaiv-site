@@ -143,14 +143,14 @@ jobs:
           # --- languages ---
           check /hi 200
           check /hi/about 200
-          check /ur/blog 200
+          check /bn/blog 200
           check /ta/contact 200
           check /hi/products 200
-          curl -s http://localhost:3000/ur | grep -q 'dir="rtl"' || { echo "::error title=Check failed::Urdu page is right-to-left"; exit 1; }; echo "Urdu page is right-to-left"
+          curl -s http://localhost:3000/ur -o /dev/null -w '%{http_code}' | grep -q '404' || { echo "::error title=Check failed::Urdu is removed (/ur is 404)"; exit 1; }; echo "Urdu removed"
           curl -s http://localhost:3000/hi | grep -qi 'hreflang' || { echo "::error title=Check failed::hreflang tags present"; exit 1; }; echo "hreflang tags present"
           curl -sf -b cookies.txt http://localhost:3000/api/admin/translations | grep -q '"locale":"hi"'
           # free Google engine (default) translates the other languages
-          curl -sf -b cookies.txt -X PUT http://localhost:3000/api/admin/settings/translation -H 'Content-Type: application/json' -d '{"value":{"provider":"google","apiKey":"","model":"","autoTranslate":false,"enabled":["en","hi","ur","bn","ta","te","mr","gu","kn","ml","pa","or","as"],"showSwitcher":true}}'
+          curl -sf -b cookies.txt -X PUT http://localhost:3000/api/admin/settings/translation -H 'Content-Type: application/json' -d '{"value":{"provider":"google","apiKey":"","model":"","autoTranslate":false,"enabled":["en","hi","bn","ta","te","mr","gu","kn","ml","pa","or","as"],"showSwitcher":true}}'
           echo
           RES=$(curl -s -b cookies.txt -X POST http://localhost:3000/api/admin/translations -H 'Content-Type: application/json' -d '{"action":"test","locale":"hi"}')
           echo "Translation test: $RES"

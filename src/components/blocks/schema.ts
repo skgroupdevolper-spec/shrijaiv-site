@@ -278,7 +278,7 @@ export const BLOCKS: BlockSchema[] = [
     description: 'Thin line of check-marked promises (e.g. Verified sellers · Secure inquiries)',
     group: 'Marketplace',
     fields: [{ name: 'items', label: 'Items (one per line)', type: 'lines' }],
-    defaults: { items: 'Verified organic sellers\nDirect buyer–seller contact\nNo commission on deals\n13 Indian languages' },
+    defaults: { items: 'Verified organic sellers\nDirect buyer–seller contact\nNo commission on deals\n12 Indian languages' },
   },
   {
     type: 'hero',

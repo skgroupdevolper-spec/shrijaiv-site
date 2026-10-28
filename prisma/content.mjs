@@ -86,9 +86,9 @@ const about = {
     b('iconTrio', { theme: 'light', heading: 'How It Works', items: [
       { image: `${IMG}/about-icon1.png`, title: 'Verified organic sellers', body: 'GST, FSSAI and organic certificates checked by our team before the Verified badge is awarded.' },
       { image: `${IMG}/about-icon2.png`, title: 'Direct buyer–seller contact', body: 'Inquiries, quotes and chat go straight between you — no middlemen, no commission.' },
-      { image: `${IMG}/about-icon3.png`, title: 'Grow with India', body: 'Buy leads from every state, 13 Indian languages, and tools that help small producers sell big.' },
+      { image: `${IMG}/about-icon3.png`, title: 'Grow with India', body: 'Buy leads from every state, 12 Indian languages, and tools that help small producers sell big.' },
     ] }),
-    b('stats', { theme: 'light', variant: 'dark', heading: 'SHRIJAIV in numbers', items: [{ value: '3', label: 'Organic worlds: agriculture, beauty, food' }, { value: '28', label: 'States & union territories' }, { value: '13', label: 'Languages' }, { value: '0%', label: 'Commission' }] }),
+    b('stats', { theme: 'light', variant: 'dark', heading: 'SHRIJAIV in numbers', items: [{ value: '3', label: 'Organic worlds: agriculture, beauty, food' }, { value: '28', label: 'States & union territories' }, { value: '12', label: 'Languages' }, { value: '0%', label: 'Commission' }] }),
     b('cards', { theme: 'sand', layout: 'steps', columns: '2', label: 'Verification', heading: 'How a seller gets the', accent: 'Verified badge', items: [
       { title: 'Register and complete the showroom', body: 'Company details, location, story and product photos.' },
       { title: 'Upload documents', body: 'GST certificate, FSSAI licence (for food) and organic certification (NPOP / PGS-India / USDA / EU).' },
@@ -106,8 +106,8 @@ const contact = {
   metaDescription: 'Talk to the SHRIJAIV team about selling, buying, verification or partnerships. WhatsApp, email and phone support in your language.',
   blocks: [
     b('photoBanner', { image: `${IMG}/customer-banner.png`, eyebrow: 'Contact', title: 'Contact Us', lead: 'Questions about selling, buying, verification or a partnership? Write to us in any Indian language — we reply within one working day.' }),
-    b('blobSplit', { theme: 'light', image: `${IMG}/call-center-pana-1.png`, imageAlt: 'Customer care', label: 'We are here to help', heading: 'Talk to a real person', lead: 'Call, WhatsApp or email — our team in Jaipur answers Mon–Sat, 10:00–19:00 IST. Our AI assistant (bottom right) answers around the clock.', points: '276, Frontier Colony, Adarsh Nagar, Jaipur, Rajasthan\nSupport in 13 Indian languages\nSeller verification & membership help', primary: { label: 'Call 93140 51605', href: 'phone' }, secondary: { label: 'WhatsApp', href: 'whatsapp' } }),
-    b('contact', { theme: 'light', formTitle: 'Send us a message', formText: 'Tell us how we can help. For product inquiries, please contact the seller directly from their showroom.', formBadge: 'Reply within 24h', topics: 'Selling on SHRIJAIV\nBuying / sourcing help\nSeller verification\nMembership & payments\nPartnership\nReport a problem\nOther', consent: true, showMap: false, points: 'Support in 13 Indian languages\nReal people, not bots (but our AI assistant never sleeps)\nWhatsApp, email and phone' }),
+    b('blobSplit', { theme: 'light', image: `${IMG}/call-center-pana-1.png`, imageAlt: 'Customer care', label: 'We are here to help', heading: 'Talk to a real person', lead: 'Call, WhatsApp or email — our team in Jaipur answers Mon–Sat, 10:00–19:00 IST. Our AI assistant (bottom right) answers around the clock.', points: '276, Frontier Colony, Adarsh Nagar, Jaipur, Rajasthan\nSupport in 12 Indian languages\nSeller verification & membership help', primary: { label: 'Call 93140 51605', href: 'phone' }, secondary: { label: 'WhatsApp', href: 'whatsapp' } }),
+    b('contact', { theme: 'light', formTitle: 'Send us a message', formText: 'Tell us how we can help. For product inquiries, please contact the seller directly from their showroom.', formBadge: 'Reply within 24h', topics: 'Selling on SHRIJAIV\nBuying / sourcing help\nSeller verification\nMembership & payments\nPartnership\nReport a problem\nOther', consent: true, showMap: false, points: 'Support in 12 Indian languages\nReal people, not bots (but our AI assistant never sleeps)\nWhatsApp, email and phone' }),
     b('faq', { theme: 'sand', layout: 'stack', heading: 'Before you write', group: 'support' }),
   ],
 };
@@ -119,7 +119,7 @@ const support = {
   metaDescription: 'Help centre for buyers and sellers on SHRIJAIV: accounts, listings, inquiries, verification, membership plans and payments.',
   blocks: [
     b('photoBanner', { image: `${IMG}/banner-6.webp`, eyebrow: 'Help centre', title: 'Customer Support', lead: 'Browse the help topics below, ask our AI assistant, or open a ticket — we reply within 24 hours.' }),
-    b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/group-chat-pana-2.png`, imageAlt: 'Support chat', heading: 'Support that speaks', accent: 'your language', lead: 'Buyers and sellers get help in 13 Indian languages — on WhatsApp, email, phone and inside the dashboard chat.', points: 'Account, listings & inquiries\nMembership plans, invoices & GST\nVerification documents\nReporting fake listings or spam', primary: { label: 'WhatsApp us', href: 'whatsapp' } }),
+    b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/group-chat-pana-2.png`, imageAlt: 'Support chat', heading: 'Support that speaks', accent: 'your language', lead: 'Buyers and sellers get help in 12 Indian languages — on WhatsApp, email, phone and inside the dashboard chat.', points: 'Account, listings & inquiries\nMembership plans, invoices & GST\nVerification documents\nReporting fake listings or spam', primary: { label: 'WhatsApp us', href: 'whatsapp' } }),
     b('cards', { theme: 'light', layout: 'compact', columns: '3', heading: 'Help topics', items: [
       { icon: 'store', title: 'Selling on SHRIJAIV', body: 'Showroom, products, inquiries, buy leads and the Verified badge.', link: { label: 'Seller guide', href: '/how-it-works' } },
       { icon: 'shopping-bag', title: 'Buying & sourcing', body: 'Searching, posting requirements, comparing quotes and reviews.', link: { label: 'Buyer guide', href: '/how-it-works' } },
@@ -149,7 +149,7 @@ const howItWorks = {
     b('cards', { theme: 'sand', layout: 'icons', columns: '4', heading: 'Why sellers choose', accent: 'SHRIJAIV', items: [
       { icon: 'percent', title: '0% commission', body: 'Deals are between you and the buyer. We never take a cut.' },
       { icon: 'megaphone', title: 'Buy leads', body: 'See what buyers need right now and quote in one click.' },
-      { icon: 'languages', title: '13 languages', body: 'Your showroom is translated automatically for buyers across India.' },
+      { icon: 'languages', title: '12 languages', body: 'Your showroom is translated automatically for buyers across India.' },
       { icon: 'sparkles', title: 'AI tools', body: 'Product descriptions, SEO titles and translations written for you.' },
     ] }),
     b('plans', { theme: 'light', heading: 'Membership', accent: 'plans', freeBanner: true }),
@@ -164,7 +164,7 @@ const becomeSeller = {
   metaDescription: 'List your organic products free, reach buyers across India, receive inquiries on WhatsApp and email, and get the Verified badge. No commission.',
   blocks: [
     b('photoBanner', { image: `${IMG}/banner-1.png`, eyebrow: 'For sellers', title: 'Become a Seller', lead: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — with zero commission.' }),
-    b('blobSplit', { theme: 'light', image: `${IMG}/telecommuting-pana-1.png`, imageAlt: 'Sell online', heading: 'Sell organic.', accent: 'Reach all of India.', lead: 'List your organic products once and reach retailers, brands, restaurants and exporters across every state — in 13 Indian languages, automatically.', points: 'Free showroom with your own link\nInquiries on WhatsApp, email and dashboard\nQuote buyer requirements (WANTED leads)\nVerified badge after document check', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
+    b('blobSplit', { theme: 'light', image: `${IMG}/telecommuting-pana-1.png`, imageAlt: 'Sell online', heading: 'Sell organic.', accent: 'Reach all of India.', lead: 'List your organic products once and reach retailers, brands, restaurants and exporters across every state — in 12 Indian languages, automatically.', points: 'Free showroom with your own link\nInquiries on WhatsApp, email and dashboard\nQuote buyer requirements (WANTED leads)\nVerified badge after document check', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
     b('wantedCards', { theme: 'sand', layout: 'cards', heading: 'Buyers are looking for', limit: 4, samples: wantedSamples, cta: { label: 'See all buy leads', href: '/requirements' } }),
     b('cards', { theme: 'light', layout: 'icons', columns: '3', heading: 'Everything a seller needs', items: [
       { icon: 'store', title: 'Your own showroom', body: 'Logo, banner, story, certifications, location map and all your products on one page with its own link.' },
@@ -201,7 +201,7 @@ const becomeBuyer = {
       { icon: 'scale', title: 'Compare quotes', body: 'Price, MOQ, delivery time and seller rating side by side.' },
       { icon: 'chat', title: 'Direct contact', body: 'Chat, email or WhatsApp with the seller. No middlemen, no commission.' },
       { icon: 'star', title: 'Real reviews', body: 'Ratings from buyers who actually made inquiries and orders.' },
-      { icon: 'languages', title: 'Your language', body: 'Browse and chat in 13 Indian languages.' },
+      { icon: 'languages', title: 'Your language', body: 'Browse and chat in 12 Indian languages.' },
     ] }),
     b('faq', { theme: 'sand', layout: 'split', heading: 'Buyer questions', group: 'buyer' }),
     b('cta', { theme: 'dark', heading: 'Start sourcing today', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Browse products', href: '/products' } }),
@@ -292,7 +292,7 @@ export const faqRecords = [
   { group: 'home', order: 1, question: 'Is SHRIJAIV free to use?', answer: 'Yes. Buyer accounts are free forever. Seller accounts are free to create and list products; optional membership plans add more products, buyer contacts and the Verified badge. We never take a commission on deals.' },
   { group: 'home', order: 2, question: 'Does SHRIJAIV sell the products?', answer: 'No. SHRIJAIV connects buyers with sellers. You agree price, quantity, delivery and payment directly with the seller.' },
   { group: 'home', order: 3, question: 'What does "Verified" mean?', answer: 'Our team has checked the seller\'s GST certificate, FSSAI licence (for food) and organic certification (NPOP, PGS-India, USDA or EU) against the official registries. Verification is reviewed every year.' },
-  { group: 'home', order: 4, question: 'Which languages does the marketplace support?', answer: 'English, Hindi, Urdu, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia and Assamese. Listings are translated automatically and our AI assistant answers in your language.' },
+  { group: 'home', order: 4, question: 'Which languages does the marketplace support?', answer: 'English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Odia and Assamese. Listings are translated automatically and our AI assistant answers in your language.' },
   { group: 'home', order: 5, question: 'How quickly do sellers reply?', answer: 'Most verified sellers reply within 24 hours. Every inquiry is delivered to the seller\'s dashboard, email and WhatsApp.' },
   { group: 'seller', order: 1, question: 'What can I list?', answer: 'Organic agriculture produce (fruit, vegetables, grains, pulses, spices, dairy, oil seeds, inputs), organic beauty products and organic processed food. Products must be organic and lawful to sell in India.' },
   { group: 'seller', order: 2, question: 'Do I need certification to sell?', answer: 'You can list without it, but the Verified badge — and most buyer trust — requires a valid organic certificate plus GST and FSSAI (for food).' },
