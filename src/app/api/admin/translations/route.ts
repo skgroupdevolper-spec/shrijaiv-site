@@ -12,7 +12,7 @@ import { safeJson } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
-const ENTITIES: Entity[] = ['page', 'post', 'faq', 'service', 'testimonial', 'partner', 'settings', 'ui'];
+const ENTITIES: Entity[] = ['page', 'post', 'faq', 'service', 'testimonial', 'partner', 'settings', 'ui', 'product', 'seller', 'category', 'requirement'];
 
 /** GET: status per language, or one translation (?entity=post&id=..&locale=ar) */
 export async function GET(req: Request) {

@@ -5,6 +5,7 @@ import { canAddProduct } from '@/lib/marketplace/plans';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { normalizeProduct } from '@/lib/marketplace/products';
 import { notifyAdmins } from '@/lib/marketplace/notify';
+import { translateLater } from '@/lib/i18n/overlay';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
   const draft = b.status === 'draft';
   const status = draft ? 'draft' : mp.approval.products ? 'pending' : 'approved';
   const p = await prisma.product.create({ data: { ...data, sellerId: ctx.seller.id, status } });
+  translateLater('product', p.id);
   if (status === 'pending') await notifyAdmins({ type: 'product', title: `Product to approve: ${p.name}`, body: ctx.seller.companyName, href: `/admin/products/${p.id}` });
   return ok({ item: p });
 }

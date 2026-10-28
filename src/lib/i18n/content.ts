@@ -8,7 +8,7 @@ import type { Field } from '@/components/blocks/types';
 import { translateTexts, translateHtml, engineTag, TrOpts } from './translate';
 import { UI_STRINGS } from './ui-strings';
 
-export type Entity = 'page' | 'post' | 'faq' | 'service' | 'testimonial' | 'partner' | 'settings' | 'ui';
+export type Entity = 'page' | 'post' | 'faq' | 'service' | 'testimonial' | 'partner' | 'settings' | 'ui' | 'product' | 'seller' | 'category' | 'requirement';
 
 type Item = { value: string; html: boolean; set: (v: string) => void };
 
@@ -155,6 +155,41 @@ export async function source(entity: Entity, id: string): Promise<{ obj: any; it
     }
     return null;
   }
+  if (entity === 'product') {
+    const p = await prisma.product.findUnique({ where: { id } });
+    if (!p) return null;
+    const specs = safeJson<{ label: string; value: string }[]>(p.specs, []);
+    const obj: any = { name: p.name, summary: p.summary, description: p.description, packaging: p.packaging, shelfLife: p.shelfLife, leadTime: p.leadTime, stock: p.stock, origin: p.origin, metaTitle: p.metaTitle, metaDescription: p.metaDescription, specs };
+    ['name', 'summary', 'packaging', 'shelfLife', 'leadTime', 'stock', 'origin', 'metaTitle', 'metaDescription'].forEach((k) => plain(obj, k, items));
+    plain(obj, 'description', items, true);
+    for (const sp of specs) {
+      plain(sp, 'label', items);
+      plain(sp, 'value', items);
+    }
+    return { obj, items };
+  }
+  if (entity === 'seller') {
+    const sl = await prisma.sellerProfile.findUnique({ where: { id } });
+    if (!sl) return null;
+    const obj: any = { about: sl.about, businessType: sl.businessType, metaTitle: sl.metaTitle, metaDescription: sl.metaDescription };
+    ['businessType', 'metaTitle', 'metaDescription'].forEach((k) => plain(obj, k, items));
+    plain(obj, 'about', items, /</.test(sl.about || ''));
+    return { obj, items };
+  }
+  if (entity === 'category') {
+    const c = await prisma.category.findUnique({ where: { id } });
+    if (!c) return null;
+    const obj: any = { name: c.name, description: c.description, metaTitle: c.metaTitle, metaDescription: c.metaDescription };
+    ['name', 'description', 'metaTitle', 'metaDescription'].forEach((k) => plain(obj, k, items));
+    return { obj, items };
+  }
+  if (entity === 'requirement') {
+    const r = await prisma.requirement.findUnique({ where: { id } });
+    if (!r) return null;
+    const obj: any = { title: r.title, details: r.details, quantity: r.quantity, unit: r.unit };
+    ['title', 'details', 'unit'].forEach((k) => plain(obj, k, items));
+    return { obj, items };
+  }
   if (entity === 'ui') {
     const obj: Record<string, string> = {};
     for (const s of UI_STRINGS) {
@@ -235,15 +270,21 @@ async function doTranslate(entity: Entity, id: string, locale: string, force: bo
 
 /** Everything that should exist in every language */
 export async function allTranslatableEntities(): Promise<{ entity: Entity; id: string }[]> {
-  const [pages, posts, faqs, services, testimonials, partners] = await Promise.all([
+  const [pages, posts, faqs, services, testimonials, partners, products, sellers, categories] = await Promise.all([
     prisma.page.findMany({ where: { status: 'published' }, select: { id: true } }),
     prisma.post.findMany({ where: { status: 'published' }, select: { id: true } }),
     prisma.faq.findMany({ where: { active: true }, select: { id: true } }),
     prisma.service.findMany({ where: { active: true }, select: { id: true } }),
     prisma.testimonial.findMany({ where: { active: true }, select: { id: true } }),
     prisma.partner.findMany({ where: { active: true }, select: { id: true } }),
+    prisma.product.findMany({ where: { status: 'approved' }, select: { id: true } }),
+    prisma.sellerProfile.findMany({ where: { status: 'approved' }, select: { id: true } }),
+    prisma.category.findMany({ where: { active: true }, select: { id: true } }),
   ]);
   return [
+    ...categories.map((c) => ({ entity: 'category' as Entity, id: c.id })),
+    ...products.map((p) => ({ entity: 'product' as Entity, id: p.id })),
+    ...sellers.map((p) => ({ entity: 'seller' as Entity, id: p.id })),
     { entity: 'ui', id: 'strings' },
     { entity: 'settings', id: 'header' },
     { entity: 'settings', id: 'footer' },

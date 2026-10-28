@@ -4,6 +4,7 @@ import { requireBuyer } from '@/lib/auth';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { notifyAdmins } from '@/lib/marketplace/notify';
 import { normalizeRequirement } from '@/lib/marketplace/requirements';
+import { translateLater } from '@/lib/i18n/overlay';
 
 export const dynamic = 'force-dynamic';
 export async function GET() {
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
   const mp = await getMarketplace();
   const expiresAt = new Date(Date.now() + 45 * 86_400_000);
   const r = await prisma.requirement.create({ data: { ...data, buyerId: ctx.buyer.id, status: mp.approval.requirements ? 'pending' : 'open', expiresAt } });
+  translateLater('requirement', r.id);
   await notifyAdmins({ type: 'requirement', title: `${r.status === 'pending' ? 'Requirement to approve' : 'New requirement'}: ${r.title}`, body: ctx.session.name, href: `/admin/requirements/${r.id}` });
   return ok({ item: r });
 }

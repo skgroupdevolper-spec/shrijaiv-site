@@ -4,6 +4,7 @@ import { requireSeller } from '@/lib/auth';
 import { entitlements } from '@/lib/marketplace/plans';
 import { uniqueSlug } from '@/lib/marketplace/settings';
 import { notifyAdmins } from '@/lib/marketplace/notify';
+import { translateLater } from '@/lib/i18n/overlay';
 
 export const dynamic = 'force-dynamic';
 const str = (v: any, max = 200) => (v == null ? null : String(v).trim().slice(0, max) || null);
@@ -51,6 +52,7 @@ export async function PUT(req: Request) {
     data.slug = await uniqueSlug(wanted || companyName, async (s) => !!(await prisma.sellerProfile.findFirst({ where: { slug: s, NOT: { id: ctx.seller.id } }, select: { id: true } })));
   }
   const item = await prisma.sellerProfile.update({ where: { id: ctx.seller.id }, data });
+  translateLater('seller', item.id);
   if (certsChanged && certs.length) await notifyAdmins({ type: 'seller', title: `Verification documents from ${companyName}`, body: certs.map((c: any) => c.name).join(', '), href: `/admin/sellers/${ctx.seller.id}` });
   return ok({ item });
 }

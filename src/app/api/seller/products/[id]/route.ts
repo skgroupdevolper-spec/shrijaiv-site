@@ -5,6 +5,7 @@ import { entitlements } from '@/lib/marketplace/plans';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { normalizeProduct } from '@/lib/marketplace/products';
 import { notifyAdmins } from '@/lib/marketplace/notify';
+import { translateLater } from '@/lib/i18n/overlay';
 
 type P = { params: Promise<{ id: string }> };
 
@@ -41,6 +42,7 @@ export async function PUT(req: Request, { params }: P) {
   else if (['draft', 'hidden', 'rejected'].includes(r.item.status) || mp.approval.products === false) status = mp.approval.products ? 'pending' : 'approved';
   else if (mp.approval.products && r.item.status === 'approved' && (data.name !== r.item.name || data.description !== r.item.description || data.images !== r.item.images)) status = 'pending';
   const item = await prisma.product.update({ where: { id }, data: { ...data, status, seen: status === 'pending' ? false : r.item.seen } });
+  translateLater('product', item.id);
   if (status === 'pending' && r.item.status !== 'pending') await notifyAdmins({ type: 'product', title: `Product to approve: ${item.name}`, body: r.ctx.seller.companyName, href: `/admin/products/${item.id}` });
   return ok({ item });
 }

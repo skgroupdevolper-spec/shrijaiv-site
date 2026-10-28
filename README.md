@@ -22,7 +22,9 @@ Design: white canvas, forest ink, organic green (`#009A35`) with a gold accent, 
 | SEO: per-page/product/seller meta, Product/Organization/FAQ schema, sitemap (all languages, products, sellers, categories), robots, RSS, IndexNow, redirects, GA4 / GTM / Meta Pixel / Clarity / Search Console IDs from admin | ✅ |
 | Backup & restore (whole site in one file), security headers, rate limits, audit log | ✅ |
 
-Not yet: automatic translation of *seller-written* product text into the 12 other languages (the UI and all site content are translated; product text shows in the seller's language), web-push notifications, and a global dark mode (colours are editable in Admin → Design).
+Seller-written products, showrooms, categories and buyer requirements are translated automatically into every enabled language as well (background jobs; edit any text in Admin → Languages).
+
+Not yet: web-push notifications and a global dark mode (colours are editable in Admin → Design).
 
 The AI Auto Publisher of the base project was removed on purpose — blog posts are written by the admin. The shared AI client lives in `src/lib/ai`.
 

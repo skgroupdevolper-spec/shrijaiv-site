@@ -1,6 +1,7 @@
 // Read helpers for the public marketplace pages and blocks.
 import { prisma } from '@/lib/db';
 import { cache } from 'react';
+import { localizeMany, localizeOne } from '@/lib/i18n/overlay';
 
 export const LIVE_SELLER = { status: 'approved' } as const;
 export const LIVE_PRODUCT = { status: 'approved', seller: { status: 'approved' } } as const;
@@ -9,7 +10,7 @@ export type CategoryNode = { id: string; slug: string; name: string; icon: strin
 
 /** Whole category tree (active only), with live product counts */
 export const getCategoryTree = cache(async (): Promise<CategoryNode[]> => {
-  const rows = await prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }] });
+  const rows = await localizeMany('category', await prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }] }));
   const live = await prisma.product.findMany({ where: LIVE_PRODUCT, select: { categoryId: true } }).catch(() => [] as { categoryId: string | null }[]);
   const cmap = new Map<string | null, number>();
   for (const p of live) cmap.set(p.categoryId, (cmap.get(p.categoryId) || 0) + 1);
@@ -74,14 +75,20 @@ export async function listProducts(f: ProductFilters = {}) {
     prisma.product.findMany({ where, orderBy, take, skip: (page - 1) * take, include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, logo: true } }, category: { select: { slug: true, name: true } } } }),
     prisma.product.count({ where }),
   ]);
-  return { items, total, page, pages: Math.max(1, Math.ceil(total / take)), take };
+  return { items: await localizeMany('product', items), total, page, pages: Math.max(1, Math.ceil(total / take)), take };
 }
 
 export async function getProduct(slug: string) {
-  return prisma.product.findFirst({
+  const p = await prisma.product.findFirst({
     where: { slug, ...LIVE_PRODUCT },
     include: { seller: true, category: { select: { id: true, slug: true, name: true, parentId: true } }, reviews: { where: { status: 'approved' }, orderBy: { createdAt: 'desc' }, take: 10 } },
   });
+  if (!p) return null;
+  const lp = await localizeOne('product', p);
+  if (!lp) return null;
+  lp.seller = (await localizeOne('seller', lp.seller))!;
+  if (lp.category) lp.category = (await localizeOne('category', lp.category))!;
+  return lp;
 }
 
 export type SellerFilters = { q?: string; state?: string; verified?: boolean; businessType?: string; categoryIds?: string[]; page?: number; take?: number; featured?: boolean };
@@ -100,14 +107,19 @@ export async function listSellers(f: SellerFilters = {}) {
     prisma.sellerProfile.findMany({ where, orderBy: [{ featured: 'desc' }, { verified: 'desc' }, { ratingAvg: 'desc' }, { createdAt: 'desc' }], take, skip: (page - 1) * take, include: { _count: { select: { products: { where: { status: 'approved' } } } }, products: { where: { status: 'approved' }, take: 3, select: { slug: true, name: true, images: true } } } }),
     prisma.sellerProfile.count({ where }),
   ]);
-  return { items, total, page, pages: Math.max(1, Math.ceil(total / take)), take };
+  return { items: await localizeMany('seller', items), total, page, pages: Math.max(1, Math.ceil(total / take)), take };
 }
 
 export async function getSeller(slug: string) {
-  return prisma.sellerProfile.findFirst({
+  const s = await prisma.sellerProfile.findFirst({
     where: { slug, ...LIVE_SELLER },
     include: { products: { where: { status: 'approved' }, orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }], include: { category: { select: { slug: true, name: true } } } }, reviews: { where: { status: 'approved' }, orderBy: { createdAt: 'desc' }, take: 20 } },
   });
+  if (!s) return null;
+  const ls = await localizeOne('seller', s);
+  if (!ls) return null;
+  ls.products = await localizeMany('product', ls.products);
+  return ls;
 }
 
 export async function listRequirements(f: { q?: string; categoryIds?: string[]; state?: string; page?: number; take?: number } = {}) {
@@ -121,11 +133,11 @@ export async function listRequirements(f: { q?: string; categoryIds?: string[]; 
     prisma.requirement.findMany({ where, orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }], take, skip: (page - 1) * take, include: { category: { select: { slug: true, name: true } }, buyer: { select: { buyerType: true, city: true, state: true, verified: true, companyName: true } } } }),
     prisma.requirement.count({ where }),
   ]);
-  return { items, total, page, pages: Math.max(1, Math.ceil(total / take)), take };
+  return { items: await localizeMany('requirement', items), total, page, pages: Math.max(1, Math.ceil(total / take)), take };
 }
 
 export async function getRequirement(id: string) {
-  return prisma.requirement.findFirst({ where: { id, status: { in: ['open', 'closed', 'expired'] } }, include: { category: { select: { slug: true, name: true } }, buyer: { select: { buyerType: true, city: true, state: true, verified: true, companyName: true, createdAt: true } }, _count: { select: { quotes: true } } } });
+  return localizeOne('requirement', await prisma.requirement.findFirst({ where: { id, status: { in: ['open', 'closed', 'expired'] } }, include: { category: { select: { slug: true, name: true } }, buyer: { select: { buyerType: true, city: true, state: true, verified: true, companyName: true, createdAt: true } }, _count: { select: { quotes: true } } } }));
 }
 
 export async function getPlans(audience = 'seller') {

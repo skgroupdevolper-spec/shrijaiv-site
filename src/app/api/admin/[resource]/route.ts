@@ -8,7 +8,7 @@ import { audit } from '@/lib/marketplace/admin-hooks';
 
 export const dynamic = 'force-dynamic';
 
-const ENTITY: Record<string, string> = { pages: 'page', posts: 'post', faqs: 'faq', services: 'service', testimonials: 'testimonial', partners: 'partner' };
+const ENTITY: Record<string, string> = { pages: 'page', posts: 'post', faqs: 'faq', services: 'service', testimonials: 'testimonial', partners: 'partner', products: 'product', sellers: 'seller', categories: 'category', requirements: 'requirement' };
 async function autoTranslate(resource: string, id: string) {
   const e = ENTITY[resource];
   if (!e) return;
