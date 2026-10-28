@@ -1,5 +1,5 @@
 {
-  "name": "Golden Visa UAE (live preview)",
+  "name": "SHRIJAIV Organic (live preview)",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
   "hostRequirements": { "cpus": 2, "memory": "4gb" },
   "forwardPorts": [3000],
@@ -7,10 +7,10 @@
     "3000": { "label": "Website", "onAutoForward": "silent", "visibility": "public" }
   },
   "containerEnv": {
-    "DATABASE_URL": "file:/workspaces/gvu-data/data.db",
-    "UPLOAD_DIR": "/workspaces/gvu-data/uploads"
+    "DATABASE_URL": "file:/workspaces/shrijaiv-data/data.db",
+    "UPLOAD_DIR": "/workspaces/shrijaiv-data/uploads"
   },
-  "postCreateCommand": "mkdir -p /workspaces/gvu-data && npm install --no-audit --no-fund && npm run build",
+  "postCreateCommand": "mkdir -p /workspaces/shrijaiv-data && npm install --no-audit --no-fund && npm run build",
   "postStartCommand": "bash .devcontainer/start.sh",
   "customizations": { "codespaces": { "openFiles": ["ADMIN-LOGIN.txt"] } }
 }
