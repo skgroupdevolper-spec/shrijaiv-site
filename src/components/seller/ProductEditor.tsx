@@ -22,16 +22,16 @@ function parse<T>(json: any, fb: T): T {
 
 export default function ProductEditor({ initial, categories, units, maxImages, aiTools, slugBase }: { initial: any | null; categories: Cat[]; units: string[]; maxImages: number; aiTools: boolean; slugBase?: string }) {
   const router = useRouter();
-  const [p, setP] = useState<any>(() => ({
-    name: '', summary: '', description: '', images: [], video: '', catalogFile: '', priceMin: '', priceMax: '', priceUnit: units[0] ? `per ${units[0]}` : '', moq: '', stock: 'In stock', specs: [], certifications: [], tags: '', origin: '', brand: '', packaging: '', shelfLife: '', leadTime: '', categoryId: '', metaTitle: '', metaDescription: '',
-    ...(initial || {}),
-    images: parse<string[]>(initial?.images, []),
-    specs: parse<{ label: string; value: string }[]>(initial?.specs, []),
-    certifications: parse<string[]>(initial?.certifications, []),
-    priceMin: initial?.priceMin ?? '',
-    priceMax: initial?.priceMax ?? '',
-    categoryId: initial?.categoryId || '',
-  }));
+  const [p, setP] = useState<any>(() => {
+    const base: any = { name: '', summary: '', description: '', video: '', catalogFile: '', priceUnit: units[0] ? `per ${units[0]}` : '', moq: '', stock: 'In stock', tags: '', origin: '', brand: '', packaging: '', shelfLife: '', leadTime: '', metaTitle: '', metaDescription: '', ...(initial || {}) };
+    base.images = parse<string[]>(initial?.images, []);
+    base.specs = parse<{ label: string; value: string }[]>(initial?.specs, []);
+    base.certifications = parse<string[]>(initial?.certifications, []);
+    base.priceMin = initial?.priceMin ?? '';
+    base.priceMax = initial?.priceMax ?? '';
+    base.categoryId = initial?.categoryId || '';
+    return base;
+  });
   const [saving, setSaving] = useState(false);
   const [ai, setAi] = useState(false);
   const [tab, setTab] = useState<'basic' | 'details' | 'seo'>('basic');

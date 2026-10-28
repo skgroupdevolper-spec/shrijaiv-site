@@ -10,8 +10,9 @@ export type CategoryNode = { id: string; slug: string; name: string; icon: strin
 /** Whole category tree (active only), with live product counts */
 export const getCategoryTree = cache(async (): Promise<CategoryNode[]> => {
   const rows = await prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }] });
-  const counts = await prisma.product.groupBy({ by: ['categoryId'], where: LIVE_PRODUCT, _count: { _all: true } }).catch(() => []);
-  const cmap = new Map(counts.map((c) => [c.categoryId, c._count._all]));
+  const live = await prisma.product.findMany({ where: LIVE_PRODUCT, select: { categoryId: true } }).catch(() => [] as { categoryId: string | null }[]);
+  const cmap = new Map<string | null, number>();
+  for (const p of live) cmap.set(p.categoryId, (cmap.get(p.categoryId) || 0) + 1);
   const nodes = new Map<string, CategoryNode>();
   for (const r of rows) nodes.set(r.id, { id: r.id, slug: r.slug, name: r.name, icon: r.icon, image: r.image, description: r.description, featured: r.featured, order: r.order, parentId: r.parentId, children: [], count: cmap.get(r.id) || 0 });
   const roots: CategoryNode[] = [];
