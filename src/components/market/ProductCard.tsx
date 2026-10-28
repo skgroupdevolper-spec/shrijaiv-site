@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 export default function ProductCard({ p, priority, compact }: { p: any; priority?: boolean; compact?: boolean }) {
   const img = images(p.images)[0];
   return (
-    <SmartLink href={`/products/${p.slug}`} className="card card-lift tilt group flex h-full flex-col overflow-hidden">
+    <SmartLink href={`/products/${p.slug}`} className="card card-lift tilt group flex h-full min-w-0 flex-col overflow-hidden !rounded-[18px] sm:!rounded-[24px]">
       <div className={cn('relative overflow-hidden bg-[#eaf5ec]', compact ? 'aspect-[4/3]' : 'aspect-square')}>
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -18,22 +18,22 @@ export default function ProductCard({ p, priority, compact }: { p: any; priority
             <Coin className="h-16 w-16 opacity-70" />
           </div>
         )}
-        {p.featured && <span className="absolute left-3 top-3 rounded-full bg-amber-400 px-2.5 py-1 text-[0.62rem] font-extrabold uppercase tracking-wider text-amber-950">Featured</span>}
+        {p.featured && <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-0.5 text-[0.55rem] font-extrabold uppercase tracking-wider text-amber-950 sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[0.62rem]">Featured</span>}
         {p.seller?.verified && (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[0.62rem] font-bold text-emerald-700 backdrop-blur">
-            <BadgeCheck className="h-3.5 w-3.5" /> Verified
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 p-1 text-[0.62rem] font-bold text-emerald-700 backdrop-blur sm:right-3 sm:top-3 sm:px-2">
+            <BadgeCheck className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Verified</span>
           </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-4">
-        {p.category && <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-gold-deep">{p.category.name}</p>}
-        <h3 className="mt-1 line-clamp-2 font-display text-[1.05rem] font-semibold leading-snug text-ink">{p.name}</h3>
-        <p className="mt-2 text-sm font-bold text-ink">{priceLabel(p)}</p>
-        {p.moq && <p className="text-xs text-ink/55">MOQ: {p.moq}</p>}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-xs text-ink/60">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        {p.category && <p className="truncate text-[0.58rem] font-bold uppercase tracking-[0.14em] text-gold-deep sm:text-[0.65rem] sm:tracking-[0.18em]">{p.category.name}</p>}
+        <h3 className="mt-1 line-clamp-2 font-display text-[0.9rem] font-semibold leading-snug text-ink sm:text-[1.05rem]">{p.name}</h3>
+        <p className="mt-1.5 text-[0.8rem] font-bold text-gold-deep sm:mt-2 sm:text-sm sm:text-ink">{priceLabel(p)}</p>
+        {p.moq && <p className="truncate text-[0.7rem] text-ink/55 sm:text-xs">MOQ: {p.moq}</p>}
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2 text-[0.68rem] text-ink/60 sm:pt-3 sm:text-xs">
           <span className="truncate">{p.seller?.companyName}</span>
           {p.seller?.state && (
-            <span className="inline-flex shrink-0 items-center gap-1">
+            <span className="hidden shrink-0 items-center gap-1 sm:inline-flex">
               <MapPin className="h-3 w-3" /> {p.seller.city || p.seller.state}
             </span>
           )}

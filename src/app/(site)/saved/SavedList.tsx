@@ -51,7 +51,7 @@ export default function SavedList() {
       {data.products.length > 0 && (
         <div>
           <h2 className="mb-4 font-display text-xl font-semibold text-ink">{t('Saved products')} <span className="text-ink/40">({data.products.length})</span></h2>
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
             {data.products.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}

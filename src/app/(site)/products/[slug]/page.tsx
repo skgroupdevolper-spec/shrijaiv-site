@@ -247,7 +247,7 @@ export default async function ProductPage({ params }: Props) {
             {more.length > 0 && (
               <div>
                 <h2 className="font-display text-xl font-semibold text-ink">{t('More from')} {s.companyName}</h2>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 xl:grid-cols-2">
                   {more.map((x) => (
                     <ProductCard key={x.id} p={x} compact />
                   ))}
@@ -257,7 +257,7 @@ export default async function ProductPage({ params }: Props) {
             {related.length > 0 && (
               <div>
                 <h2 className="font-display text-xl font-semibold text-ink">{t('Similar products')}</h2>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 xl:grid-cols-2">
                   {related.map((x) => (
                     <ProductCard key={x.id} p={x} compact />
                   ))}
