@@ -105,7 +105,8 @@ const contact = {
   metaTitle: 'Contact SHRIJAIV Organic',
   metaDescription: 'Talk to the SHRIJAIV team about selling, buying, verification or partnerships. WhatsApp, email and phone support in your language.',
   blocks: [
-    ph('We are here', 'Questions about selling, buying, verification or a partnership? Write to us in any Indian language — we reply within one working day.', { titleAccent: 'to help.', eyebrow: 'Contact', crumb: 'Contact us', primary: { label: 'Call 93140 51605', href: 'phone' }, secondary: { label: 'WhatsApp', href: 'whatsapp' } }),
+    b('photoBanner', { image: `${IMG}/customer-banner.png`, eyebrow: 'Contact', title: 'Contact Us', lead: 'Questions about selling, buying, verification or a partnership? Write to us in any Indian language — we reply within one working day.' }),
+    b('blobSplit', { theme: 'light', image: `${IMG}/call-center-pana-1.png`, imageAlt: 'Customer care', label: 'We are here to help', heading: 'Talk to a real person', lead: 'Call, WhatsApp or email — our team in Jaipur answers Mon–Sat, 10:00–19:00 IST. Our AI assistant (bottom right) answers around the clock.', points: '276, Frontier Colony, Adarsh Nagar, Jaipur, Rajasthan\nSupport in 13 Indian languages\nSeller verification & membership help', primary: { label: 'Call 93140 51605', href: 'phone' }, secondary: { label: 'WhatsApp', href: 'whatsapp' } }),
     b('contact', { theme: 'light', formTitle: 'Send us a message', formText: 'Tell us how we can help. For product inquiries, please contact the seller directly from their showroom.', formBadge: 'Reply within 24h', topics: 'Selling on SHRIJAIV\nBuying / sourcing help\nSeller verification\nMembership & payments\nPartnership\nReport a problem\nOther', consent: true, showMap: false, points: 'Support in 13 Indian languages\nReal people, not bots (but our AI assistant never sleeps)\nWhatsApp, email and phone' }),
     b('faq', { theme: 'sand', layout: 'stack', heading: 'Before you write', group: 'support' }),
   ],
@@ -117,7 +118,8 @@ const support = {
   metaTitle: 'Customer support — SHRIJAIV Organic',
   metaDescription: 'Help centre for buyers and sellers on SHRIJAIV: accounts, listings, inquiries, verification, membership plans and payments.',
   blocks: [
-    ph('How can we', 'Browse the help topics below, ask our AI assistant (bottom right), or contact the team.', { titleAccent: 'help you?', eyebrow: 'Help centre', crumb: 'Customer support' }),
+    b('photoBanner', { image: `${IMG}/banner-6.webp`, eyebrow: 'Help centre', title: 'Customer Support', lead: 'Browse the help topics below, ask our AI assistant, or open a ticket — we reply within 24 hours.' }),
+    b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/group-chat-pana-2.png`, imageAlt: 'Support chat', heading: 'Support that speaks', accent: 'your language', lead: 'Buyers and sellers get help in 13 Indian languages — on WhatsApp, email, phone and inside the dashboard chat.', points: 'Account, listings & inquiries\nMembership plans, invoices & GST\nVerification documents\nReporting fake listings or spam', primary: { label: 'WhatsApp us', href: 'whatsapp' } }),
     b('cards', { theme: 'light', layout: 'compact', columns: '3', heading: 'Help topics', items: [
       { icon: 'store', title: 'Selling on SHRIJAIV', body: 'Showroom, products, inquiries, buy leads and the Verified badge.', link: { label: 'Seller guide', href: '/how-it-works' } },
       { icon: 'shopping-bag', title: 'Buying & sourcing', body: 'Searching, posting requirements, comparing quotes and reviews.', link: { label: 'Buyer guide', href: '/how-it-works' } },
@@ -137,7 +139,12 @@ const howItWorks = {
   metaTitle: 'How SHRIJAIV works — for buyers and sellers',
   metaDescription: 'Buyers search, post requirements and compare quotes. Sellers build a showroom, list products and answer inquiries. Free to join, no commission.',
   blocks: [
-    ph('How SHRIJAIV', 'A marketplace where buyers and verified organic sellers meet directly. Free to join, no commission on deals.', { titleAccent: 'works', eyebrow: 'Guide', crumb: 'How it works' }),
+    b('photoBanner', { image: `${IMG}/banner-7.webp`, eyebrow: 'Guide', title: 'How It Works', lead: 'A marketplace where buyers and verified organic sellers meet directly. Free to join, no commission on deals.' }),
+    b('iconTrio', { theme: 'light', items: [
+      { image: `${IMG}/about-icon1.png`, title: 'Register free', body: 'Sellers and buyers create an account in two minutes.' },
+      { image: `${IMG}/about-icon2.png`, title: 'List or post', body: 'Sellers list products; buyers post what they want to buy.' },
+      { image: `${IMG}/about-icon3.png`, title: 'Connect & deal', body: 'Inquiries, quotes and chat go directly between you.' },
+    ] }),
     b('howItWorks', { theme: 'light', buyerTitle: 'For buyers', buyerSteps: 'Create a free buyer account — one minute, mobile number and email\nSearch or browse — filter by category, state, price and Verified sellers\nSend inquiries — or post a requirement and let sellers quote you\nCompare and choose — quotes side by side, chat in the dashboard\nRate the seller — reviews keep the marketplace honest', buyerLink: { label: 'Create buyer account', href: '/register?as=buyer' }, sellerTitle: 'For sellers', sellerSteps: 'Create a free seller account — company, type and location\nBuild your showroom — logo, banner, story, certifications\nAdd products — photos, price range, MOQ, specs (AI writes the description for you)\nGet verified — upload GST, FSSAI and organic certificates\nAnswer inquiries & quote buy leads — email, WhatsApp and dashboard\nUpgrade when you grow — more products, more contacts, featured slots', sellerLink: { label: 'Create seller account', href: '/register?as=seller' } }),
     b('cards', { theme: 'sand', layout: 'icons', columns: '4', heading: 'Why sellers choose', accent: 'SHRIJAIV', items: [
       { icon: 'percent', title: '0% commission', body: 'Deals are between you and the buyer. We never take a cut.' },
@@ -156,7 +163,9 @@ const becomeSeller = {
   metaTitle: 'Sell organic products online in India — Become a SHRIJAIV seller',
   metaDescription: 'List your organic products free, reach buyers across India, receive inquiries on WhatsApp and email, and get the Verified badge. No commission.',
   blocks: [
-    ph('Sell organic.', 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — with zero commission.', { titleAccent: 'Reach all of India.', eyebrow: 'For sellers', crumb: 'Become a seller', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
+    b('photoBanner', { image: `${IMG}/banner-1.png`, eyebrow: 'For sellers', title: 'Become a Seller', lead: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — with zero commission.' }),
+    b('blobSplit', { theme: 'light', image: `${IMG}/telecommuting-pana-1.png`, imageAlt: 'Sell online', heading: 'Sell organic.', accent: 'Reach all of India.', lead: 'List your organic products once and reach retailers, brands, restaurants and exporters across every state — in 13 Indian languages, automatically.', points: 'Free showroom with your own link\nInquiries on WhatsApp, email and dashboard\nQuote buyer requirements (WANTED leads)\nVerified badge after document check', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
+    b('wantedCards', { theme: 'sand', layout: 'cards', heading: 'Buyers are looking for', limit: 4, samples: wantedSamples, cta: { label: 'See all buy leads', href: '/requirements' } }),
     b('cards', { theme: 'light', layout: 'icons', columns: '3', heading: 'Everything a seller needs', items: [
       { icon: 'store', title: 'Your own showroom', body: 'Logo, banner, story, certifications, location map and all your products on one page with its own link.' },
       { icon: 'package', title: 'Unlimited product details', body: 'Up to 15 photos, video, price range, MOQ, packaging, shelf life, specs and a PDF catalogue.' },
@@ -183,7 +192,9 @@ const becomeBuyer = {
   metaTitle: 'Source organic products in bulk — Become a SHRIJAIV buyer',
   metaDescription: 'Retailers, brands, restaurants and exporters: find verified organic sellers, post requirements and compare quotes. Free forever for buyers.',
   blocks: [
-    ph('Source organic', 'Verified sellers, direct prices and quotes that come to you. Free forever for buyers.', { titleAccent: 'with confidence.', eyebrow: 'For buyers', crumb: 'Become a buyer', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Post a requirement', href: '/post-requirement' } }),
+    b('photoBanner', { image: `${IMG}/banner-2.png`, eyebrow: 'For buyers', title: 'Become a Buyer', lead: 'Verified sellers, direct prices and quotes that come to you. Free forever for buyers.' }),
+    b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/online-review-pana-2.png`, imageAlt: 'Compare quotes', heading: 'Source organic', accent: 'with confidence.', lead: 'Post what you need once — verified organic sellers from across India send quotes to your dashboard. Compare price, MOQ, delivery and ratings side by side.', points: 'Verified GST / FSSAI / organic certificates\nPost requirements, receive quotes\nChat, email or WhatsApp with sellers\nReal reviews from real buyers', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Post a requirement', href: '/post-requirement' } }),
+    b('productRow', { theme: 'light', heading: 'Fresh from verified sellers', layout: 'row', limit: 5, items: sampleProducts2(['Organic Turmeric Powder', 'Cold-pressed Coconut Oil', 'Organic Basmati Rice', 'Herbal Face Pack', 'Organic Jaggery']), cta: { label: 'Browse all products', href: '/products' } }),
     b('cards', { theme: 'light', layout: 'icons', columns: '3', heading: 'Why buy on', accent: 'SHRIJAIV', items: [
       { icon: 'verified', title: 'Verified sellers', body: 'GST, FSSAI and organic certificates checked by our team. Look for the badge.' },
       { icon: 'megaphone', title: 'Post, then relax', body: 'Describe what you need once — sellers send quotes to your dashboard.' },
@@ -208,6 +219,24 @@ const faqPage = {
     b('faq', { theme: 'sand', layout: 'stack', heading: 'For sellers', group: 'seller' }),
     b('faq', { theme: 'light', layout: 'stack', heading: 'For buyers', group: 'buyer' }),
     b('faq', { theme: 'sand', layout: 'stack', heading: 'Support, safety & payments', group: 'support', helpTitle: 'Not answered?', helpText: 'Write to us — we reply within one working day.' }),
+  ],
+};
+
+const pricing = {
+  slug: 'pricing',
+  title: 'Membership',
+  metaTitle: 'Membership plans — SHRIJAIV Organic',
+  metaDescription: 'Silver, Gold and Platinum membership plans for organic sellers. Start with the free plan and upgrade when you grow. Monthly, quarterly, yearly and lifetime options.',
+  blocks: [
+    b('photoBanner', { image: `${IMG}/banner-5.png`, eyebrow: 'For sellers', title: 'Membership', lead: 'Start with the free plan. Upgrade to Silver, Gold or Platinum when you need more products, more buyer contacts or a Verified badge.' }),
+    b('plans', { theme: 'light', heading: 'Choose your', accent: 'plan', freeBanner: true }),
+    b('iconTrio', { theme: 'sand', heading: 'Every plan includes', items: [
+      { image: `${IMG}/veryfy.png`, title: 'Verification review', body: 'Documents checked by our team; Verified badge on your showroom.' },
+      { image: `${IMG}/inquire.png`, title: 'Inquiries everywhere', body: 'Dashboard, email and WhatsApp — never miss a buyer.' },
+      { image: `${IMG}/verinty.png`, title: 'All-India payments', body: 'UPI, cards, net banking and wallets. GST invoice for every payment, auto-renewal optional.' },
+    ] }),
+    b('faq', { theme: 'light', layout: 'split', heading: 'Membership questions', group: 'seller', helpTitle: 'Not sure which plan?', helpText: 'Try the free plan first — upgrade any time from your dashboard.' }),
+    b('cta', { theme: 'dark', heading: 'Try Free Plan', lead: 'Create your seller account and list your first products today — no card required.', primary: { label: 'Try Free Plan', href: '/register?as=seller' }, secondary: { label: 'Talk to us', href: '/contact' } }),
   ],
 };
 
@@ -257,7 +286,7 @@ const blogPage = {
   blocks: [ph('The organic', 'Guides, market insights and tips for buyers and sellers of organic products in India.', { titleAccent: 'journal', eyebrow: 'Blog', crumb: 'Blog' }), b('blog', { theme: 'light', paged: true })],
 };
 
-export const allPages = [home, about, contact, support, howItWorks, becomeSeller, becomeBuyer, faqPage, blogPage, terms, privacy, refund, disclaimer];
+export const allPages = [home, about, contact, support, howItWorks, becomeSeller, becomeBuyer, pricing, faqPage, blogPage, terms, privacy, refund, disclaimer];
 
 export const faqRecords = [
   { group: 'home', order: 1, question: 'Is SHRIJAIV free to use?', answer: 'Yes. Buyer accounts are free forever. Seller accounts are free to create and list products; optional membership plans add more products, buyer contacts and the Verified badge. We never take a commission on deals.' },
