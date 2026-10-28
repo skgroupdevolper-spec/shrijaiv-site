@@ -48,7 +48,7 @@ export async function ShopHero({ data, site }: P) {
       <div className="hdr-width relative">
         <div className="grid items-stretch gap-5 lg:grid-cols-[290px_1fr]">
           {/* popular categories — same height as the search + slider column */}
-          <aside className="fx-up glass relative hidden flex-col overflow-hidden rounded-[26px] p-3 lg:flex" style={{ ['--d' as any]: '.05s' }}>
+          <aside className="fx-up glass relative hidden flex-col overflow-hidden rounded-[26px] p-3 lg:flex lg:h-0 lg:min-h-full" style={{ ['--d' as any]: '.05s' }}>
             <HeroCategories items={heroCats} title={data.sidebarTitle || t('All Category')} allLabel={t('All')} allCatsLabel={t('All categories')} />
           </aside>
           {/* search + slider */}
@@ -59,17 +59,12 @@ export async function ShopHero({ data, site }: P) {
             <div className="fx-up mt-4" style={{ ['--d' as any]: '.18s' }}>
               <ShopSlider slides={JSON.parse(JSON.stringify(slides))} interval={Number(data.interval) || 6} />
             </div>
-            {/* categories on phones: round image chips, app style */}
-            <div className="thin-scroll mt-4 flex gap-3 overflow-x-auto pb-2 lg:hidden">
-              {list.map((c) => (
-                <SmartLink key={c.id} href={`/category/${c.slug}`} className="flex w-[76px] shrink-0 flex-col items-center gap-1.5 text-center">
-                  <span className="glass grid h-16 w-16 place-items-center rounded-[22px]">
-                    {c.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={c.image} alt="" className="h-9 w-9 object-contain" />
-                    ) : (
-                      <Icon name={c.icon || 'leaf'} className="h-7 w-7 text-gold-deep" />
-                    )}
+            {/* categories on phones: app-style tiles */}
+            <div className="thin-scroll -mx-4 mt-4 flex gap-2.5 overflow-x-auto px-4 pb-2 lg:hidden">
+              {list.map((c, i) => (
+                <SmartLink key={c.id} href={`/category/${c.slug}`} className="flex w-[74px] shrink-0 flex-col items-center gap-1.5 text-center">
+                  <span className={cn('grid h-[60px] w-[60px] place-items-center rounded-[20px] shadow-[0_8px_20px_-12px_rgba(0,80,30,.45)] ring-1 ring-white', ['bg-[linear-gradient(145deg,#e9f8ee,#c9ecd5)]', 'bg-[linear-gradient(145deg,#fff4e0,#ffe2b0)]', 'bg-[linear-gradient(145deg,#eaf3ff,#cfe2ff)]', 'bg-[linear-gradient(145deg,#fdeef3,#f9d2df)]'][i % 4])}>
+                    <Icon name={c.icon || 'leaf'} className="h-7 w-7 text-[#0f5f2b]" />
                   </span>
                   <span className="line-clamp-2 text-[0.7rem] font-semibold leading-tight text-ink/80">{c.name}</span>
                 </SmartLink>
@@ -87,12 +82,12 @@ function RowHead({ title, href, label, sub }: { title: string; href?: string; la
   return (
     <div className="reveal mb-6 flex items-end justify-between gap-4">
       <div className="min-w-0">
-        <h2 className="font-display text-[1.45rem] font-semibold tracking-tight text-ink sm:text-[1.75rem]">{title}</h2>
+        <h2 className="font-display text-[1.2rem] font-semibold leading-tight tracking-tight text-ink sm:text-[1.75rem]">{title}</h2>
         <span className="mt-2 block h-1 w-14 rounded-full" style={{ background: 'var(--gold-grad)' }} />
         {sub && <p className="mt-2 text-sm text-ink/55">{sub}</p>}
       </div>
       {href && (
-        <SmartLink href={href} className="btn btn-outline btn-sm shrink-0 !rounded-full">
+        <SmartLink href={href} className="btn btn-outline btn-sm shrink-0 !rounded-full !min-h-[34px] !px-3 sm:!px-4">
           {label || 'View all'} <ArrowRight className="h-4 w-4" />
         </SmartLink>
       )}
@@ -335,21 +330,48 @@ export function BlobSplit({ data }: P) {
 
 /* ------------------------------------------------------------------ photo page banner (About hero) */
 export function PhotoBanner({ data }: P) {
+  const cover = data.layout === 'cover';
   return (
-    <section id={data.anchor || undefined} className="theme-light relative pt-[7.6rem] sm:pt-[8.2rem]">
-      <div className="container-x">
-        <div className="relative overflow-hidden rounded-[28px] shadow-xl">
-          {data.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={data.image} alt="" className="h-[320px] w-full object-cover sm:h-[420px]" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-8 text-center text-white sm:p-12">
-            {data.eyebrow && <p className="eyebrow justify-center text-gold-light">{data.eyebrow}</p>}
-            <h1 className="fx-blur font-display text-[clamp(2rem,1.5rem+2.5vw,3.6rem)] font-semibold">{data.title}</h1>
-            {data.lead && <p className="fx-up mx-auto mt-3 max-w-2xl text-white/85">{data.lead}</p>}
+    <section id={data.anchor || undefined} className="theme-light relative pt-[7rem] sm:pt-[8.2rem]">
+      <div className="hdr-width">
+        {cover ? (
+          <div className="relative overflow-hidden rounded-[28px] shadow-xl">
+            {data.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={data.image} alt="" className="h-[300px] w-full object-cover sm:h-[420px]" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-center text-white sm:p-12">
+              {data.eyebrow && <p className="mx-auto mb-2 w-max rounded-full bg-white/15 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white backdrop-blur">{data.eyebrow}</p>}
+              <h1 className="fx-blur font-display text-[clamp(1.9rem,1.4rem+2.5vw,3.6rem)] font-semibold">{data.title}</h1>
+              {data.lead && <p className="fx-up mx-auto mt-3 max-w-2xl text-white/90">{data.lead}</p>}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="photo-split relative grid overflow-hidden rounded-[28px] shadow-[0_30px_70px_-35px_rgba(0,70,25,.6)] md:grid-cols-[1.25fr_1fr]">
+            <div className="relative z-[1] flex flex-col justify-center p-7 text-white sm:p-12">
+              <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-xs text-white/70">
+                <SmartLink href="/" className="hover:text-white">Home</SmartLink> <ChevronRight className="h-3 w-3" /> <span className="text-white">{data.title}</span>
+              </nav>
+              {data.eyebrow && <p className="w-max rounded-full bg-white/15 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white ring-1 ring-white/25 backdrop-blur">{data.eyebrow}</p>}
+              <h1 className="fx-blur mt-3 font-display text-[clamp(2rem,1.4rem+2.6vw,3.5rem)] font-semibold leading-[1.05]">{data.title}</h1>
+              {data.lead && <p className="fx-up mt-4 max-w-xl text-[1.02rem] leading-relaxed text-white/85">{data.lead}</p>}
+              {(hasLink(data.primary) || hasLink(data.secondary)) && (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Btn link={data.primary} variant="gold" arrow />
+                  {hasLink(data.secondary) && <SmartLink href={data.secondary.href} className="btn border border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20">{data.secondary.label}</SmartLink>}
+                </div>
+              )}
+            </div>
+            {data.image && (
+              <div className="relative hidden min-h-[320px] items-center justify-center p-6 md:flex">
+                <span className="absolute inset-8 rounded-full bg-white/15 blur-2xl" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={data.image} alt="" className="tilt relative max-h-[340px] w-auto max-w-full rounded-[22px] object-contain shadow-2xl ring-4 ring-white/30" data-tilt="5" />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

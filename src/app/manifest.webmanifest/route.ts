@@ -14,7 +14,7 @@ export async function GET() {
     theme_color: '#009A35',
     lang: 'en',
     icons: [
-      { src: '/icon.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icon.png', sizes: '256x256', type: 'image/png', purpose: 'any' },
       { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
     shortcuts: [

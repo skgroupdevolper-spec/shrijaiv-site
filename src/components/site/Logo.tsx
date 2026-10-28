@@ -5,24 +5,41 @@ import { cn } from '@/lib/utils';
  * Brand logo. Shows the logo uploaded in Admin → Site settings → Logo.
  * Until one is uploaded, a clean built-in mark is used (green emblem + name).
  */
-export const BRAND_LOGO = '/brand/logo.svg';
-export const BRAND_COIN = '/brand/coin.svg';
+export const BRAND_LOGO = '';
+/** The SHRIJAIV Organic round badge (from the original site) */
+export const BRAND_COIN = '/brand/badge-logo.webp';
 
 export default function Logo({ src, name, tagline, className, size = 'md' }: { src?: string; name: string; tagline?: string; className?: string; size?: 'md' | 'lg' }) {
-  src = src || BRAND_LOGO;
   return (
     <SmartLink href="/" className={cn('site-logo group flex min-w-0 shrink items-center', className)} ariaLabel={name}>
       {src ? (
+        // logo uploaded in Admin → Site settings
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={BRAND_COIN} alt="" aria-hidden="true" width={256} height={256} className="logo-compact hidden h-11 w-11 shrink-0 object-contain" />
-      ) : null}
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={name} width={src === BRAND_LOGO ? 760 : undefined} height={src === BRAND_LOGO ? 160 : undefined} fetchPriority="high" decoding="async" style={{ height: size === 'lg' ? 'var(--ftr-logo-h, 46px)' : 'var(--logo-h, 40px)' }} className="logo-img w-auto max-w-[62vw] object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
+        <img src={src} alt={name} fetchPriority="high" decoding="async" style={{ height: size === 'lg' ? 'var(--ftr-logo-h, 46px)' : 'var(--logo-h, 44px)' }} className="logo-img w-auto max-w-[62vw] object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
       ) : (
-        <TextMark name={name} tagline={tagline} size={size} />
+        <BadgeMark name={name} tagline={tagline} size={size} />
       )}
     </SmartLink>
+  );
+}
+
+/** Round badge + name (default logo) */
+export function BadgeMark({ name, tagline, size = 'md' }: { name: string; tagline?: string; size?: 'md' | 'lg' }) {
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0] || name;
+  const rest = parts.slice(1).join(' ');
+  return (
+    <span className="flex min-w-0 items-center gap-2.5">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={BRAND_COIN} alt="" aria-hidden="true" width={256} height={256} fetchPriority="high" decoding="async" className={cn('shrink-0 object-contain drop-shadow-[0_4px_10px_rgba(0,90,30,.25)] transition-transform duration-500 group-hover:rotate-[-8deg]', size === 'lg' ? 'h-14 w-14' : 'h-11 w-11 sm:h-12 sm:w-12')} />
+      <span className="logo-words min-w-0 leading-none">
+        <span className={cn('block truncate font-display font-extrabold tracking-[-0.01em] text-[#0b1a10]', size === 'lg' ? 'text-[1.3rem]' : 'text-[1.08rem] sm:text-[1.18rem]')}>
+          {first}
+          {rest && <span className="ms-1 text-[var(--brand-gold)]">{rest}</span>}
+        </span>
+        {tagline && <span className="mt-1 block truncate text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[#5b7a64]">{tagline}</span>}
+      </span>
+    </span>
   );
 }
 

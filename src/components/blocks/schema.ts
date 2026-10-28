@@ -189,7 +189,7 @@ export const BLOCKS: BlockSchema[] = [
     label: 'Photo banner (page top)',
     description: 'Full-width photo with the page title on it',
     group: 'Hero',
-    fields: [{ name: 'image', label: 'Photo', type: 'image' }, { name: 'eyebrow', label: 'Small heading', type: 'text' }, { name: 'title', label: 'Title', type: 'text' }, lead],
+    fields: [{ name: 'layout', label: 'Layout', type: 'select', options: opt(['split', 'Green panel + photo'], ['cover', 'Full-width photo']) }, { name: 'image', label: 'Photo', type: 'image' }, { name: 'eyebrow', label: 'Small heading', type: 'text' }, { name: 'title', label: 'Title', type: 'text' }, lead, link('primary', 'Main button'), link('secondary', 'Second button')],
     defaults: { title: 'About us' },
   },
   {

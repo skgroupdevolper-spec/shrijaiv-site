@@ -3,13 +3,13 @@
 
 export const CATEGORIES = [
   {
-    name: 'Organic Agriculture', slug: 'organic-agriculture', icon: 'wheat', featured: true, image: '/images/site/category2.png',
+    name: 'Organic Agriculture', slug: 'organic-agriculture', icon: 'wheat', featured: true,
     children: [
-      { name: 'Fruit', slug: 'fruit', featured: true, icon: 'apple', image: '/images/site/category5.png' },
-      { name: 'Vegetables', slug: 'vegetables', featured: true, icon: 'carrot', image: '/images/site/category9.png' },
-      { name: 'Dairy Products', slug: 'dairy-products', featured: true, icon: 'milk', image: '/images/site/category6.png' },
-      { name: 'Oil Seeds', slug: 'oil-seeds', icon: 'droplets', image: '/images/site/category7.png' },
-      { name: 'Pulses', slug: 'pulses', icon: 'bean', image: '/images/site/category8.png' },
+      { name: 'Fruit', slug: 'fruit', featured: true, icon: 'apple' },
+      { name: 'Vegetables', slug: 'vegetables', featured: true, icon: 'carrot' },
+      { name: 'Dairy Products', slug: 'dairy-products', featured: true, icon: 'milk' },
+      { name: 'Oil Seeds', slug: 'oil-seeds', icon: 'droplets' },
+      { name: 'Pulses', slug: 'pulses', icon: 'bean' },
       { name: 'Grains & Cereals', slug: 'grains-cereals', icon: 'wheat' },
       { name: 'Spices & Herbs', slug: 'spices-herbs', featured: true, icon: 'leaf' },
       { name: 'Dry Fruits & Nuts', slug: 'dry-fruits-nuts', icon: 'nut' },
@@ -18,10 +18,10 @@ export const CATEGORIES = [
     ],
   },
   {
-    name: 'Organic Beauty', slug: 'organic-beauty', icon: 'sparkles', featured: true, image: '/images/site/category3.png',
+    name: 'Organic Beauty', slug: 'organic-beauty', icon: 'sparkles', featured: true,
     children: [
-      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', featured: true, icon: 'droplet', image: '/images/site/category10.png' },
-      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', featured: true, icon: 'smile', image: '/images/site/category11.png' },
+      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', featured: true, icon: 'droplet' },
+      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', featured: true, icon: 'smile' },
       { name: 'Hair Care', slug: 'hair-care', icon: 'scissors' },
       { name: 'Soaps & Body Care', slug: 'soaps-body-care', icon: 'bath' },
       { name: 'Essential Oils', slug: 'essential-oils', icon: 'flower' },
@@ -29,7 +29,7 @@ export const CATEGORIES = [
     ],
   },
   {
-    name: 'Organic Processed Food', slug: 'organic-processed-food', icon: 'cookie', featured: true, image: '/images/site/category4.png',
+    name: 'Organic Processed Food', slug: 'organic-processed-food', icon: 'cookie', featured: true,
     children: [
       { name: 'Flours & Atta', slug: 'flours-atta', featured: true, icon: 'package' },
       { name: 'Snacks', slug: 'snacks', icon: 'cookie' },
@@ -53,15 +53,18 @@ export async function seedMarketplace(prisma) {
   let created = 0;
   for (let i = 0; i < CATEGORIES.length; i++) {
     const c = CATEGORIES[i];
-    const parent = await prisma.category.upsert({ where: { slug: c.slug }, update: { image: c.image || undefined }, create: { slug: c.slug, name: c.name, icon: c.icon, image: c.image || null, featured: !!c.featured, order: i } });
+    const parent = await prisma.category.upsert({ where: { slug: c.slug }, update: {}, create: { slug: c.slug, name: c.name, icon: c.icon, image: c.image || null, featured: !!c.featured, order: i } });
     if (parent.createdAt.getTime() > Date.now() - 5000) created++;
     for (let j = 0; j < c.children.length; j++) {
       const ch = c.children[j];
-      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: { image: ch.image || undefined, ...(ch.featured ? { featured: true } : {}) }, create: { slug: ch.slug, name: ch.name, icon: ch.icon, image: ch.image || null, featured: !!ch.featured, parentId: parent.id, order: j } });
+      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: { ...(ch.featured ? { featured: true } : {}) }, create: { slug: ch.slug, name: ch.name, icon: ch.icon, image: ch.image || null, featured: !!ch.featured, parentId: parent.id, order: j } });
       if (row.createdAt.getTime() > Date.now() - 5000) created++;
     }
   }
   if (created) console.log(`✔ ${created} marketplace categories`);
+  // the tiny 21px icons of the first version looked blurry when enlarged: categories use sharp vector icons
+  // instead (an admin can still upload a real image per category)
+  await prisma.category.updateMany({ where: { image: { startsWith: '/images/site/category' } }, data: { image: null } });
   if ((await prisma.plan.count()) === 0) {
     for (const p of PLANS) await prisma.plan.create({ data: { ...p, features: JSON.stringify(p.features) } });
     console.log(`✔ ${PLANS.length} membership plans (Paid plans are OFF by default: everything is free and unlimited until you switch them on in Admin → Marketplace)`);

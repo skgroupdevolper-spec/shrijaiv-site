@@ -38,6 +38,15 @@ const nextConfig = {
       },
     ];
   },
+  // addresses of the original static site keep working
+  async redirects() {
+    return [
+      ['/policy', '/privacy'], ['/privacy-policy', '/privacy'], ['/signup', '/register'], ['/sign-up', '/register'],
+      ['/membership', '/pricing'], ['/plans', '/pricing'], ['/shop', '/products'], ['/inquire-now', '/inquire'],
+      ['/about-us', '/about'], ['/contact-us', '/contact'], ['/support', '/customer-support'], ['/account-login', '/login'],
+      ['/suppliers', '/sellers'], ['/buyers', '/requirements'], ['/buy-leads', '/requirements'],
+    ].map(([source, destination]) => ({ source, destination, permanent: true }));
+  },
   async rewrites() {
     return { beforeFiles: [{ source: '/.well-known/acme-challenge/:token', destination: '/api/acme-challenge/:token' }] };
   },

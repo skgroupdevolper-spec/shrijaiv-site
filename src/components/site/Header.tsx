@@ -345,18 +345,20 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
             <nav className="px-5" aria-label="Mobile">
               {/* account strip */}
               <div className="sheet-account">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-gold-deep shadow-sm"><User className="h-5 w-5" /></span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[0.95rem] font-bold text-ink">{me ? me.name : t('Welcome to') + ' ' + site.name}</span>
-                  <span className="block truncate text-xs text-ink/55">{me ? accountLabel : t('Login or create a free account')}</span>
-                </span>
-                {me ? (
-                  <Link href={accountHref} className="btn btn-gold btn-sm">{t('Open')}</Link>
-                ) : (
-                  <span className="flex gap-1.5">
-                    <Link href={L('/login')} className="btn btn-outline btn-sm !px-3"><LogIn className="h-4 w-4" /> {t('Login')}</Link>
-                    <Link href={L('/register')} className="btn btn-gold btn-sm !px-3"><UserPlus className="h-4 w-4" /> {t('Sign up')}</Link>
+                <div className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-gold-deep shadow-sm"><User className="h-5 w-5" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[0.98rem] font-bold text-ink">{me ? me.name : t('Welcome to') + ' ' + site.name}</span>
+                    <span className="block truncate text-xs text-ink/55">{me ? accountLabel : t('Login or create a free account')}</span>
                   </span>
+                </div>
+                {me ? (
+                  <Link href={accountHref} className="btn btn-gold btn-sm mt-3 w-full">{t('Open')} {accountLabel}</Link>
+                ) : (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Link href={L('/login')} className="btn btn-outline btn-sm w-full bg-white"><LogIn className="h-4 w-4" /> {t('Login')}</Link>
+                    <Link href={L('/register')} className="btn btn-gold btn-sm w-full"><UserPlus className="h-4 w-4" /> {t('Sign up')}</Link>
+                  </div>
                 )}
               </div>
               <ul className="mt-4 grid grid-cols-2 gap-2">
@@ -371,7 +373,7 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
               <div className="mt-4 grid grid-cols-3 gap-2">
                 <button type="button" onClick={() => { setOpen(false); setCats(true); }} className="sheet-tile"><LayoutGrid className="h-5 w-5" /> {t('Categories')}</button>
                 <SmartLink href="/register?as=seller" className="sheet-tile"><Store className="h-5 w-5" /> {t('Sell')}</SmartLink>
-                <SmartLink href="/customer-support" className="sheet-tile"><LifeBuoy className="h-5 w-5" /> {t('Help')}</SmartLink>
+                <SmartLink href="/inquire" className="sheet-tile"><LifeBuoy className="h-5 w-5" /> {t('Inquire')}</SmartLink>
               </div>
               {me && (
                 <ul className="mt-4 divide-y divide-black/5 rounded-2xl bg-[#f5f5f7]">
