@@ -69,7 +69,7 @@ export default async function ProductPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ListingHeader compact crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} eyebrow={p.category?.name} title={p.name} />
       <section className="theme-sand pb-16 pt-4 sm:pb-24">
-        <div className="container-x grid items-start gap-10 lg:grid-cols-[1.05fr_1fr]">
+        <div className="container-x grid items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-10 [&>*]:min-w-0">
           {/* the gallery stays in view while the details on the right scroll */}
           <div className="lg:sticky lg:top-28">
             <Gallery images={imgs} alt={p.name} />
@@ -186,32 +186,32 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="container-x mt-14 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <div className="container-x mt-10 grid gap-8 lg:mt-14 lg:grid-cols-[1.4fr_1fr] lg:gap-10 [&>*]:min-w-0">
           <div className="space-y-10">
             {p.description && (
-              <div className="card p-6 md:p-8">
-                <h2 className="font-display text-2xl font-semibold text-ink">{t('About this product')}</h2>
-                <div className="rte mt-4" dangerouslySetInnerHTML={{ __html: safeArticleHtml(p.description) }} />
+              <div className="card p-5 md:p-8">
+                <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">{t('About this product')}</h2>
+                <div className="rte mt-4 break-words" dangerouslySetInnerHTML={{ __html: safeArticleHtml(p.description) }} />
               </div>
             )}
             {specs.length > 0 && (
-              <div className="card p-6 md:p-8">
-                <h2 className="font-display text-2xl font-semibold text-ink">{t('Specifications')}</h2>
-                <table className="table-nice mt-4 w-full text-sm">
+              <div className="card p-5 md:p-8">
+                <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">{t('Specifications')}</h2>
+                <table className="table-nice mt-4 w-full table-fixed text-sm">
                   <tbody>
                     {specs.map((r) => (
                       <tr key={r.label}>
-                        <th className="w-1/3 py-2 pr-4 text-left font-semibold text-ink/60">{r.label}</th>
-                        <td className="py-2 text-ink">{r.value}</td>
+                        <th className="w-2/5 break-words py-2 pr-4 text-left align-top font-semibold text-ink/60">{r.label}</th>
+                        <td className="break-words py-2 text-ink">{r.value}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
-            <div className="card p-6 md:p-8" id="reviews">
+            <div className="card p-5 md:p-8" id="reviews">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="font-display text-2xl font-semibold text-ink">{t('Reviews')}</h2>
+                <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">{t('Reviews')}</h2>
                 <Rating value={p.ratingAvg} count={p.ratingCount} size="md" />
               </div>
               {p.reviews.length === 0 ? <p className="mt-3 text-sm text-ink/55">{t('No reviews yet — be the first buyer to share your experience.')}</p> : (

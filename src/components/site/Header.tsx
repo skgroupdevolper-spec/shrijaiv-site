@@ -11,10 +11,12 @@ import { useT, useLocalize } from './SiteProvider';
 import { splitLocale } from '@/lib/i18n/config';
 import SmartLink from '@/components/ui/SmartLink';
 import { Icon } from '@/components/ui/Icon';
+import { resolveHref } from '@/components/ui/href';
 
 type Me = { name: string; role: string } | null;
 export const MENU_EVENT = 'open-site-menu';
 export const CATS_EVENT = 'open-site-categories';
+const MENU_ICONS: Record<string, string> = { '/': 'store', '/products': 'shopping-bag', '/become-a-seller': 'factory', '/become-a-buyer': 'users', '/requirements': 'megaphone', '/contact': 'phone', '/blog': 'file', '/about': 'building', '/pricing': 'crown', '/sellers': 'verified', '/how-it-works': 'sprout' };
 /** Category tree for the Shop menu and the mobile Categories sheet (from Admin → Categories) */
 export type NavCategory = { slug: string; name: string; icon: string | null; image: string | null; count?: number; children: NavCategory[] };
 
@@ -361,22 +363,45 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
                   </div>
                 )}
               </div>
-              <ul className="mt-4 grid grid-cols-2 gap-2">
+              {/* categories, app style: horizontal tiles */}
+              {categories.length > 0 && (
+                <div className="mt-5">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="sheet-label">{t('Categories')}</p>
+                    <button type="button" onClick={() => { setOpen(false); setCats(true); }} className="text-xs font-bold text-gold-deep">{t('See all')}</button>
+                  </div>
+                  <div className="thin-scroll -mx-5 flex gap-2.5 overflow-x-auto px-5 pb-1">
+                    {categories.flatMap((g) => [g, ...g.children]).slice(0, 12).map((c, i) => (
+                      <SmartLink key={c.slug} href={`/category/${c.slug}`} className="flex w-[70px] shrink-0 flex-col items-center gap-1.5 text-center">
+                        <span className={cn('grid h-14 w-14 place-items-center rounded-[18px] ring-1 ring-white', ['bg-[linear-gradient(145deg,#e9f8ee,#c9ecd5)]', 'bg-[linear-gradient(145deg,#fff4e0,#ffe2b0)]', 'bg-[linear-gradient(145deg,#eaf3ff,#cfe2ff)]', 'bg-[linear-gradient(145deg,#fdeef3,#f9d2df)]'][i % 4])}>
+                          <CatVisual c={c} className="h-6 w-6 text-[#0f5f2b]" />
+                        </span>
+                        <span className="line-clamp-2 text-[0.68rem] font-semibold leading-tight text-ink/75">{c.name}</span>
+                      </SmartLink>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* pages: app-style list with icons */}
+              <p className="sheet-label mt-5">{t('Explore')}</p>
+              <ul className="sheet-list mt-2">
                 {header.menu.map((item, i) => (
-                  <li key={i} style={{ animation: `pop .35s cubic-bezier(.2,.8,.2,1) ${i * 0.03}s both` }}>
-                    <SmartLink href={item.href} className={cn('flex min-h-[50px] items-center rounded-2xl px-4 text-[0.93rem] font-medium', isActive(item.href) ? 'chip-active' : 'bg-[#f5f5f7] text-[#1d1d1f]')}>
-                      {item.label}
+                  <li key={i}>
+                    <SmartLink href={item.href} className={cn('sheet-row', isActive(item.href) && 'is-on')}>
+                      <span className="sheet-ico"><Icon name={MENU_ICONS[item.href] || 'leaf'} className="h-[18px] w-[18px]" /></span>
+                      <span className="flex-1">{item.label}</span>
+                      <ChevronRight className="h-4 w-4 text-ink/25 rtl:rotate-180" />
                     </SmartLink>
                   </li>
                 ))}
               </ul>
               <div className="mt-4 grid grid-cols-3 gap-2">
-                <button type="button" onClick={() => { setOpen(false); setCats(true); }} className="sheet-tile"><LayoutGrid className="h-5 w-5" /> {t('Categories')}</button>
-                <SmartLink href="/register?as=seller" className="sheet-tile"><Store className="h-5 w-5" /> {t('Sell')}</SmartLink>
+                <SmartLink href="/sellers" className="sheet-tile"><Store className="h-5 w-5" /> {t('Sellers')}</SmartLink>
                 <SmartLink href="/inquire" className="sheet-tile"><LifeBuoy className="h-5 w-5" /> {t('Inquire')}</SmartLink>
+                <a href={resolveHref('whatsapp', site)} target="_blank" rel="noopener noreferrer" className="sheet-tile"><Phone className="h-5 w-5" /> {t('WhatsApp')}</a>
               </div>
               {me && (
-                <ul className="mt-4 divide-y divide-black/5 rounded-2xl bg-[#f5f5f7]">
+                <ul className="sheet-list mt-4">
                   {(me.role === 'SELLER'
                     ? [['/seller', t('Dashboard')], ['/seller/products', t('My products')], ['/seller/inquiries', t('Inquiries')], ['/seller/requirements', t('Buy leads')], ['/seller/membership', t('Membership')], ['/seller/profile', t('Company profile')]]
                     : me.role === 'BUYER'
@@ -384,13 +409,13 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
                       : [[accountHref, accountLabel]]
                   ).map(([href, label]) => (
                     <li key={href}>
-                      <Link href={href} className="flex items-center justify-between px-4 py-3 text-[0.92rem] text-ink">
-                        {label} <ChevronRight className="h-4 w-4 text-ink/30" />
+                      <Link href={href} className="sheet-row">
+                        <span className="flex-1">{label}</span> <ChevronRight className="h-4 w-4 text-ink/25" />
                       </Link>
                     </li>
                   ))}
                   <li>
-                    <a href="/api/auth/logout" className="flex items-center justify-between px-4 py-3 text-[0.92rem] text-rose-600">{t('Log out')}</a>
+                    <a href="/api/auth/logout" className="sheet-row !text-rose-600">{t('Log out')}</a>
                   </li>
                 </ul>
               )}

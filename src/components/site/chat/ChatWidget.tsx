@@ -144,7 +144,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
     }
   }
 
-  const side = cfg.position === 'start' ? 'start-4 lg:start-6 bottom-[168px] lg:bottom-[80px]' : 'end-4 lg:end-6 bottom-[164px] lg:bottom-[92px]';
+  const side = cfg.position === 'start' ? 'start-3 lg:start-6 bottom-[88px] lg:bottom-[80px]' : 'end-3 lg:end-6 bottom-[88px] lg:bottom-[92px]';
   const suggestions = [t('Find organic turmeric sellers'), t('How do I become a seller?'), t('Talk to your team')];
 
   return (
@@ -230,7 +230,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
           </button>
         </div>
       )}
-      <button type="button" onClick={() => (open ? setOpen(false) : openChat())} aria-expanded={open} aria-label={open ? t('Close') : t('Ask our AI assistant')} className="relative grid h-14 w-14 place-items-center rounded-full text-white shadow-[0_14px_34px_-10px_rgba(0,0,0,.55)] transition-transform hover:scale-105 active:scale-95" style={{ background: cfg.color, animation: 'pop .35s cubic-bezier(.2,.8,.2,1) both' }}>
+      <button type="button" onClick={() => (open ? setOpen(false) : openChat())} aria-expanded={open} aria-label={open ? t('Close') : t('Ask our AI assistant')} className="relative grid h-12 w-12 place-items-center rounded-full text-white lg:h-14 lg:w-14 shadow-[0_14px_34px_-10px_rgba(0,0,0,.55)] transition-transform hover:scale-105 active:scale-95" style={{ background: cfg.color, animation: 'pop .35s cubic-bezier(.2,.8,.2,1) both' }}>
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         {teaser && !open && <span className="absolute -end-0.5 -top-0.5 h-3.5 w-3.5 rounded-full bg-[#ff3b30] ring-2 ring-white" aria-hidden />}
       </button>

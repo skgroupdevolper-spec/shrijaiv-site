@@ -58,7 +58,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
       </SmartLink>
 
       {site.showWhatsappButton && (
-        <div className="fixed bottom-[96px] end-4 z-50 flex flex-col items-end gap-3 lg:bottom-6 lg:end-6">
+        <div className="fixed bottom-[96px] end-4 z-50 hidden flex-col items-end gap-3 lg:bottom-6 lg:end-6 lg:flex">
           {(bubble || panel) && (
             <div className="relative w-[17rem] rounded-3xl bg-white p-5 shadow-[0_30px_70px_-25px_rgba(0,0,0,.45)] ring-1 ring-black/5" style={{ animation: 'pop .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <button onClick={() => { closeBubble(); setPanel(false); }} className="absolute end-3 top-3 grid h-7 w-7 place-items-center rounded-full text-[#8e8e93] hover:bg-black/5" aria-label={t('Close')}>
@@ -84,7 +84,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
       )}
 
       {show && (
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="to-top fixed bottom-[104px] start-4 z-40 grid h-12 w-12 place-items-center rounded-full lg:bottom-6 lg:start-6 lg:h-11 lg:w-11" style={{ animation: 'pop .3s both' }} aria-label={t('Back to top')}>
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="to-top fixed bottom-6 start-6 z-40 hidden h-11 w-11 place-items-center rounded-full lg:grid" style={{ animation: 'pop .3s both' }} aria-label={t('Back to top')}>
           <ArrowUp className="h-5 w-5" strokeWidth={2.4} />
         </button>
       )}
