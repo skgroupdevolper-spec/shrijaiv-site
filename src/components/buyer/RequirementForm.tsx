@@ -10,7 +10,19 @@ type Cat = { id: string; name: string; parentId: string | null };
 
 export default function RequirementForm({ initial, categories, units, defaultState, defaultCity }: { initial: any | null; categories: Cat[]; units: string[]; defaultState?: string | null; defaultCity?: string | null }) {
   const router = useRouter();
-  const [r, setR] = useState<any>(() => ({ title: '', details: '', categoryId: '', quantity: '', unit: units[0] || 'kg', budgetMin: '', budgetMax: '', deliveryCity: defaultCity || '', deliveryState: defaultState || '', neededBy: '', attachment: '', ...(initial || {}), budgetMin: initial?.budgetMin ?? '', budgetMax: initial?.budgetMax ?? '', categoryId: initial?.categoryId || '', neededBy: initial?.neededBy ? String(initial.neededBy).slice(0, 10) : '', attachment: (() => { try { return JSON.parse(initial?.attachments || '[]')[0] || ''; } catch { return ''; } })() }));
+  const [r, setR] = useState<any>(() => {
+    const base: any = { title: '', details: '', quantity: '', unit: units[0] || 'kg', deliveryCity: defaultCity || '', deliveryState: defaultState || '', ...(initial || {}) };
+    base.budgetMin = initial?.budgetMin ?? '';
+    base.budgetMax = initial?.budgetMax ?? '';
+    base.categoryId = initial?.categoryId || '';
+    base.neededBy = initial?.neededBy ? String(initial.neededBy).slice(0, 10) : '';
+    try {
+      base.attachment = JSON.parse(initial?.attachments || '[]')[0] || '';
+    } catch {
+      base.attachment = '';
+    }
+    return base;
+  });
   const [busy, setBusy] = useState(false);
   const set = (k: string, v: any) => setR((x: any) => ({ ...x, [k]: v }));
   async function submit(e: React.FormEvent) {
