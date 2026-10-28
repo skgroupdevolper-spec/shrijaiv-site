@@ -14,9 +14,9 @@ export default function ShopSearch({ placeholder, supplierLabel, buyerLabel }: {
         <Search className="h-4 w-4 shrink-0 text-ink/40" />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={placeholder} className="min-w-0 flex-1 bg-transparent py-3.5 text-[0.95rem] outline-none placeholder:text-ink/40" aria-label={placeholder} />
       </label>
-      <div className="flex gap-2">
-        <button type="button" onClick={() => go('sellers')} className="btn btn-gold !rounded-2xl">{supplierLabel}</button>
-        <button type="button" onClick={() => go('requirements')} className="btn btn-gold !rounded-2xl">{buyerLabel}</button>
+      <div className="grid grid-cols-2 gap-2 sm:flex">
+        <button type="button" onClick={() => go('sellers')} className="btn btn-gold !rounded-2xl !px-3 sm:!px-5">{supplierLabel}</button>
+        <button type="button" onClick={() => go('requirements')} className="btn btn-gold !rounded-2xl !px-3 sm:!px-5">{buyerLabel}</button>
       </div>
     </form>
   );

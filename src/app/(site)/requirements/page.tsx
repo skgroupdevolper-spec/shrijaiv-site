@@ -6,6 +6,7 @@ import ListingHeader from '@/components/market/ListingHeader';
 import Filters from '@/components/market/Filters';
 import RequirementCard from '@/components/market/RequirementCard';
 import Pagination from '@/components/market/Pagination';
+import QuickChips from '@/components/market/QuickChips';
 import SmartLink from '@/components/ui/SmartLink';
 
 export const dynamic = 'force-dynamic';
@@ -21,12 +22,22 @@ export default async function RequirementsPage({ searchParams }: { searchParams:
   const { t } = await getI18n();
   const tree = await getCategoryTree();
   const cat = sp.cat ? await getCategory(sp.cat) : null;
-  const res = await listRequirements({ q: sp.q, categoryIds: cat?.ids, state: sp.state, page: Number(sp.page) || 1 });
+  const res = await listRequirements({ q: sp.q, categoryIds: cat?.ids, state: sp.state, featured: sp.featured === '1', page: Number(sp.page) || 1 });
   return (
     <>
       <ListingHeader crumbs={[{ label: t('Buy leads') }]} eyebrow={t('Requirements')} title={t('Buyers are looking for')} lead={t('Fresh requirements from retailers, brands, exporters and restaurants. Sellers quote directly; buyers compare and choose.')} right={<SmartLink href="/post-requirement" className="btn btn-gold">{t('Post a requirement')}</SmartLink>} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
+          <QuickChips
+            base="/requirements"
+            params={sp}
+            chips={[
+              { label: t('All leads') },
+              { label: t('Premium'), key: 'featured', value: '1' },
+              ...tree.map((c) => ({ label: c.name, key: 'cat', value: c.slug })),
+              ...['Maharashtra', 'Delhi', 'Gujarat', 'Karnataka', 'Rajasthan', 'Tamil Nadu'].map((s) => ({ label: s, key: 'state', value: s })),
+            ]}
+          />
           <Suspense>
             <Filters
               total={res.total}
@@ -44,7 +55,7 @@ export default async function RequirementsPage({ searchParams }: { searchParams:
                   <SmartLink href="/post-requirement" className="btn btn-gold mt-6">{t('Post a requirement')}</SmartLink>
                 </div>
               ) : (
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {res.items.map((r) => (
                     <RequirementCard key={r.id} r={r} />
                   ))}

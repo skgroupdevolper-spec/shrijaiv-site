@@ -6,6 +6,7 @@ import ListingHeader from '@/components/market/ListingHeader';
 import Filters from '@/components/market/Filters';
 import ProductCard from '@/components/market/ProductCard';
 import Pagination from '@/components/market/Pagination';
+import QuickChips from '@/components/market/QuickChips';
 import SmartLink from '@/components/ui/SmartLink';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,17 @@ export default async function ProductsPage({ searchParams }: { searchParams: SP 
       <ListingHeader crumbs={[{ label: t('Products') }]} eyebrow={t('Marketplace')} title={cat ? cat.node.name : sp.q ? `${t('Results for')} “${sp.q}”` : t('Organic products')} lead={cat?.node.description || t('Every product is listed by a seller on SHRIJAIV. Send an inquiry to get prices, samples and delivery details.')} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
+          <QuickChips
+            base="/products"
+            params={sp}
+            chips={[
+              { label: t('All products') },
+              { label: t('Verified sellers'), key: 'verified', value: '1' },
+              { label: t('Best rated'), key: 'sort', value: 'rating' },
+              ...tree.map((c) => ({ label: c.name, key: 'cat', value: c.slug })),
+              ...tree.flatMap((c) => c.children.filter((x) => x.featured)).slice(0, 6).map((c) => ({ label: c.name, key: 'cat', value: c.slug })),
+            ]}
+          />
           <Suspense>
             <Filters
               total={res.total}

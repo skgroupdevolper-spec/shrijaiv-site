@@ -230,6 +230,16 @@ p { text-wrap: pretty; }
   .bg-pattern { background-image: radial-gradient(color-mix(in oklab, var(--brand-gold) 22%, transparent) 1px, transparent 1px); background-size: 22px 22px; }
 }
 
+/* product cards in home rows */
+.pcard { display: flex; flex-direction: column; border-radius: 22px; background: #fff; border: 1px solid rgba(17, 17, 17, 0.06); box-shadow: 0 1px 0 #fff inset, 0 14px 34px -22px rgba(0, 60, 20, 0.35); transition: transform 0.35s var(--ease), box-shadow 0.35s ease, border-color 0.3s ease; overflow: hidden; }
+.pcard:hover { transform: translateY(-5px); border-color: color-mix(in oklab, var(--brand-gold) 45%, transparent); box-shadow: 0 1px 0 #fff inset, 0 28px 50px -24px rgba(0, 80, 30, 0.45); }
+.pcard-img { position: relative; display: grid; place-items: center; aspect-ratio: 1; margin: 8px 8px 0; border-radius: 16px; background: radial-gradient(circle at 30% 20%, #ffffff, #eef5f0 70%); }
+.pcard-tag { position: absolute; top: 8px; left: 8px; border-radius: 999px; padding: 3px 8px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; background: #fbbf24; color: #451a03; }
+.pcard-verified { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; padding: 3px 7px; font-size: 0.6rem; font-weight: 700; color: #047857; background: rgba(255, 255, 255, 0.92); box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.3); }
+.pcard-btn { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 10px; border-radius: 12px; padding: 7px 10px; font-size: 0.78rem; font-weight: 700; color: var(--brand-gold); background: color-mix(in oklab, var(--brand-gold) 10%, #fff); transition: background-color 0.25s ease, color 0.25s ease; }
+.pcard:hover .pcard-btn { background: var(--gold-grad); color: #fff; }
+@media (hover: none) { .pcard-btn { background: var(--gold-grad); color: #fff; } }
+
 /* ---------------------------------------------------------------- header */
 .site-header { position: fixed; inset-inline: 0; top: 0; z-index: 60; padding: 10px 10px 0; pointer-events: none; transition: transform 0.45s var(--ease); }
 @media (min-width: 768px) { .site-header { padding: 14px 18px 0; } }
@@ -283,6 +293,10 @@ p { text-wrap: pretty; }
 /* Drawer / sheets */
 .sheet-backdrop { position: fixed; inset: 0; z-index: 80; background: rgba(0, 0, 0, 0.35); animation: fade-in 0.25s ease both; }
 .sheet { position: fixed; z-index: 81; inset-inline: 0; bottom: 0; max-height: 88dvh; overflow-y: auto; border-radius: 28px 28px 0 0; background: #fff; padding-bottom: calc(20px + env(safe-area-inset-bottom)); animation: sheet-up 0.38s var(--ease) both; overscroll-behavior: contain; }
+.sheet-account { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem; border-radius: 20px; background: linear-gradient(135deg, #eef8f1, #e3f2e8); border: 1px solid rgba(0, 154, 53, 0.15); }
+.sheet-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; min-height: 74px; border-radius: 18px; background: #f5f5f7; font-size: 0.8rem; font-weight: 600; color: #1d1d1f; }
+.sheet-tile svg { color: var(--brand-gold); }
+.sheet-tile:active { transform: scale(0.96); }
 .sheet-grip { width: 42px; height: 5px; border-radius: 9px; background: rgba(0, 0, 0, 0.15); margin: 10px auto 6px; }
 
 /* ---------------------------------------------------------------- footer */
@@ -477,7 +491,15 @@ html[data-anim-ready] .blk[data-anim='blur']:not(.in) > :first-child { filter: b
 @media (max-width: 640px) {
   .btn { max-width: 100%; }
   .btn-row > .btn { flex: 1 1 auto; }
+  /* app feel on phones: tighter sections, full-width primary actions, rounded cards */
+  .section { padding-block: 3rem; }
+  .blk .btn-gold, .blk .btn-dark, .cta-wrap .btn { width: 100%; }
+  .card { border-radius: 20px; }
+  h1, .h-display { letter-spacing: -0.025em; }
+  .hero-cats { display: none; }
 }
+/* smooth, app-like scrolling of horizontal rows */
+.thin-scroll { -webkit-overflow-scrolling: touch; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X, Phone, User, ArrowRight, Megaphone, Check } from 'lucide-react';
+import { ChevronDown, Menu, X, Phone, User, ArrowRight, Megaphone, Check, LayoutGrid, LogIn, UserPlus, Store, ShoppingBag, LifeBuoy, ChevronRight, Search } from 'lucide-react';
 import type { HeaderSettings, SiteSettings } from '@/lib/defaults';
 import { cn } from '@/lib/utils';
 import Logo from './Logo';
@@ -14,14 +14,28 @@ import { Icon } from '@/components/ui/Icon';
 
 type Me = { name: string; role: string } | null;
 export const MENU_EVENT = 'open-site-menu';
+export const CATS_EVENT = 'open-site-categories';
+/** Category tree for the Shop menu and the mobile Categories sheet (from Admin → Categories) */
+export type NavCategory = { slug: string; name: string; icon: string | null; image: string | null; count?: number; children: NavCategory[] };
 
-export default function Header({ site, header }: { site: SiteSettings; header: HeaderSettings }) {
+function CatVisual({ c, className }: { c: NavCategory; className?: string }) {
+  return c.image ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={c.image} alt="" className={cn('object-contain', className)} />
+  ) : (
+    <Icon name={c.icon || 'leaf'} className={className} />
+  );
+}
+
+export default function Header({ site, header, categories = [] }: { site: SiteSettings; header: HeaderSettings; categories?: NavCategory[] }) {
   const fullPath = usePathname() || '/';
   const pathname = splitLocale(fullPath).path;
   const t = useT();
   const L = useLocalize();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [cats, setCats] = useState(false);
+  const [catOpen, setCatOpen] = useState<string | null>(null);
   const [drop, setDrop] = useState<number | null>(null);
   const [me, setMe] = useState<Me>(null);
   const closeTimer = useRef<number | null>(null);
@@ -88,17 +102,21 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    const openMenu = () => setOpen(true);
+    const openMenu = () => { setCats(false); setOpen(true); };
+    const openCats = () => { setOpen(false); setCats(true); };
     window.addEventListener(MENU_EVENT, openMenu);
+    window.addEventListener(CATS_EVENT, openCats);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener(MENU_EVENT, openMenu);
+      window.removeEventListener(CATS_EVENT, openCats);
     };
   }, []);
 
   useEffect(() => {
     setOpen(false);
+    setCats(false);
     setDrop(null);
   }, [pathname]);
 
@@ -111,15 +129,16 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
   }, [header.showLogin, pathname]);
 
   useEffect(() => {
-    document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    const any = open || cats;
+    document.documentElement.style.overflow = any ? 'hidden' : '';
+    if (!any) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && (setOpen(false), setCats(false));
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
       document.documentElement.style.overflow = '';
     };
-  }, [open]);
+  }, [open, cats]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setDrop(null);
@@ -128,9 +147,12 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
   }, []);
 
   const mega = header.mega?.enabled && header.mega.groups?.length ? header.mega : null;
-  const isMega = (href: string) => !!mega && href === mega.attachTo;
+  const shopHref = mega?.attachTo || '/products';
+  const hasCats = categories.length > 0;
+  const isMega = (href: string) => (hasCats ? href === shopHref : !!mega && href === mega.attachTo);
   const isActive = (href: string) => (href === '/' ? pathname === '/' : !!pathname?.startsWith(href));
-  const accountHref = me ? (me.role === 'CUSTOMER' ? '/account' : '/admin') : L('/login');
+  const accountHref = me ? (me.role === 'SELLER' ? '/seller' : me.role === 'BUYER' ? '/buyer' : me.role === 'CUSTOMER' ? '/account' : '/admin') : L('/login');
+  const accountLabel = me ? (me.role === 'SELLER' ? t('Seller dashboard') : me.role === 'BUYER' ? t('Buyer dashboard') : me.role === 'CUSTOMER' ? t('My account') : t('Admin')) : t('Login');
   const enter = (i: number | null) => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current);
     setDrop(i);
@@ -207,8 +229,53 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
             </button>
           </div>
 
-          {/* services mega menu */}
-          {mega && drop !== null && isMega(header.menu[drop]?.href) && (
+          {/* categories mega menu (from Admin → Categories) */}
+          {hasCats && drop !== null && isMega(header.menu[drop]?.href) && (
+            <div className="absolute inset-x-0 top-full hidden pt-3 lg:block" onMouseEnter={() => enter(drop)}>
+              <div className="glass-menu mega-panel rounded-[24px] p-5">
+                <div className={cn('grid gap-4', categories.length >= 3 ? 'grid-cols-3' : 'grid-cols-2')}>
+                  {categories.map((g) => (
+                    <div key={g.slug} className="min-w-0 rounded-2xl bg-[linear-gradient(160deg,#f6fbf7,#eef6f0)] p-4 ring-1 ring-black/[0.04]">
+                      <SmartLink href={`/category/${g.slug}`} onClick={() => setDrop(null)} className="group flex items-center gap-3">
+                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition group-hover:scale-105">
+                          <CatVisual c={g} className="h-7 w-7 text-gold-deep" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate font-display text-[1.02rem] font-semibold text-ink">{g.name}</span>
+                          <span className="block text-xs text-ink/50">{g.count ? `${g.count} ${t('products')}` : t('View category')}</span>
+                        </span>
+                      </SmartLink>
+                      <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-0.5">
+                        {g.children.slice(0, 10).map((c) => (
+                          <li key={c.slug}>
+                            <SmartLink href={`/category/${c.slug}`} onClick={() => setDrop(null)} className="group flex items-center gap-2 rounded-xl px-2 py-1.5 text-[0.84rem] text-ink/80 transition-colors hover:bg-white hover:text-gold-deep">
+                              <CatVisual c={c} className="h-4 w-4 shrink-0 text-gold-deep transition-transform group-hover:scale-110" />
+                              <span className="truncate">{c.name}</span>
+                            </SmartLink>
+                          </li>
+                        ))}
+                      </ul>
+                      {g.children.length > 10 && (
+                        <SmartLink href={`/category/${g.slug}`} onClick={() => setDrop(null)} className="mt-2 inline-flex items-center gap-1 px-2 text-xs font-bold text-gold-deep">
+                          {t('All')} {g.name} <ChevronRight className="h-3.5 w-3.5" />
+                        </SmartLink>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
+                  <p className="text-sm text-ink/60">{t('Verified GST, FSSAI & organic certificates · Direct contact, no commission')}</p>
+                  <div className="flex gap-2">
+                    <SmartLink href="/products" onClick={() => setDrop(null)} className="btn btn-dark btn-sm">{t('All products')} <ArrowRight className="h-4 w-4" /></SmartLink>
+                    <SmartLink href="/sellers" onClick={() => setDrop(null)} className="btn btn-outline btn-sm"><Store className="h-4 w-4" /> {t('All sellers')}</SmartLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* services mega menu (settings) */}
+          {!hasCats && mega && drop !== null && isMega(header.menu[drop]?.href) && (
             <div className="absolute inset-x-0 top-full hidden pt-3 lg:block" onMouseEnter={() => enter(drop)}>
               <div className="glass-menu mega-panel grid grid-cols-[0.8fr_2.2fr] gap-6 rounded-[24px] p-6">
                 <div className="flex flex-col rounded-2xl bg-[linear-gradient(145deg,#fffaf0,#f7ecd0)] p-6">
@@ -263,7 +330,7 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
         </div>
       </header>
 
-      {/* mobile & tablet menu — a bottom sheet (easy to reach with the thumb) */}
+      {/* mobile & tablet menu — pages, account and language (bottom sheet, thumb friendly) */}
       {open && (
         <div className={cn(fit < 2 && 'lg:hidden')}>
           <div className="sheet-backdrop" onClick={() => setOpen(false)} />
@@ -276,51 +343,127 @@ export default function Header({ site, header }: { site: SiteSettings; header: H
               </button>
             </div>
             <nav className="px-5" aria-label="Mobile">
-              <ul className="grid grid-cols-2 gap-2">
+              {/* account strip */}
+              <div className="sheet-account">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-gold-deep shadow-sm"><User className="h-5 w-5" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[0.95rem] font-bold text-ink">{me ? me.name : t('Welcome to') + ' ' + site.name}</span>
+                  <span className="block truncate text-xs text-ink/55">{me ? accountLabel : t('Login or create a free account')}</span>
+                </span>
+                {me ? (
+                  <Link href={accountHref} className="btn btn-gold btn-sm">{t('Open')}</Link>
+                ) : (
+                  <span className="flex gap-1.5">
+                    <Link href={L('/login')} className="btn btn-outline btn-sm !px-3"><LogIn className="h-4 w-4" /> {t('Login')}</Link>
+                    <Link href={L('/register')} className="btn btn-gold btn-sm !px-3"><UserPlus className="h-4 w-4" /> {t('Sign up')}</Link>
+                  </span>
+                )}
+              </div>
+              <ul className="mt-4 grid grid-cols-2 gap-2">
                 {header.menu.map((item, i) => (
                   <li key={i} style={{ animation: `pop .35s cubic-bezier(.2,.8,.2,1) ${i * 0.03}s both` }}>
-                    <SmartLink href={item.href} className={cn('flex min-h-[52px] items-center rounded-2xl px-4 text-[0.95rem] font-medium', isActive(item.href) ? 'chip-active' : 'bg-[#f5f5f7] text-[#1d1d1f]')}>
+                    <SmartLink href={item.href} className={cn('flex min-h-[50px] items-center rounded-2xl px-4 text-[0.93rem] font-medium', isActive(item.href) ? 'chip-active' : 'bg-[#f5f5f7] text-[#1d1d1f]')}>
                       {item.label}
                     </SmartLink>
                   </li>
                 ))}
               </ul>
-              {mega && (
-                <div className="mt-6 space-y-5">
-                  {mega.groups.map((g, gi) => (
-                    <div key={gi}>
-                      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#8a6d2c]">{g.title}</p>
-                      <ul className="mt-2 grid gap-1">
-                        {g.links.map((c, j) => (
-                          <li key={j}>
-                            <SmartLink href={c.href} className="flex items-center gap-3 rounded-xl py-2 text-[0.92rem] text-[#1d1d1f]">
-                              <Icon name={c.icon || 'check'} className="h-4 w-4 shrink-0 text-gold-deep" />
-                              {c.label}
-                            </SmartLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <button type="button" onClick={() => { setOpen(false); setCats(true); }} className="sheet-tile"><LayoutGrid className="h-5 w-5" /> {t('Categories')}</button>
+                <SmartLink href="/register?as=seller" className="sheet-tile"><Store className="h-5 w-5" /> {t('Sell')}</SmartLink>
+                <SmartLink href="/customer-support" className="sheet-tile"><LifeBuoy className="h-5 w-5" /> {t('Help')}</SmartLink>
+              </div>
+              {me && (
+                <ul className="mt-4 divide-y divide-black/5 rounded-2xl bg-[#f5f5f7]">
+                  {(me.role === 'SELLER'
+                    ? [['/seller', t('Dashboard')], ['/seller/products', t('My products')], ['/seller/inquiries', t('Inquiries')], ['/seller/requirements', t('Buy leads')], ['/seller/membership', t('Membership')], ['/seller/profile', t('Company profile')]]
+                    : me.role === 'BUYER'
+                      ? [['/buyer', t('Dashboard')], ['/buyer/requirements', t('My requirements')], ['/buyer/inquiries', t('Inquiries')], ['/buyer/favourites', t('Favourites')], ['/buyer/profile', t('Profile')]]
+                      : [[accountHref, accountLabel]]
+                  ).map(([href, label]) => (
+                    <li key={href}>
+                      <Link href={href} className="flex items-center justify-between px-4 py-3 text-[0.92rem] text-ink">
+                        {label} <ChevronRight className="h-4 w-4 text-ink/30" />
+                      </Link>
+                    </li>
                   ))}
-                </div>
+                  <li>
+                    <a href="/api/auth/logout" className="flex items-center justify-between px-4 py-3 text-[0.92rem] text-rose-600">{t('Log out')}</a>
+                  </li>
+                </ul>
               )}
-              <div className="mt-6">
+              <div className="mt-5">
                 <LanguageSwitcher variant="sheet" />
               </div>
-              <div className="mt-6 grid gap-2.5 pb-2">
+              <div className="mt-5 grid gap-2.5 pb-2">
                 <SmartLink href={header.cta.href} className="btn btn-dark w-full">
                   {header.cta.label}
                 </SmartLink>
                 <a href={`tel:${site.phone}`} className="btn btn-outline w-full">
                   <Phone className="h-4 w-4" /> <span className="ltr">{site.phoneDisplay}</span>
                 </a>
-                {header.showLogin && (
-                  <Link href={accountHref} className="flex items-center justify-center gap-2 py-2 text-sm text-[#3a3a3c]">
-                    <User className="h-4 w-4 text-gold-deep" /> {me ? `${t('My account')} (${me.name})` : t('Client login / Register')}
-                  </Link>
-                )}
               </div>
             </nav>
+          </div>
+        </div>
+      )}
+
+      {/* mobile categories sheet — every category with its icon / image, sub-categories fold out */}
+      {cats && (
+        <div className="lg:hidden">
+          <div className="sheet-backdrop" onClick={() => setCats(false)} />
+          <div className="sheet" role="dialog" aria-modal="true" aria-label={t('Categories')}>
+            <div className="sheet-grip" />
+            <div className="flex items-center justify-between px-5 pb-3 pt-1">
+              <p className="font-display text-[1.15rem] font-semibold text-ink">{t('All categories')}</p>
+              <button onClick={() => setCats(false)} className="grid h-10 w-10 place-items-center rounded-full bg-[#f5f5f7]" aria-label={t('Close')}>
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-5">
+              <form action="/products" className="relative mb-4">
+                <Search className="pointer-events-none absolute start-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40" />
+                <input name="q" placeholder={t('Search products or sellers')} className="field !rounded-full !ps-11" />
+              </form>
+              <ul className="space-y-2 pb-2">
+                {categories.map((g, i) => {
+                  const openIt = catOpen === g.slug;
+                  return (
+                    <li key={g.slug} className="overflow-hidden rounded-2xl bg-[#f5f5f7]" style={{ animation: `pop .35s cubic-bezier(.2,.8,.2,1) ${i * 0.04}s both` }}>
+                      <div className="flex items-center gap-3 px-3 py-2.5">
+                        <SmartLink href={`/category/${g.slug}`} className="flex min-w-0 flex-1 items-center gap-3">
+                          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white shadow-sm"><CatVisual c={g} className="h-6 w-6 text-gold-deep" /></span>
+                          <span className="min-w-0">
+                            <span className="block truncate font-semibold text-ink">{g.name}</span>
+                            <span className="block text-xs text-ink/50">{g.children.length} {t('sub-categories')}{g.count ? ` · ${g.count} ${t('products')}` : ''}</span>
+                          </span>
+                        </SmartLink>
+                        {g.children.length > 0 && (
+                          <button type="button" onClick={() => setCatOpen(openIt ? null : g.slug)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-ink/60" aria-expanded={openIt} aria-label={g.name}>
+                            <ChevronDown className={cn('h-4 w-4 transition-transform', openIt && 'rotate-180')} />
+                          </button>
+                        )}
+                      </div>
+                      {openIt && (
+                        <ul className="grid grid-cols-2 gap-1.5 px-3 pb-3">
+                          {g.children.map((c) => (
+                            <li key={c.slug}>
+                              <SmartLink href={`/category/${c.slug}`} className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-[0.86rem] text-ink/85">
+                                <CatVisual c={c} className="h-4 w-4 shrink-0 text-gold-deep" /> <span className="truncate">{c.name}</span>
+                              </SmartLink>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="grid grid-cols-2 gap-2 pb-2">
+                <SmartLink href="/products" className="btn btn-dark w-full">{t('All products')}</SmartLink>
+                <SmartLink href="/sellers" className="btn btn-outline w-full">{t('All sellers')}</SmartLink>
+              </div>
+            </div>
           </div>
         </div>
       )}

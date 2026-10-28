@@ -204,6 +204,8 @@ export const defaultFooter: FooterSettings = {
         { label: 'Organic Processed Food', href: '/category/organic-processed-food' },
         { label: 'Verified sellers', href: '/sellers?verified=1' },
         { label: 'Buy leads', href: '/requirements' },
+        { label: 'Suppliers by state', href: '/regions' },
+        { label: 'Ratings & reviews', href: '/reviews' },
         { label: 'Post a requirement', href: '/post-requirement' },
       ],
     },

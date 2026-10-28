@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
  * Brand logo. Shows the logo uploaded in Admin → Site settings → Logo.
  * Until one is uploaded, a clean built-in mark is used (green emblem + name).
  */
-export const BRAND_LOGO = '/brand/logo.webp';
-export const BRAND_COIN = '/brand/coin.webp';
+export const BRAND_LOGO = '/brand/logo.svg';
+export const BRAND_COIN = '/brand/coin.svg';
 
 export default function Logo({ src, name, tagline, className, size = 'md' }: { src?: string; name: string; tagline?: string; className?: string; size?: 'md' | 'lg' }) {
   src = src || BRAND_LOGO;
@@ -18,7 +18,7 @@ export default function Logo({ src, name, tagline, className, size = 'md' }: { s
       ) : null}
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={name} width={src === BRAND_LOGO ? 1263 : undefined} height={src === BRAND_LOGO ? 264 : undefined} fetchPriority="high" decoding="async" style={{ height: size === 'lg' ? 'var(--ftr-logo-h, 46px)' : 'var(--logo-h, 40px)' }} className="logo-img w-auto max-w-[62vw] object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
+        <img src={src} alt={name} width={src === BRAND_LOGO ? 760 : undefined} height={src === BRAND_LOGO ? 160 : undefined} fetchPriority="high" decoding="async" style={{ height: size === 'lg' ? 'var(--ftr-logo-h, 46px)' : 'var(--logo-h, 40px)' }} className="logo-img w-auto max-w-[62vw] object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
       ) : (
         <TextMark name={name} tagline={tagline} size={size} />
       )}

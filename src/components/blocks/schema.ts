@@ -101,7 +101,7 @@ export const BLOCKS: BlockSchema[] = [
     group: 'Marketplace',
     fields: [
       { name: 'sidebarTitle', label: 'Sidebar title', type: 'text', half: true },
-      { name: 'sidebarItems', label: 'Categories in the sidebar', type: 'number', half: true },
+      { name: 'sidebarItems', label: 'Categories in the sidebar (the ones marked Featured in Admin → Categories)', type: 'number', half: true },
       { name: 'searchPlaceholder', label: 'Search placeholder', type: 'text' },
       { name: 'supplierLabel', label: 'Button: find supplier', type: 'text', half: true },
       { name: 'buyerLabel', label: 'Button: find buyer', type: 'text', half: true },
@@ -618,7 +618,7 @@ export const BLOCKS: BlockSchema[] = [
     label: 'Reviews',
     description: 'Client reviews from Admin → Testimonials',
     group: 'Dynamic',
-    fields: [label, heading, accent, lead, { name: 'limit', label: 'Show first … (rest behind "Show more")', type: 'number' }, { name: 'googleBadge', label: 'Show Google rating badge', type: 'boolean' }],
+    fields: [label, heading, accent, lead, { name: 'limit', label: 'Show first … (rest behind "Show more")', type: 'number' }, { name: 'googleBadge', label: 'Show Google rating badge', type: 'boolean' }, { name: 'allLabel', label: '"All reviews" button label', type: 'text', half: true }],
     defaults: { theme: 'sand', heading: 'What our clients say', limit: 6 },
   },
   {

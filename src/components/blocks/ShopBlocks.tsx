@@ -22,45 +22,55 @@ const FLAG = '/images/site/india.png';
 export async function ShopHero({ data, site }: P) {
   const { t } = await getI18n();
   const tree = await getCategoryTree();
-  const roots = tree.slice(0, 3);
-  // sub-categories interleaved across the main categories (fruit, cream, flours, vegetables, face wash…)
-  const subs: typeof roots = [];
-  const max = Math.max(0, (Number(data.sidebarItems) || 10) - roots.length);
-  for (let k = 0; subs.length < max; k++) {
-    const row = roots.map((r) => r.children[k]).filter(Boolean);
-    if (!row.length) break;
-    subs.push(...row.slice(0, max - subs.length));
+  const all = tree.flatMap((r) => [r, ...r.children]);
+  const limit = Math.max(4, Number(data.sidebarItems) || 9);
+  // Popular categories: the ones marked "Featured" in Admin → Categories (main categories first).
+  // Without any featured ones, the main categories plus their first sub-categories are shown.
+  let list = all.filter((c) => c.featured);
+  if (list.length < 4) {
+    const roots = tree.slice(0, 3);
+    const subs: typeof roots = [];
+    for (let k = 0; roots.length && subs.length < limit; k++) {
+      const row = roots.map((r) => r.children[k]).filter(Boolean);
+      if (!row.length) break;
+      subs.push(...row);
+    }
+    list = [...roots, ...subs];
   }
+  list = list.slice(0, limit);
   const slides = (Array.isArray(data.slides) ? data.slides : []).filter((s: any) => s && (s.image || s.title));
   return (
     <section id={data.anchor || undefined} className="theme-light relative pt-[7.6rem] sm:pt-[8.2rem]">
       <div className="hero-aurora" />
       <div className="container-x relative">
-        <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
-          {/* category sidebar */}
-          <aside className="fx-up glass hidden rounded-[26px] p-3 lg:block" style={{ ['--d' as any]: '.05s' }}>
-            <SmartLink href="/products" className="flex items-center justify-between px-3 py-2 font-display text-[1.15rem] font-semibold text-ink">
-              <span className="inline-flex items-center gap-2"><Icon name="boxes" className="h-5 w-5 text-gold-deep" /> {data.sidebarTitle || t('All Category')}</span>
-              <ChevronRight className="h-4 w-4 rotate-90 text-ink/40" />
+        <div className="grid items-stretch gap-5 lg:grid-cols-[290px_1fr]">
+          {/* popular categories — same height as the search + slider column */}
+          <aside className="fx-up glass relative hidden flex-col overflow-hidden rounded-[26px] p-3 lg:flex" style={{ ['--d' as any]: '.05s' }}>
+            <SmartLink href="/products" className="flex items-center justify-between px-3 py-2 font-display text-[1.12rem] font-semibold text-ink">
+              <span className="inline-flex items-center gap-2"><Icon name="boxes" className="h-5 w-5 text-gold-deep" /> {data.sidebarTitle || t('Popular categories')}</span>
+              <ChevronRight className="h-4 w-4 text-ink/40" />
             </SmartLink>
-            <ul className="mt-1 space-y-1.5">
-              {[...roots, ...subs].map((c) => (
-                <li key={c.id}>
-                  <SmartLink href={`/category/${c.slug}`} className="group flex items-center justify-between rounded-2xl border border-ink/5 bg-white/80 px-3.5 py-2.5 text-[0.95rem] text-ink/85 shadow-sm transition hover:-translate-y-px hover:border-gold hover:text-gold-deep hover:shadow-md">
-                    <span className="inline-flex items-center gap-2.5">
+            <ul className="hero-cats mt-1 flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
+              {list.map((c) => (
+                <li key={c.id} className="min-h-0 flex-1">
+                  <SmartLink href={`/category/${c.slug}`} className="group flex h-full min-h-[40px] items-center justify-between rounded-2xl border border-ink/5 bg-white/85 px-3.5 text-[0.93rem] text-ink/85 shadow-sm transition hover:-translate-y-px hover:border-gold hover:text-gold-deep hover:shadow-md">
+                    <span className="inline-flex min-w-0 items-center gap-2.5">
                       {c.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={c.image} alt="" className="h-5 w-5 object-contain" />
+                        <img src={c.image} alt="" className="h-6 w-6 object-contain" />
                       ) : (
-                        <Icon name={c.icon || 'leaf'} className="h-4.5 w-4.5 text-ink/60 group-hover:text-gold-deep" />
+                        <span className="grid h-6 w-6 place-items-center rounded-lg bg-gold/10"><Icon name={c.icon || 'leaf'} className="h-3.5 w-3.5 text-gold-deep" /></span>
                       )}
-                      {c.name}
+                      <span className="truncate">{c.name}</span>
                     </span>
-                    {c.children.length > 0 && <ChevronRight className="h-4 w-4 text-ink/30" />}
+                    <span className="inline-flex items-center gap-1 text-xs text-ink/35">{c.count ? c.count : ''}<ChevronRight className="h-4 w-4" /></span>
                   </SmartLink>
                 </li>
               ))}
             </ul>
+            <SmartLink href="/products" className="mt-2 flex items-center justify-center gap-1.5 rounded-2xl bg-ink px-3 py-2.5 text-sm font-bold text-white transition hover:bg-gold-deep">
+              {t('All categories')} <ArrowRight className="h-4 w-4" />
+            </SmartLink>
           </aside>
           {/* search + slider */}
           <div className="min-w-0">
@@ -70,11 +80,19 @@ export async function ShopHero({ data, site }: P) {
             <div className="fx-up mt-4" style={{ ['--d' as any]: '.18s' }}>
               <ShopSlider slides={JSON.parse(JSON.stringify(slides))} interval={Number(data.interval) || 6} />
             </div>
-            {/* categories on phones */}
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-              {[...roots, ...subs].map((c) => (
-                <SmartLink key={c.id} href={`/category/${c.slug}`} className="glass shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold text-ink/80">
-                  {c.name}
+            {/* categories on phones: round image chips, app style */}
+            <div className="thin-scroll mt-4 flex gap-3 overflow-x-auto pb-2 lg:hidden">
+              {list.map((c) => (
+                <SmartLink key={c.id} href={`/category/${c.slug}`} className="flex w-[76px] shrink-0 flex-col items-center gap-1.5 text-center">
+                  <span className="glass grid h-16 w-16 place-items-center rounded-[22px]">
+                    {c.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.image} alt="" className="h-9 w-9 object-contain" />
+                    ) : (
+                      <Icon name={c.icon || 'leaf'} className="h-7 w-7 text-gold-deep" />
+                    )}
+                  </span>
+                  <span className="line-clamp-2 text-[0.7rem] font-semibold leading-tight text-ink/80">{c.name}</span>
                 </SmartLink>
               ))}
             </div>
@@ -86,13 +104,17 @@ export async function ShopHero({ data, site }: P) {
 }
 
 /* ------------------------------------------------------------------ section heading row (title + View all) */
-function RowHead({ title, href, label }: { title: string; href?: string; label?: string }) {
+function RowHead({ title, href, label, sub }: { title: string; href?: string; label?: string; sub?: string }) {
   return (
-    <div className="reveal mb-5 flex items-center justify-between gap-4">
-      <h2 className="font-display text-[1.45rem] font-semibold tracking-tight text-ink sm:text-[1.7rem]">{title}</h2>
+    <div className="reveal mb-6 flex items-end justify-between gap-4">
+      <div className="min-w-0">
+        <h2 className="font-display text-[1.45rem] font-semibold tracking-tight text-ink sm:text-[1.75rem]">{title}</h2>
+        <span className="mt-2 block h-1 w-14 rounded-full" style={{ background: 'var(--gold-grad)' }} />
+        {sub && <p className="mt-2 text-sm text-ink/55">{sub}</p>}
+      </div>
       {href && (
-        <SmartLink href={href} className="btn btn-outline btn-sm !rounded-full">
-          {label || 'View all'}
+        <SmartLink href={href} className="btn btn-outline btn-sm shrink-0 !rounded-full">
+          {label || 'View all'} <ArrowRight className="h-4 w-4" />
         </SmartLink>
       )}
     </div>
@@ -101,8 +123,10 @@ function RowHead({ title, href, label }: { title: string; href?: string; label?:
 
 /* ------------------------------------------------------------------ product row (live products, or sample items) */
 export async function ProductRow({ data }: P) {
+  const { t } = await getI18n();
   const take = Math.max(4, Number(data.limit) || 8);
-  let cards: { href: string; image: string; name: string; rating: number; sub?: string }[] = [];
+  type C = { href: string; image: string; name: string; rating: number; count?: number; sub?: string; moq?: string; verified?: boolean; seller?: string; place?: string; featured?: boolean };
+  let cards: C[] = [];
   let categoryIds: string[] | undefined;
   if (data.category) {
     const tree = await getCategoryTree();
@@ -111,35 +135,41 @@ export async function ProductRow({ data }: P) {
     if (c) categoryIds = [c.id, ...tree.filter((r) => r.id === c.id).flatMap((r) => r.children.map((x) => x.id))];
   }
   const { items } = await listProducts({ take, categoryIds, sort: data.sort || 'new', featured: data.onlyFeatured ? true : undefined });
-  if (items.length) cards = items.map((p) => ({ href: `/products/${p.slug}`, image: imgs(p.images)[0] || '', name: p.name, rating: p.ratingAvg || 0, sub: priceLabel(p) }));
+  if (items.length) cards = items.map((p) => ({ href: `/products/${p.slug}`, image: imgs(p.images)[0] || '', name: p.name, rating: p.ratingAvg || 0, count: p.ratingCount, sub: priceLabel(p), moq: p.moq || undefined, verified: p.seller?.verified, seller: p.seller?.companyName, place: p.seller?.city || p.seller?.state || undefined, featured: p.featured }));
   else if (data.samples !== false) {
     const sample = (Array.isArray(data.items) ? data.items : []).filter((x: any) => x?.image || x?.title);
-    cards = sample.map((s: any) => ({ href: s.link?.href || '/products', image: s.image || '', name: s.title || 'Product', rating: Number(s.rating) || 5, sub: s.meta }));
+    cards = sample.map((s: any) => ({ href: s.link?.href || '/products', image: s.image || '', name: s.title || 'Product', rating: Number(s.rating) || 5, sub: s.meta, verified: true }));
   }
   if (!cards.length) return null;
   const grid = data.layout === 'grid';
   return (
     <Section data={data} tight>
       <div className="container-x">
-        <RowHead title={data.heading || 'Products'} href={data.cta?.href || '/products'} label={data.cta?.label} />
-        <div className={cn(grid ? 'grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6' : 'thin-scroll flex gap-3 overflow-x-auto pb-3 snap-x')}>
+        <RowHead title={data.heading || t('Products')} href={data.cta?.href || '/products'} label={data.cta?.label || t('View all')} sub={data.lead} />
+        <div className={cn(grid ? 'grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 sm:gap-4' : 'thin-scroll -mx-4 flex gap-3 overflow-x-auto px-4 pb-4 snap-x sm:gap-4')}>
           {cards.map((c, i) => (
-            <SmartLink key={c.href + i} href={c.href} className={cn('card card-lift tilt reveal group flex flex-col items-center p-3 text-center snap-start', !grid && 'w-[160px] shrink-0 sm:w-[185px]')}>
-              <div className="grid aspect-square w-full place-items-center overflow-hidden rounded-2xl bg-[#f4f6f4]">
+            <SmartLink key={c.href + i} href={c.href} className={cn('pcard reveal group snap-start', !grid && 'w-[168px] shrink-0 sm:w-[200px]')}>
+              <div className="pcard-img">
                 {c.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.image} alt={c.name} loading="lazy" className="h-[80%] w-[80%] object-contain transition-transform duration-500 group-hover:scale-110" />
+                  <img src={c.image} alt={c.name} loading="lazy" className="h-[82%] w-[82%] object-contain transition-transform duration-500 group-hover:scale-110" />
                 ) : (
                   <Icon name="leaf" className="h-10 w-10 text-gold" />
                 )}
+                {c.featured && <span className="pcard-tag">{t('Featured')}</span>}
+                {c.verified && <span className="pcard-verified"><BadgeCheck className="h-3 w-3" /> {t('Verified')}</span>}
               </div>
-              <p className="mt-3 line-clamp-1 text-[0.95rem] font-semibold text-ink">{c.name}</p>
-              {c.sub && <p className="line-clamp-1 text-xs text-ink/50">{c.sub}</p>}
-              <span className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#f4f6f4] px-2.5 py-1">
-                <Rating value={c.rating} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={FLAG} alt="India" className="h-4 w-4" />
-              </span>
+              <div className="px-3 pb-3 pt-2.5 text-start">
+                <p className="line-clamp-1 text-[0.93rem] font-semibold text-ink">{c.name}</p>
+                {c.sub && <p className="mt-0.5 line-clamp-1 text-[0.8rem] font-bold text-gold-deep">{c.sub}</p>}
+                <p className="line-clamp-1 text-[0.72rem] text-ink/50">{c.moq ? `${t('MOQ')}: ${c.moq}` : c.seller || t('Price on request')}</p>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5"><Rating value={c.rating} /> {c.count ? <span className="text-[0.68rem] text-ink/45">({c.count})</span> : null}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={FLAG} alt="India" className="h-4 w-4" title={c.place || 'India'} />
+                </div>
+                <span className="pcard-btn">{t('Inquire now')} <ArrowRight className="h-3.5 w-3.5" /></span>
+              </div>
             </SmartLink>
           ))}
         </div>
@@ -174,11 +204,14 @@ export async function WantedCards({ data }: P) {
                 <p className="mt-2 text-sm font-semibold text-rose-600">WANTED: {c.wanted}</p>
                 <p className="mt-1 font-display text-[1.6rem] font-semibold leading-tight text-ink">{c.from}</p>
                 <p className="mt-3 line-clamp-3 text-sm text-ink/70">{c.text}</p>
-                <span className="btn btn-outline btn-sm mt-5 bg-white">View More</span>
+                <span className="btn btn-outline btn-sm mt-5 bg-white transition group-hover:border-gold group-hover:bg-gold group-hover:text-white">View More <ArrowRight className="h-3.5 w-3.5" /></span>
               </div>
               {c.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.image} alt="" loading="lazy" className={cn('pointer-events-none absolute transition-transform duration-700 group-hover:scale-105', wide ? 'inset-y-0 right-0 h-full w-1/2 object-cover' : 'bottom-0 left-0 h-[48%] w-full object-cover')} />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" loading="lazy" className={cn('pointer-events-none absolute transition-transform duration-700 group-hover:scale-105', wide ? 'inset-y-0 right-0 h-full w-1/2 object-cover' : 'bottom-0 left-0 h-[48%] w-full object-cover')} />
+                  <span className={cn('pointer-events-none absolute', wide ? 'inset-y-0 right-1/2 w-24 bg-gradient-to-r from-[#f7f6f1] to-transparent' : 'inset-x-0 top-[52%] h-10 bg-gradient-to-b from-[#f7f6f1] to-transparent -translate-y-full')} />
+                </>
               )}
             </SmartLink>
           ))}
@@ -214,16 +247,17 @@ export async function Regions({ data }: P) {
   return (
     <Section data={data} tight>
       <div className="container-x">
-        <RowHead title={data.heading || 'Suppliers By Region'} href={data.cta?.href || '/sellers'} label={data.cta?.label} />
+        <RowHead title={data.heading || 'Suppliers By Region'} href={data.cta?.href || '/regions'} label={data.cta?.label || 'All states'} />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
           {list.map((s) => (
-            <SmartLink key={s} href={`/sellers?state=${encodeURIComponent(s)}`} className="card card-lift tilt reveal flex min-h-[100px] flex-col items-center justify-center gap-1 p-3 text-center text-[0.95rem] font-semibold text-ink/85">
+            <SmartLink key={s} href={`/sellers?state=${encodeURIComponent(s)}`} className="card card-lift tilt reveal group flex min-h-[104px] flex-col items-center justify-center gap-1.5 p-3 text-center text-[0.9rem] font-semibold text-ink/85">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] font-display text-[0.95rem] font-bold text-gold-deep ring-2 ring-white shadow-sm transition group-hover:scale-110">{s.slice(0, 2).toUpperCase()}</span>
               <span className="inline-flex items-center gap-1.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={FLAG} alt="" className="h-4 w-4" />
-                {s}
+                <img src={FLAG} alt="" className="h-3.5 w-3.5" />
+                <span className="line-clamp-1">{s}</span>
               </span>
-              {counts.get(s) ? <span className="text-xs font-normal text-ink/45">{counts.get(s)} sellers</span> : null}
+              <span className="text-[0.7rem] font-normal text-ink/45">{counts.get(s) ? `${counts.get(s)} sellers` : 'View sellers'}</span>
             </SmartLink>
           ))}
         </div>

@@ -5,13 +5,13 @@ export const CATEGORIES = [
   {
     name: 'Organic Agriculture', slug: 'organic-agriculture', icon: 'wheat', featured: true, image: '/images/site/category2.png',
     children: [
-      { name: 'Fruit', slug: 'fruit', icon: 'apple', image: '/images/site/category5.png' },
-      { name: 'Vegetables', slug: 'vegetables', icon: 'carrot', image: '/images/site/category9.png' },
-      { name: 'Dairy Products', slug: 'dairy-products', icon: 'milk', image: '/images/site/category6.png' },
+      { name: 'Fruit', slug: 'fruit', featured: true, icon: 'apple', image: '/images/site/category5.png' },
+      { name: 'Vegetables', slug: 'vegetables', featured: true, icon: 'carrot', image: '/images/site/category9.png' },
+      { name: 'Dairy Products', slug: 'dairy-products', featured: true, icon: 'milk', image: '/images/site/category6.png' },
       { name: 'Oil Seeds', slug: 'oil-seeds', icon: 'droplets', image: '/images/site/category7.png' },
       { name: 'Pulses', slug: 'pulses', icon: 'bean', image: '/images/site/category8.png' },
       { name: 'Grains & Cereals', slug: 'grains-cereals', icon: 'wheat' },
-      { name: 'Spices & Herbs', slug: 'spices-herbs', icon: 'leaf' },
+      { name: 'Spices & Herbs', slug: 'spices-herbs', featured: true, icon: 'leaf' },
       { name: 'Dry Fruits & Nuts', slug: 'dry-fruits-nuts', icon: 'nut' },
       { name: 'Seeds & Saplings', slug: 'seeds-saplings', icon: 'sprout' },
       { name: 'Fertilizers & Bio-inputs', slug: 'fertilizers-bio-inputs', icon: 'flask-conical' },
@@ -20,8 +20,8 @@ export const CATEGORIES = [
   {
     name: 'Organic Beauty', slug: 'organic-beauty', icon: 'sparkles', featured: true, image: '/images/site/category3.png',
     children: [
-      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', icon: 'droplet', image: '/images/site/category10.png' },
-      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', icon: 'smile', image: '/images/site/category11.png' },
+      { name: 'Cream & Moisturisers', slug: 'cream-moisturisers', featured: true, icon: 'droplet', image: '/images/site/category10.png' },
+      { name: 'Face Wash & Cleansers', slug: 'face-wash-cleansers', featured: true, icon: 'smile', image: '/images/site/category11.png' },
       { name: 'Hair Care', slug: 'hair-care', icon: 'scissors' },
       { name: 'Soaps & Body Care', slug: 'soaps-body-care', icon: 'bath' },
       { name: 'Essential Oils', slug: 'essential-oils', icon: 'flower' },
@@ -31,9 +31,9 @@ export const CATEGORIES = [
   {
     name: 'Organic Processed Food', slug: 'organic-processed-food', icon: 'cookie', featured: true, image: '/images/site/category4.png',
     children: [
-      { name: 'Flours & Atta', slug: 'flours-atta', icon: 'package' },
+      { name: 'Flours & Atta', slug: 'flours-atta', featured: true, icon: 'package' },
       { name: 'Snacks', slug: 'snacks', icon: 'cookie' },
-      { name: 'Sweeteners (Jaggery, Honey)', slug: 'sweeteners', icon: 'candy' },
+      { name: 'Sweeteners (Jaggery, Honey)', slug: 'sweeteners', featured: true, icon: 'candy' },
       { name: 'Beverages & Tea', slug: 'beverages-tea', icon: 'coffee' },
       { name: 'Pickles, Jams & Sauces', slug: 'pickles-jams-sauces', icon: 'jar' },
       { name: 'Ready to Cook', slug: 'ready-to-cook', icon: 'chef-hat' },
@@ -57,7 +57,7 @@ export async function seedMarketplace(prisma) {
     if (parent.createdAt.getTime() > Date.now() - 5000) created++;
     for (let j = 0; j < c.children.length; j++) {
       const ch = c.children[j];
-      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: { image: ch.image || undefined }, create: { slug: ch.slug, name: ch.name, icon: ch.icon, image: ch.image || null, parentId: parent.id, order: j } });
+      const row = await prisma.category.upsert({ where: { slug: ch.slug }, update: { image: ch.image || undefined, ...(ch.featured ? { featured: true } : {}) }, create: { slug: ch.slug, name: ch.name, icon: ch.icon, image: ch.image || null, featured: !!ch.featured, parentId: parent.id, order: j } });
       if (row.createdAt.getTime() > Date.now() - 5000) created++;
     }
   }

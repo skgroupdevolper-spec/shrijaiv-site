@@ -14,10 +14,14 @@ import OfferPopup from '@/components/site/OfferPopup';
 import { designCss, designBodyClass, googleFontsUrl } from '@/lib/design';
 import ChatLoader from '@/components/site/chat/ChatLoader';
 import { getChatConfig, widgetConfig } from '@/lib/chatbot/config';
+import { getCategoryTree } from '@/lib/marketplace/data';
+import type { NavCategory } from '@/components/site/Header';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const { locale, dict } = await getI18n();
-  const [{ site, header, footer }, tr, design, fees, offer, chat] = await Promise.all([getLocalizedBundle(locale), getSetting('translation'), getSetting('design'), getLocalizedFees(locale), getLocalizedOffer(locale), getChatConfig()]);
+  const [{ site, header, footer }, tr, design, fees, offer, chat, tree] = await Promise.all([getLocalizedBundle(locale), getSetting('translation'), getSetting('design'), getLocalizedFees(locale), getLocalizedOffer(locale), getChatConfig(), getCategoryTree().catch(() => [])]);
+  const nav = (n: (typeof tree)[number]): NavCategory => ({ slug: n.slug, name: n.name, icon: n.icon, image: n.image, count: n.count, children: n.children.map(nav) });
+  const categories = tree.map(nav);
   const languages = tr.showSwitcher ? tr.enabled : ['en'];
   // switching language: no loading screen, the page simply appears in the new language
   const switching = !!(await cookies()).get('rgv_switch');
@@ -35,7 +39,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         </div>
         <NavProgress />
         {site.showPreloader && !switching && <Preloader />}
-        <Header site={site} header={header} />
+        <Header site={site} header={header} categories={categories} />
         <main id="main">{children}</main>
         <Footer site={site} footer={footer} />
         <Floating site={site} />

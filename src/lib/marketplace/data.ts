@@ -122,12 +122,13 @@ export async function getSeller(slug: string) {
   return ls;
 }
 
-export async function listRequirements(f: { q?: string; categoryIds?: string[]; state?: string; page?: number; take?: number } = {}) {
+export async function listRequirements(f: { q?: string; categoryIds?: string[]; state?: string; featured?: boolean; page?: number; take?: number } = {}) {
   const take = Math.min(60, Math.max(1, f.take || 20));
   const page = Math.max(1, f.page || 1);
   const where: any = { status: 'open' };
   if (f.categoryIds?.length) where.categoryId = { in: f.categoryIds };
   if (f.state) where.deliveryState = f.state;
+  if (f.featured) where.featured = true;
   if (f.q) where.OR = [{ title: { contains: f.q } }, { details: { contains: f.q } }];
   const [items, total] = await Promise.all([
     prisma.requirement.findMany({ where, orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }], take, skip: (page - 1) * take, include: { category: { select: { slug: true, name: true } }, buyer: { select: { buyerType: true, city: true, state: true, verified: true, companyName: true } } } }),

@@ -256,6 +256,13 @@ export async function Testimonials({ data }: P) {
         <Head label={data.label} heading={data.heading} accent={data.accent} lead={data.lead} />
         {data.googleBadge && <GoogleBadge />}
         <ReviewGrid items={JSON.parse(JSON.stringify(items))} limit={Number(data.limit) || 6} />
+        {data.allLink !== false && (
+          <div className="reveal mt-8 text-center">
+            <SmartLink href="/reviews" className="btn btn-outline">
+              {data.allLabel || 'All ratings & reviews'} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+            </SmartLink>
+          </div>
+        )}
       </div>
     </Section>
   );

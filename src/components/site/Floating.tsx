@@ -1,14 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ArrowUp, X, Phone, House, LayoutGrid, Megaphone, Menu } from 'lucide-react';
+import { ArrowUp, X, Phone, House, LayoutGrid, Megaphone, Menu, User } from 'lucide-react';
 import type { SiteSettings } from '@/lib/defaults';
 import { SocialIcon } from '@/components/ui/Icon';
 import { resolveHref } from '@/components/ui/href';
 import SmartLink from '@/components/ui/SmartLink';
 import { splitLocale } from '@/lib/i18n/config';
 import { useT } from './SiteProvider';
-import { MENU_EVENT } from './Header';
+import { MENU_EVENT, CATS_EVENT } from './Header';
 
 /** WhatsApp bubble, calculator side tab, back-to-top and the mobile bottom navigation bar */
 export default function Floating({ site }: { site: SiteSettings }) {
@@ -95,20 +95,20 @@ export default function Floating({ site }: { site: SiteSettings }) {
             <House className="h-[21px] w-[21px]" />
             <span>{t('Home')}</span>
           </SmartLink>
-          <SmartLink href="/products" className={active('/products') || active('/category') ? 'is-active' : ''}>
+          <button type="button" onClick={() => window.dispatchEvent(new CustomEvent(CATS_EVENT))} className={active('/products') || active('/category') ? 'is-active' : ''}>
             <LayoutGrid className="h-[21px] w-[21px]" />
-            <span>{t('Products')}</span>
-          </SmartLink>
+            <span>{t('Categories')}</span>
+          </button>
           <SmartLink href="/post-requirement" className="mnav-cta" ariaLabel={t('Post a requirement')}>
             <i>
               <Megaphone className="h-5 w-5" />
             </i>
             <span>{t('Post')}</span>
           </SmartLink>
-          <a href={wa} target="_blank" rel="noopener noreferrer">
-            <SocialIcon name="whatsapp" className="h-[21px] w-[21px] text-[#25D366]" />
-            <span>{t('WhatsApp')}</span>
-          </a>
+          <SmartLink href="/login" className={active('/login') || active('/seller') || active('/buyer') || active('/account') ? 'is-active' : ''}>
+            <User className="h-[21px] w-[21px]" />
+            <span>{t('Account')}</span>
+          </SmartLink>
           <button type="button" onClick={() => window.dispatchEvent(new CustomEvent(MENU_EVENT))}>
             <Menu className="h-[21px] w-[21px]" />
             <span>{t('Menu')}</span>

@@ -68,8 +68,9 @@ export default async function ProductPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ListingHeader compact crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} eyebrow={p.category?.name} title={p.name} />
       <section className="theme-sand pb-16 pt-4 sm:pb-24">
-        <div className="container-x grid gap-10 lg:grid-cols-[1.05fr_1fr]">
-          <div>
+        <div className="container-x grid items-start gap-10 lg:grid-cols-[1.05fr_1fr]">
+          {/* the gallery stays in view while the details on the right scroll */}
+          <div className="lg:sticky lg:top-28">
             <Gallery images={imgs} alt={p.name} />
             {p.video && (
               <div className="card mt-4 overflow-hidden">

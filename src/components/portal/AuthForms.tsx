@@ -102,19 +102,21 @@ export function AdminSetupForm() {
 
 const INDIAN_STATES = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman & Nicobar', 'Chandigarh', 'Dadra & Nagar Haveli and Daman & Diu', 'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'];
 
-export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTypes = [] }: { initialRole?: 'buyer' | 'seller'; sellerTypes?: string[]; buyerTypes?: string[] }) {
+export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTypes = [], categories = [] }: { initialRole?: 'buyer' | 'seller'; sellerTypes?: string[]; buyerTypes?: string[]; categories?: { id: string; name: string }[] }) {
   const t = useT();
   const [role, setRole] = useState<'buyer' | 'seller'>(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const types = role === 'seller' ? sellerTypes : buyerTypes;
+  const [more, setMore] = useState(false);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError('');
     const fd = new FormData(e.currentTarget);
     try {
-      const d = await post('/api/auth/register', { ...Object.fromEntries(fd.entries()), role });
+      const body: Record<string, any> = { ...Object.fromEntries(fd.entries()), role, categories: fd.getAll('categories') };
+      const d = await post('/api/auth/register', body);
       window.location.href = d.redirect;
     } catch (err: any) {
       setError(err.message);
@@ -150,13 +152,59 @@ export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTyp
           ))}
         </select>
       </div>
-      <input name="city" placeholder={t('City')} className="field" autoComplete="address-level2" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input name="city" placeholder={t('City')} className="field" autoComplete="address-level2" />
+        <input name="pincode" inputMode="numeric" placeholder={t('PIN code')} className="field" autoComplete="postal-code" />
+      </div>
+      {categories.length > 0 && (
+        <div>
+          <p className="mb-1.5 text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-ink/45">{role === 'seller' ? t('I sell') : t('I buy')}</p>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <label key={c.id} className="cursor-pointer">
+                <input type="checkbox" name="categories" value={c.id} className="peer sr-only" />
+                <span className="inline-block rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-sm font-semibold text-ink/70 transition peer-checked:border-transparent peer-checked:bg-ink peer-checked:text-white">{c.name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+      <button type="button" onClick={() => setMore((v) => !v)} className="flex w-full items-center justify-between rounded-2xl bg-ink/5 px-4 py-3 text-sm font-bold text-ink">
+        {role === 'seller' ? t('Business details (GST, FSSAI, website…)') : t('More details (optional)')}
+        <span className="text-ink/50">{more ? '−' : '+'}</span>
+      </button>
+      {more && (
+        <div className="space-y-3 rounded-2xl border border-ink/10 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input name="gst" placeholder={t('GST number')} className="field uppercase" maxLength={15} />
+            {role === 'seller' ? <input name="fssai" placeholder={t('FSSAI licence (food)')} className="field" maxLength={14} /> : <input name="whatsapp" inputMode="tel" placeholder={t('WhatsApp (if different)')} className="field" />}
+          </div>
+          {role === 'seller' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input name="year" inputMode="numeric" placeholder={t('Year established')} className="field" maxLength={4} />
+              <select name="employees" className="field" defaultValue="">
+                <option value="">{t('Employees')}</option>
+                {['1-10', '11-50', '51-200', '201-500', '500+'].map((x) => (
+                  <option key={x} value={x}>{x}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {role === 'seller' && <input name="website" type="url" placeholder={t('Website (https://…)')} className="field" />}
+          {role === 'seller' && <input name="whatsapp" inputMode="tel" placeholder={t('WhatsApp (if different from mobile)')} className="field" />}
+          <input name="address" placeholder={t('Address')} className="field" autoComplete="street-address" />
+          <textarea name="about" rows={3} placeholder={role === 'seller' ? t('About your company — products, certifications, capacity') : t('What do you usually buy, and how much?')} className="field" />
+        </div>
+      )}
       <PasswordInput name="password" required minLength={8} placeholder={t('Password (min 8 characters)')} autoComplete="new-password" />
+      <label className="flex items-start gap-2 text-xs text-ink/60">
+        <input type="checkbox" name="agree" required className="mt-0.5 h-4 w-4 accent-[var(--brand-gold)]" />
+        <span>{t('I agree to the')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms')}</SmartLink> {t('and')} <SmartLink href="/privacy" className="font-bold text-gold-deep">{t('Privacy Policy')}</SmartLink>, {t('and to receive inquiries and updates by email / WhatsApp.')}</span>
+      </label>
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
       <button disabled={loading} className="btn btn-gold w-full">
         {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {role === 'seller' ? t('Create my seller account') : t('Create my buyer account')}
       </button>
-      <p className="text-center text-xs text-ink/50">{t('By creating an account you agree to our')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms')}</SmartLink> {t('and')} <SmartLink href="/privacy" className="font-bold text-gold-deep">{t('Privacy Policy')}</SmartLink>.</p>
       <p className="text-center text-sm text-ink/60">
         {t('Already have an account?')} <SmartLink href="/login" className="font-bold text-gold-deep">{t('Sign in')}</SmartLink>
       </p>

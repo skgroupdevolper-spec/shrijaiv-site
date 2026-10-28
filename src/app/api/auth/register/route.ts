@@ -20,6 +20,18 @@ export async function POST(req: Request) {
   const city = String(b.city || '').trim();
   const state = String(b.state || '').trim();
   const type = String(b.type || '').trim();
+  const str = (k: string, max = 200) => String(b[k] || '').trim().slice(0, max) || null;
+  const gst = str('gst', 15)?.toUpperCase() || null;
+  const fssai = str('fssai', 14);
+  const whatsapp = String(b.whatsapp || '').replace(/[^\d+]/g, '').trim() || phone;
+  const website = str('website');
+  const address = str('address', 300);
+  const pincode = str('pincode', 10);
+  const about = str('about', 2000);
+  const employees = str('employees', 20);
+  const yearRaw = Number(b.year);
+  const year = yearRaw >= 1900 && yearRaw <= new Date().getFullYear() ? yearRaw : null;
+  const categories = Array.isArray(b.categories) ? b.categories.map(String).filter(Boolean).slice(0, 20) : [];
   if (!name) return fail('Please enter your name');
   if (!isEmail(email)) return fail('Please enter a valid email');
   if (!phone || phone.replace(/\D/g, '').length < 10) return fail('Please enter a valid mobile number');
@@ -34,10 +46,10 @@ export async function POST(req: Request) {
   if (role === 'SELLER') {
     const slug = await uniqueSlug(company, async (s) => !!(await prisma.sellerProfile.findUnique({ where: { slug: s }, select: { id: true } })));
     await prisma.sellerProfile.create({
-      data: { userId: user.id, slug, companyName: company, businessType: type || null, phone, whatsapp: phone, email, city: city || null, state: state || null, status: mp.approval.sellers ? 'pending' : 'approved' },
+      data: { userId: user.id, slug, companyName: company, businessType: type || null, phone, whatsapp, email, city: city || null, state: state || null, gstNumber: gst, fssaiNumber: fssai, website, address, pincode, about, employees, yearEstablished: year, status: mp.approval.sellers ? 'pending' : 'approved' },
     });
   } else {
-    await prisma.buyerProfile.create({ data: { userId: user.id, companyName: company || null, buyerType: type || null, phone, whatsapp: phone, city: city || null, state: state || null } });
+    await prisma.buyerProfile.create({ data: { userId: user.id, companyName: company || null, buyerType: type || null, phone, whatsapp, city: city || null, state: state || null, gstNumber: gst, address, pincode, interests: JSON.stringify(categories) } });
   }
 
   await prisma.notification.create({ data: { type: role === 'SELLER' ? 'seller' : 'buyer', title: `New ${role === 'SELLER' ? 'seller' : 'buyer'}: ${company || name}`, body: `${name} · ${email} · ${phone}${city ? ` · ${city}` : ''}`, href: role === 'SELLER' ? '/admin/sellers' : '/admin/buyers' } }).catch(() => null);
