@@ -15,3 +15,14 @@ export async function PUT(req: Request) {
   await startSession(user);
   return ok();
 }
+
+/** Delete own account (sellers / buyers). Admins cannot delete themselves here. */
+export async function DELETE() {
+  const s = await getSession();
+  if (!s) return fail('Unauthorized', 401);
+  if (s.role === 'ADMIN' || s.role === 'EDITOR') return fail('Staff accounts are managed in Admin → Users');
+  await prisma.user.delete({ where: { id: s.sub } });
+  const { endSession } = await import('@/lib/auth');
+  await endSession();
+  return ok();
+}

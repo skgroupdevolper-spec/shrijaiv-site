@@ -15,3 +15,21 @@ if (process.env.DISABLE_AUTO_TRANSLATE !== '1' && !process.env.VERCEL) {
     }
   }, 20_000);
 }
+
+// Membership plans: reminders and expiry — once an hour on long-running servers (Vercel uses /api/cron/plans)
+if (!process.env.VERCEL) {
+  const g = globalThis as unknown as { __planTicker?: NodeJS.Timeout };
+  if (!g.__planTicker) {
+    const run = async () => {
+      try {
+        const { planMaintenance } = await import('./lib/marketplace/payments');
+        await planMaintenance();
+      } catch (e) {
+        console.error('[plans] maintenance failed:', (e as Error).message);
+      }
+    };
+    setTimeout(run, 30_000);
+    g.__planTicker = setInterval(run, 60 * 60_000);
+    g.__planTicker.unref?.();
+  }
+}
