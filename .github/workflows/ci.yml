@@ -24,6 +24,15 @@ jobs:
           node-version: 22
       - name: Install
         run: npm install --no-audit --no-fund
+      - name: Typecheck (all errors at once)
+        run: |
+          node scripts/db.mjs generate >/dev/null 2>&1 || true
+          npx tsc --noEmit --pretty false > tsc.log 2>&1 || true
+          n=$(grep -c "error TS" tsc.log || true); echo "tsc errors: $n"
+          if [ "$n" != "0" ]; then
+            grep "error TS" tsc.log | head -120 | split -l 12 - tschunk_
+            for f in tschunk_*; do msg=$(sed 's/%/%25/g' "$f" | awk '{printf "%s%%0A", $0}'); echo "::warning title=tsc::$msg"; done
+          fi
       - name: Build
         run: |
           set -o pipefail

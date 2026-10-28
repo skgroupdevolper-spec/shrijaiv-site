@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   let phone = String(b.phone || '').trim();
   let buyerId: string | null = null;
   if (session) {
-    const user = await prisma.user.findUnique({ where: { id: session.sub }, include: { buyer: true } });
+    const user = await prisma.user.findUnique({ where: { id: session.sub }, include: { buyer: true, seller: { select: { id: true } } } });
     if (user) {
       name = name || user.name;
       email = email || user.email;

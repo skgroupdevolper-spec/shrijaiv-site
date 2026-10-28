@@ -94,7 +94,7 @@ export async function entitlements(sellerId: string): Promise<Entitlements> {
 }
 
 /** true when the seller may add one more product */
-export async function canAddProduct(sellerId: string) {
+export async function canAddProduct(sellerId: string): Promise<{ ok: boolean; reason?: string; e: Entitlements }> {
   const e = await entitlements(sellerId);
   if (!e.canAddProducts) return { ok: false, reason: 'Please choose a plan to add products.', e };
   if (e.maxProducts < 0) return { ok: true, e };
