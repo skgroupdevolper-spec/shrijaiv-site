@@ -122,7 +122,7 @@ p { text-wrap: pretty; }
   }
   .btn:active { transform: scale(0.97); }
   .btn:focus-visible { outline: 2px solid var(--brand-gold); outline-offset: 3px; }
-  .btn-gold { background: var(--gold-grad); background-size: 160% 160%; color: #1a1406; box-shadow: 0 10px 30px -14px color-mix(in oklab, var(--brand-gold) 90%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.55); }
+  .btn-gold { background: var(--gold-grad); background-size: 160% 160%; color: #ffffff; box-shadow: 0 10px 30px -14px color-mix(in oklab, var(--brand-gold) 90%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.55); }
   .btn-gold::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%); transform: translateX(-120%); transition: transform 0.8s var(--ease); }
   .btn-gold:hover::after { transform: translateX(120%); }
   .btn-gold:hover { box-shadow: 0 16px 40px -14px color-mix(in oklab, var(--brand-gold) 95%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.6); transform: translateY(-1px); }

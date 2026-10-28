@@ -4,7 +4,7 @@ import { Coin } from '@/components/site/Logo';
 import Particles from '@/components/site/Particles';
 
 export default function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
-  const perks = ['Track your visa application in real time', 'Upload documents securely', 'Chat directly with your consultant', 'Get instant status notifications'];
+  const perks = ['Verified organic sellers across India', 'Post requirements and compare quotes', 'Chat with sellers in your language', 'Ratings and reviews you can trust'];
   return (
     <section className="hero-stage theme-light">
       <div className="hero-aurora" />
@@ -14,7 +14,7 @@ export default function AuthShell({ title, subtitle, children }: { title: string
           <div className="relative">
             <Coin eager className="h-[72px] w-[72px]" />
             <h2 className="mt-8 font-display text-4xl font-semibold leading-tight text-white">
-              <T>Your Golden Visa journey, in one place.</T>
+              <T>India's organic marketplace, in one place.</T>
             </h2>
             <ul className="mt-10 space-y-4">
               {perks.map((p) => (

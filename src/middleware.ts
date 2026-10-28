@@ -41,6 +41,20 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Seller / buyer dashboards: /seller/* and /buyer/* (public showrooms live at /sellers/<slug>, /buyers/<id>)
+  for (const [prefix, role] of [['/seller', 'SELLER'], ['/buyer', 'BUYER']] as const) {
+    if (pathname !== prefix && !pathname.startsWith(prefix + '/')) continue;
+    if (!session) {
+      const url = new URL(locale === DEFAULT_LOCALE ? '/login' : `/${locale}/login`, req.url);
+      url.searchParams.set('next', req.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+    if (session.role !== role && !staff) return NextResponse.redirect(new URL(session.role === 'SELLER' ? '/seller' : session.role === 'BUYER' ? '/buyer' : '/account', req.url));
+  }
+  if ((pathname.startsWith('/api/seller') || pathname.startsWith('/api/buyer')) && !session) {
+    return NextResponse.json({ error: 'Please log in' }, { status: 401 });
+  }
+
   // Customer portal
   if (pathname.startsWith('/account') && !session) {
     const url = new URL(locale === DEFAULT_LOCALE ? '/login' : `/${locale}/login`, req.url);

@@ -100,19 +100,21 @@ export function AdminSetupForm() {
   );
 }
 
-export function RegisterForm() {
+const INDIAN_STATES = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman & Nicobar', 'Chandigarh', 'Dadra & Nagar Haveli and Daman & Diu', 'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'];
+
+export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTypes = [] }: { initialRole?: 'buyer' | 'seller'; sellerTypes?: string[]; buyerTypes?: string[] }) {
   const t = useT();
-  const L = useLocalize();
-  const router = useRouter();
+  const [role, setRole] = useState<'buyer' | 'seller'>(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const types = role === 'seller' ? sellerTypes : buyerTypes;
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError('');
     const fd = new FormData(e.currentTarget);
     try {
-      const d = await post('/api/auth/register', Object.fromEntries(fd.entries()));
+      const d = await post('/api/auth/register', { ...Object.fromEntries(fd.entries()), role });
       window.location.href = d.redirect;
     } catch (err: any) {
       setError(err.message);
@@ -121,17 +123,40 @@ export function RegisterForm() {
   }
   return (
     <form onSubmit={submit} className="space-y-4">
-      <input name="name" required placeholder={t('Full name')} className="field" autoComplete="name" />
-      <input name="email" type="email" required placeholder={t('Email address')} className="field" autoComplete="email" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input name="phone" placeholder={t('Phone / WhatsApp')} className="field" autoComplete="tel" />
-        <input name="nationality" placeholder={t('Nationality')} className="field" />
+      <div className="grid grid-cols-2 gap-2 rounded-2xl bg-ink/5 p-1.5" role="tablist" aria-label={t('I want to')}>
+        {(['buyer', 'seller'] as const).map((r) => (
+          <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => setRole(r)} className={`rounded-xl px-4 py-3 text-sm font-bold transition ${role === r ? 'bg-white text-ink shadow-sm ring-1 ring-ink/10' : 'text-ink/55 hover:text-ink'}`}>
+            {r === 'buyer' ? t('I want to buy') : t('I want to sell')}
+          </button>
+        ))}
       </div>
+      <input name="name" required placeholder={t('Full name')} className="field" autoComplete="name" />
+      <input name="company" required={role === 'seller'} placeholder={role === 'seller' ? t('Company / farm / brand name') : t('Company name (optional)')} className="field" autoComplete="organization" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input name="email" type="email" required placeholder={t('Email address')} className="field" autoComplete="email" />
+        <input name="phone" required inputMode="tel" placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <select name="type" className="field" defaultValue="">
+          <option value="">{role === 'seller' ? t('Business type') : t('Buyer type')}</option>
+          {types.map((x) => (
+            <option key={x} value={x}>{x}</option>
+          ))}
+        </select>
+        <select name="state" className="field" defaultValue="">
+          <option value="">{t('State')}</option>
+          {INDIAN_STATES.map((x) => (
+            <option key={x} value={x}>{x}</option>
+          ))}
+        </select>
+      </div>
+      <input name="city" placeholder={t('City')} className="field" autoComplete="address-level2" />
       <PasswordInput name="password" required minLength={8} placeholder={t('Password (min 8 characters)')} autoComplete="new-password" />
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
       <button disabled={loading} className="btn btn-gold w-full">
-        {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {t('Create my account')}
+        {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {role === 'seller' ? t('Create my seller account') : t('Create my buyer account')}
       </button>
+      <p className="text-center text-xs text-ink/50">{t('By creating an account you agree to our')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms')}</SmartLink> {t('and')} <SmartLink href="/privacy" className="font-bold text-gold-deep">{t('Privacy Policy')}</SmartLink>.</p>
       <p className="text-center text-sm text-ink/60">
         {t('Already have an account?')} <SmartLink href="/login" className="font-bold text-gold-deep">{t('Sign in')}</SmartLink>
       </p>

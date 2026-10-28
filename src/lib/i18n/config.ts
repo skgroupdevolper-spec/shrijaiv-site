@@ -32,7 +32,7 @@ export function localeInfo(code: string) {
 }
 
 /** Paths that are never translated / prefixed */
-const NO_PREFIX = /^\/(admin|api|uploads|_next|account)(\/|$)|^\/(sitemap\.xml|robots\.txt|icon\.svg|favicon\.ico)$/;
+const NO_PREFIX = /^\/(admin|api|uploads|_next|account|seller|buyer)(\/|$)|^\/(sitemap\.xml|robots\.txt|icon\.svg|favicon\.ico)$/;
 
 /** Adds the language prefix to an internal link */
 export function localizePath(href: string, locale: string) {

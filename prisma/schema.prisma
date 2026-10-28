@@ -1,4 +1,4 @@
-// Golden Visa UAE - database schema
+// SHRIJAIV Organic - database schema
 // Default provider is SQLite (a single file, no database server needed).
 // To use MySQL instead: change provider to "mysql" and set DATABASE_URL in .env
 // (see README -> "Using MySQL").
@@ -19,7 +19,7 @@ model User {
   phone        String?
   nationality  String?
   passwordHash String
-  role         String        @default("CUSTOMER") // ADMIN | EDITOR | CUSTOMER
+  role         String        @default("CUSTOMER") // ADMIN | EDITOR | CUSTOMER | SELLER | BUYER
   active       Boolean       @default(true)
   avatar       String?
   resetToken   String?
@@ -30,6 +30,9 @@ model User {
   applications Application[]
   messages     Message[]
   leads        Lead[]
+  seller       SellerProfile?
+  buyer        BuyerProfile?
+  inquiryMessages InquiryMessage[]
 }
 
 model Setting {
@@ -265,4 +268,463 @@ model ChatSession {
 
   @@index([createdAt])
   @@index([status])
+}
+
+// ================================================================ Marketplace (SHRIJAIV Organic)
+
+// Category tree: Organic Agriculture > Fruit > ... (unlimited depth, managed in Admin -> Categories)
+model Category {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  name        String
+  description String?
+  icon        String?
+  image       String?
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
+  order       Int        @default(0)
+  featured    Boolean    @default(false)
+  active      Boolean    @default(true)
+  metaTitle   String?
+  metaDescription String?
+  products    Product[]
+  requirements Requirement[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([parentId])
+}
+
+// Seller company profile (one per SELLER user). Public showroom at /seller/[slug]
+model SellerProfile {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug          String    @unique
+  companyName   String
+  about         String?
+  logo          String?
+  banner        String?
+  businessType  String?   // manufacturer | wholesaler | exporter | farmer | trader | brand
+  gstNumber     String?
+  fssaiNumber   String?
+  yearEstablished Int?
+  employees     String?
+  annualTurnover String?
+  website       String?
+  phone         String?
+  whatsapp      String?
+  email         String?
+  address       String?
+  city          String?
+  state         String?
+  pincode       String?
+  country       String    @default("India")
+  lat           Float?
+  lng           Float?
+  certifications String   @default("[]") // JSON [{ name, number, file }]
+  status        String    @default("pending") // pending | approved | suspended | rejected
+  verified      Boolean   @default(false)
+  verifiedAt    DateTime?
+  featured      Boolean   @default(false)
+  ratingAvg     Float     @default(0)
+  ratingCount   Int       @default(0)
+  views         Int       @default(0)
+  adminNote     String?
+  seen          Boolean   @default(false)
+  products      Product[]
+  inquiries     Inquiry[]
+  quotes        Quote[]
+  reviews       Review[]
+  subscriptions Subscription[]
+  favourites    Favourite[]
+  metaTitle     String?
+  metaDescription String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([state])
+}
+
+// Buyer profile (one per BUYER user)
+model BuyerProfile {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName  String?
+  buyerType    String?   // retailer | wholesaler | restaurant | exporter | individual | brand
+  gstNumber    String?
+  phone        String?
+  whatsapp     String?
+  address      String?
+  city         String?
+  state        String?
+  pincode      String?
+  country      String    @default("India")
+  interests    String    @default("[]") // JSON category ids
+  verified     Boolean   @default(false)
+  status       String    @default("approved") // approved | suspended
+  seen         Boolean   @default(false)
+  requirements Requirement[]
+  inquiries    Inquiry[]
+  reviews      Review[]
+  favourites   Favourite[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Product {
+  id            String    @id @default(cuid())
+  sellerId      String
+  seller        SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  slug          String    @unique
+  name          String
+  summary       String?
+  description   String?
+  images        String    @default("[]") // JSON [url]
+  video         String?
+  catalogFile   String?
+  priceMin      Float?
+  priceMax      Float?
+  priceUnit     String?   // per kg | per litre | per piece | per quintal | per ton
+  currency      String    @default("INR")
+  moq           String?   // minimum order quantity, e.g. "100 kg"
+  stock         String?   // in stock | made to order | limited
+  specs         String    @default("[]") // JSON [{ label, value }]
+  certifications String   @default("[]") // JSON [name]
+  tags          String?
+  origin        String?   // state / region
+  brand         String?
+  packaging     String?
+  shelfLife     String?
+  leadTime      String?
+  status        String    @default("pending") // draft | pending | approved | rejected | hidden
+  featured      Boolean   @default(false)
+  views         Int       @default(0)
+  inquiryCount  Int       @default(0)
+  ratingAvg     Float     @default(0)
+  ratingCount   Int       @default(0)
+  adminNote     String?
+  seen          Boolean   @default(false)
+  metaTitle     String?
+  metaDescription String?
+  inquiries     Inquiry[]
+  reviews       Review[]
+  favourites    Favourite[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([sellerId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+// A buyer's posted requirement (Buy Lead / RFQ) at /requirements/[id]
+model Requirement {
+  id          String    @id @default(cuid())
+  buyerId     String
+  buyer       BuyerProfile @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  title       String
+  details     String?
+  quantity    String?
+  unit        String?
+  budgetMin   Float?
+  budgetMax   Float?
+  currency    String    @default("INR")
+  deliveryCity String?
+  deliveryState String?
+  neededBy    DateTime?
+  attachments String    @default("[]") // JSON [url]
+  status      String    @default("open") // pending | open | closed | expired | rejected
+  featured    Boolean   @default(false)
+  views       Int       @default(0)
+  quoteCount  Int       @default(0)
+  seen        Boolean   @default(false)
+  adminNote   String?
+  quotes      Quote[]
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+  @@index([categoryId])
+}
+
+// A seller's quote on a requirement
+model Quote {
+  id            String      @id @default(cuid())
+  requirementId String
+  requirement   Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  sellerId      String
+  seller        SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  price         Float?
+  priceUnit     String?
+  currency      String      @default("INR")
+  quantity      String?
+  deliveryTime  String?
+  message       String?
+  attachments   String      @default("[]")
+  status        String      @default("sent") // sent | shortlisted | accepted | rejected | withdrawn
+  seenByBuyer   Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([requirementId, sellerId])
+}
+
+// Buyer -> seller inquiry about a product (or the company). Has a chat thread.
+model Inquiry {
+  id          String    @id @default(cuid())
+  refNo       String    @unique
+  sellerId    String
+  seller      SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  buyerId     String?
+  buyer       BuyerProfile? @relation(fields: [buyerId], references: [id], onDelete: SetNull)
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  // guest details when the buyer is not logged in
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  city        String?
+  quantity    String?
+  message     String
+  status      String    @default("new") // new | replied | quoted | closed | spam
+  contactUnlocked Boolean @default(true) // false when the seller's plan hides buyer contact details
+  seenBySeller Boolean  @default(false)
+  seenByBuyer  Boolean  @default(true)
+  seenByAdmin  Boolean  @default(false)
+  adminNote   String?
+  messages    InquiryMessage[]
+  lastMessageAt DateTime @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([status])
+}
+
+model InquiryMessage {
+  id         String   @id @default(cuid())
+  inquiryId  String
+  inquiry    Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  senderId   String?
+  sender     User?    @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  senderRole String   @default("buyer") // buyer | seller | admin | system
+  body       String
+  attachments String  @default("[]")
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([inquiryId])
+}
+
+// Ratings & reviews by buyers for a seller (optionally about one product)
+model Review {
+  id         String   @id @default(cuid())
+  sellerId   String
+  seller     SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  productId  String?
+  product    Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  buyerId    String?
+  buyer      BuyerProfile? @relation(fields: [buyerId], references: [id], onDelete: SetNull)
+  authorName String
+  rating     Int      @default(5) // 1-5
+  title      String?
+  body       String
+  images     String   @default("[]")
+  reply      String?
+  repliedAt  DateTime?
+  status     String   @default("pending") // pending | approved | hidden | spam
+  verifiedPurchase Boolean @default(false)
+  helpful    Int      @default(0)
+  seen       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([productId])
+  @@index([status])
+}
+
+// Buyer favourites (saved products / sellers)
+model Favourite {
+  id        String   @id @default(cuid())
+  buyerId   String
+  buyer     BuyerProfile @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sellerId  String?
+  seller    SellerProfile? @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([buyerId, productId])
+  @@unique([buyerId, sellerId])
+}
+
+// ---------------------------------------------------------------- Plans & payments
+// Admin -> Plans & payments. The master switch "paidPlans" lives in Setting key "marketplace":
+// OFF = every seller gets unlimited everything for free; ON = a seller needs an active plan.
+model Plan {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  description   String?
+  price         Float    @default(0) // INR, 0 = free plan
+  period        String   @default("monthly") // monthly | quarterly | yearly | lifetime | custom
+  periodDays    Int?     // for custom
+  trialDays     Int      @default(0)
+  audience      String   @default("seller") // seller | buyer
+  // limits: -1 = unlimited
+  maxProducts   Int      @default(-1)
+  maxInquiries  Int      @default(-1) // inquiries whose buyer contact is unlocked per month
+  maxQuotes     Int      @default(-1) // quotes on requirements per month
+  maxImages     Int      @default(-1) // images per product
+  featuredSlots Int      @default(0)
+  verifiedBadge Boolean  @default(false)
+  priorityRank  Int      @default(0) // higher = shown first in listings
+  analytics     Boolean  @default(true)
+  aiTools       Boolean  @default(true)
+  features      String   @default("[]") // JSON [text] shown on the pricing page
+  highlight     Boolean  @default(false) // "Most popular"
+  autoRenew     Boolean  @default(true) // offer auto-renewal at checkout
+  razorpayPlanId String?
+  order         Int      @default(0)
+  active        Boolean  @default(true)
+  subscriptions Subscription[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Subscription {
+  id           String   @id @default(cuid())
+  sellerId     String
+  seller       SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         Plan     @relation(fields: [planId], references: [id])
+  status       String   @default("active") // trial | active | past_due | cancelled | expired
+  autoRenew    Boolean  @default(false)
+  startsAt     DateTime @default(now())
+  endsAt       DateTime?
+  cancelledAt  DateTime?
+  renewalReminderAt DateTime?
+  razorpaySubscriptionId String?
+  source       String   @default("razorpay") // razorpay | manual | free
+  adminNote    String?
+  payments     Payment[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([status])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  subscriptionId  String?
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  userId          String?
+  amount          Float
+  currency        String   @default("INR")
+  gst             Float    @default(0)
+  status          String   @default("created") // created | paid | failed | refunded
+  provider        String   @default("razorpay") // razorpay | manual
+  providerOrderId String?
+  providerPaymentId String?
+  method          String?  // upi | card | netbanking | wallet | emi | bank_transfer
+  invoiceNo       String?  @unique
+  couponCode      String?
+  notes           String?
+  raw             String?
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Coupon {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  type       String   @default("percent") // percent | flat
+  value      Float
+  maxUses    Int      @default(0) // 0 = unlimited
+  used       Int      @default(0)
+  planIds    String   @default("[]") // JSON [] = all plans
+  startsAt   DateTime?
+  endsAt     DateTime?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+// ---------------------------------------------------------------- Trust & admin
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String?
+  targetType String   // seller | buyer | product | review | requirement
+  targetId   String
+  reason     String
+  details    String?
+  status     String   @default("open") // open | resolved | dismissed
+  adminNote  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// In-app notifications (bell) for sellers, buyers and admins
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?  // null = all admins
+  type      String   // inquiry | quote | review | product | seller | buyer | plan | payment | message | system
+  title     String
+  body      String?
+  href      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+// Who changed what in the admin (Admin -> Audit log)
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userName  String?
+  action    String   // create | update | delete | approve | reject | login | ...
+  entity    String
+  entityId  String?
+  summary   String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+  @@index([createdAt])
+}
+
+model Redirect {
+  id        String   @id @default(cuid())
+  from      String   @unique
+  to        String
+  code      Int      @default(301)
+  hits      Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model SearchLog {
+  id        String   @id @default(cuid())
+  query     String
+  results   Int      @default(0)
+  locale    String   @default("en")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

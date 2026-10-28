@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { seedMarketplace } from './marketplace-seed.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +33,7 @@ async function main() {
     // No default password on public hosting: the first visitor of /admin/login creates the admin account.
     console.log('ℹ No admin yet - open /admin/login on your website to create the admin account.');
   } else if (adminCount === 0) {
-    const email = (process.env.ADMIN_EMAIL || 'admin@goldenvisauae.ai').toLowerCase();
+    const email = (process.env.ADMIN_EMAIL || 'admin@shrijaiv.com').toLowerCase();
     const password = process.env.ADMIN_PASSWORD || 'Admin@12345';
     await prisma.user.upsert({
       where: { email },
@@ -42,8 +43,11 @@ async function main() {
     console.log(`✔ Admin user created: ${email} / ${password}  (change it after first login!)`);
   }
 
-  // 2) Built-in professional translations (Arabic, Russian …)
+  // 2) Built-in translation packs (prisma/translations/*.json, when present)
   await loadTranslationPacks();
+
+  // 2b) Marketplace: categories, plans, settings
+  await seedMarketplace(prisma);
 
   // 3) Content
   await applyPageUpgrades();

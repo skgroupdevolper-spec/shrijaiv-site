@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from 'jose';
 
 export type SessionPayload = {
   sub: string;
-  role: 'ADMIN' | 'EDITOR' | 'CUSTOMER';
+  role: 'ADMIN' | 'EDITOR' | 'CUSTOMER' | 'SELLER' | 'BUYER';
   name: string;
   email: string;
   /** fingerprint of the password at sign-in: a password change ends every older login */

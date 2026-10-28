@@ -71,3 +71,29 @@ export async function requireAdmin() {
   if (!s || s.role !== 'ADMIN') return null;
   return s;
 }
+
+/** Where a signed-in user lands after login, by role */
+export function homeFor(role?: string | null) {
+  if (role === 'ADMIN' || role === 'EDITOR') return '/admin';
+  if (role === 'SELLER') return '/seller';
+  if (role === 'BUYER') return '/buyer';
+  return '/account';
+}
+
+/** Returns the seller session (with the seller profile) or null */
+export async function requireSeller() {
+  const s = await getSession();
+  if (!s || s.role !== 'SELLER') return null;
+  const seller = await prisma.sellerProfile.findUnique({ where: { userId: s.sub } });
+  if (!seller) return null;
+  return { session: s, seller };
+}
+
+/** Returns the buyer session (with the buyer profile) or null */
+export async function requireBuyer() {
+  const s = await getSession();
+  if (!s || s.role !== 'BUYER') return null;
+  const buyer = await prisma.buyerProfile.findUnique({ where: { userId: s.sub } });
+  if (!buyer) return null;
+  return { session: s, buyer };
+}
