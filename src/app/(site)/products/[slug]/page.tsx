@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays } from 'lucide-react';
+import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays, ChevronLeft, MessageCircle, Send, ChevronRight } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
 import { getProduct, listProducts, images, priceLabel } from '@/lib/marketplace/data';
 import { getCurrentUser } from '@/lib/auth';
@@ -67,8 +67,16 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ListingHeader compact crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} eyebrow={p.category?.name} title={p.name} />
-      <section className="theme-sand pb-16 pt-4 sm:pb-24">
+      <div className="hidden lg:block">
+        <ListingHeader compact crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} eyebrow={p.category?.name} title={p.name} />
+      </div>
+      {/* phones: slim back bar instead of the big page header */}
+      <div className="container-x flex items-center gap-2 pb-3 pt-[6.6rem] text-[0.8rem] text-ink/55 lg:hidden">
+        <SmartLink href={p.category ? `/category/${p.category.slug}` : '/products'} className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm ring-1 ring-ink/5">
+          <ChevronLeft className="h-4 w-4" /> {p.category?.name || t('Products')}
+        </SmartLink>
+      </div>
+      <section className="theme-sand pb-28 pt-1 sm:pb-24 lg:pt-4">
         <div className="container-x grid items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-10 [&>*]:min-w-0">
           {/* the gallery stays in view while the details on the right scroll */}
           <div className="lg:sticky lg:top-28">
@@ -80,6 +88,7 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
           <div>
+            <h2 className="mb-3 font-display text-[1.45rem] font-semibold leading-tight text-ink lg:hidden">{p.name}</h2>
             <div className="flex flex-wrap items-center gap-2">
               {s.verified && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-100">
@@ -92,13 +101,23 @@ export default async function ProductPage({ params }: Props) {
                 </span>
               ))}
             </div>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="font-display text-3xl font-semibold text-ink">{priceLabel(p)}</p>
-              <FavButton productId={p.id} initial={fav} canSave={!!buyer} />
+            <div className="pdp-price mt-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-ink/45">{t('Price')}</p>
+                  <p className="font-display text-[1.7rem] font-semibold leading-tight text-gold-deep sm:text-3xl">{priceLabel(p)}</p>
+                  {p.moq && <p className="mt-0.5 text-sm text-ink/60">{t('Minimum order')}: <b className="text-ink">{p.moq}</b></p>}
+                </div>
+                <FavButton productId={p.id} initial={fav} canSave={!!buyer} />
+              </div>
+              {p.ratingCount > 0 && (
+                <a href="#reviews" className="mt-3 inline-flex items-center gap-2 text-sm text-ink/60">
+                  <Rating value={p.ratingAvg} count={p.ratingCount} size="md" />
+                </a>
+              )}
             </div>
-            {p.ratingCount > 0 && <Rating value={p.ratingAvg} count={p.ratingCount} size="md" className="mt-2" />}
             {p.summary && <p className="mt-4 text-[1.02rem] leading-relaxed text-ink/75">{p.summary}</p>}
-            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+            <dl className="mt-5 grid grid-cols-2 gap-2 text-sm sm:gap-3">
               {[
                 [Package, t('MOQ'), p.moq],
                 [Tag, t('Brand'), p.brand],
@@ -110,17 +129,17 @@ export default async function ProductPage({ params }: Props) {
               ]
                 .filter((r) => r[2])
                 .map(([I, k, v]: any) => (
-                  <div key={k} className="flex gap-2">
+                  <div key={k} className="flex min-w-0 gap-2 rounded-2xl bg-white p-3 ring-1 ring-ink/5">
                     <I className="mt-0.5 h-4 w-4 shrink-0 text-gold-deep" />
-                    <div>
-                      <dt className="text-[0.68rem] font-bold uppercase tracking-wider text-ink/45">{k}</dt>
-                      <dd className="font-semibold text-ink">{v}</dd>
+                    <div className="min-w-0">
+                      <dt className="text-[0.62rem] font-bold uppercase tracking-wider text-ink/45">{k}</dt>
+                      <dd className="break-words text-[0.85rem] font-semibold leading-snug text-ink">{v}</dd>
                     </div>
                   </div>
                 ))}
             </dl>
 
-            <div className="card mt-8 p-5 md:p-6">
+            <div id="inquiry" className="card mt-6 scroll-mt-28 p-5 md:mt-8 md:p-6">
               <p className="font-display text-xl font-semibold text-ink">{t('Get the best price')}</p>
               <p className="mb-4 mt-1 text-sm text-ink/60">{t('Your inquiry goes straight to')} {s.companyName}.</p>
               <InquiryForm sellerId={s.id} sellerName={s.companyName} productId={p.id} productName={p.name} user={user ? { name: user.name, email: user.email, phone: user.phone } : null} compact />
@@ -131,7 +150,7 @@ export default async function ProductPage({ params }: Props) {
               )}
             </div>
 
-            <SmartLink href={`/sellers/${s.slug}`} className="card card-lift mt-5 flex items-center gap-4 p-4">
+            <SmartLink href={`/sellers/${s.slug}`} className="card card-lift mt-5 flex items-center gap-3 p-4 sm:gap-4">
               <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#eaf5ec] font-display text-xl font-bold text-gold-deep">
                 {s.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -152,7 +171,8 @@ export default async function ProductPage({ params }: Props) {
                 </p>
                 <Rating value={s.ratingAvg} count={s.ratingCount} className="mt-1" />
               </div>
-              <span className="text-sm font-bold text-gold-deep">{t('Showroom')} →</span>
+              <span className="hidden text-sm font-bold text-gold-deep sm:inline">{t('Showroom')} →</span>
+              <ChevronRight className="h-5 w-5 shrink-0 text-gold-deep sm:hidden" />
             </SmartLink>
 
             {/* Verified supplier details — like the info box on the original product page */}
@@ -271,6 +291,21 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
       </section>
+      {/* phones: price + actions always at hand */}
+      <div className="pdp-cta lg:hidden">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[0.95rem] font-bold text-gold-deep">{priceLabel(p)}</p>
+          <p className="truncate text-[0.68rem] text-ink/55">{p.moq ? `${t('MOQ')}: ${p.moq}` : s.companyName}</p>
+        </div>
+        {s.whatsapp && (
+          <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I saw "${p.name}" on SHRIJAIV and would like a quote.`)} target="_blank" rel="noopener noreferrer" className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#25D366] text-white shadow" aria-label={t('Chat on WhatsApp')}>
+            <MessageCircle className="h-5 w-5" />
+          </a>
+        )}
+        <a href="#inquiry" className="btn btn-gold !min-h-[44px] shrink-0 !rounded-2xl !px-4 text-sm">
+          <Send className="h-4 w-4" /> {t('Get best price')}
+        </a>
+      </div>
     </>
   );
 }

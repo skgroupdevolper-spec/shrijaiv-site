@@ -148,7 +148,7 @@ export default function ChatWidget({ cfg }: { cfg: ChatWidgetConfig }) {
   const suggestions = [t('Find organic turmeric sellers'), t('How do I become a seller?'), t('Talk to your team')];
 
   return (
-    <div className={`fixed z-[60] flex flex-col gap-3 ${side} ${cfg.position === 'start' ? 'items-start' : 'items-end'}`}>
+    <div className={`chat-launcher-wrap fixed z-[60] flex flex-col gap-3 ${side} ${cfg.position === 'start' ? 'items-start' : 'items-end'}`}>
       {open && (
         <div role="dialog" aria-label={cfg.botName} className="flex h-[min(560px,calc(100dvh-220px))] w-[min(380px,calc(100vw-32px))] flex-col overflow-hidden rounded-3xl bg-white shadow-[0_30px_80px_-25px_rgba(0,0,0,.5)] ring-1 ring-black/5" style={{ animation: 'pop .3s cubic-bezier(.2,.8,.2,1) both' }}>
           <div className="flex items-center gap-3 px-4 py-3 text-white" style={{ background: cfg.color }}>

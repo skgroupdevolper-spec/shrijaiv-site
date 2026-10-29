@@ -16,24 +16,38 @@ const SELLERS = [
 
 const P = (seller, cat, slug, name, image, priceMin, priceMax, priceUnit, moq, summary, extra = {}) => ({ seller, cat, slug, name, image, priceMin, priceMax, priceUnit, moq, summary, ...extra });
 
+const D = '/images/demo';
 const PRODUCTS = [
-  P(0, 'vegetables', 'organic-fresh-vegetables-basket', 'Organic Fresh Vegetables Basket', `${IMG}/product-1.png`, 45, 70, 'per kg', '50 kg', 'Seasonal mixed vegetables harvested the same morning — tomato, spinach, bottle gourd, okra and more. Chemical-free, PGS-India certified.', { featured: true, origin: 'Rajasthan', leadTime: '1-2 days', shelfLife: '5-7 days (refrigerated)', packaging: 'Crates of 10 kg', stock: 'in stock', rating: 4.8, ratingCount: 14, specs: [['Variety', 'Seasonal mix (6-8 items)'], ['Grading', 'A grade, hand sorted'], ['Harvest', 'Same day']] }),
-  P(0, 'grains-cereals', 'organic-whole-wheat-sharbati', 'Organic Sharbati Wheat', `${IMG}/product1.png`, 38, 46, 'per kg', '500 kg', 'Premium Sharbati wheat from organic fields near Jaipur. Low gluten, naturally sweet, ideal for chakki atta.', { origin: 'Rajasthan', moq: '500 kg', leadTime: '3-5 days', shelfLife: '12 months', packaging: '50 kg PP bags', stock: 'in stock', rating: 4.9, ratingCount: 9, specs: [['Moisture', '< 11%'], ['Protein', '11-12%'], ['Certification', 'NPOP']] }),
-  P(0, 'oil-seeds', 'organic-black-mustard-seeds', 'Organic Black Mustard Seeds', `${IMG}/product2.png`, 85, 110, 'per kg', '200 kg', 'Bold black mustard seeds, sun-dried and machine cleaned. Suitable for cold-pressing and spice blends.', { origin: 'Rajasthan', leadTime: '3-5 days', shelfLife: '18 months', packaging: '25 / 50 kg bags', stock: 'in stock' }),
-  P(0, 'dairy-products', 'organic-a2-desi-ghee', 'Organic A2 Desi Cow Ghee', `${IMG}/product-4.png`, 1800, 2200, 'per litre', '20 litre', 'Bilona-method ghee from grass-fed Gir cows. Rich aroma, golden colour, no additives.', { featured: true, origin: 'Rajasthan', leadTime: '5-7 days', shelfLife: '9 months', packaging: '500 ml / 1 l glass jars', stock: 'made to order', rating: 5, ratingCount: 21 }),
-  P(1, 'cream-moisturisers', 'organic-aloe-saffron-moisturiser', 'Organic Aloe & Saffron Moisturiser', `${IMG}/product3.png`, 180, 240, 'per piece', '100 pieces', 'Light, non-greasy daily moisturiser with organic aloe vera, Kashmiri saffron and kokum butter. Private label ready.', { featured: true, origin: 'Kerala', leadTime: '7-10 days', shelfLife: '24 months', packaging: '50 g / 100 g jars', stock: 'in stock', rating: 4.7, ratingCount: 18, specs: [['Skin type', 'All'], ['Preservative', 'Natural (ECOCERT approved)'], ['Private label', 'MOQ 500 pcs']] }),
-  P(1, 'face-wash-cleansers', 'organic-neem-tulsi-face-wash', 'Organic Neem & Tulsi Face Wash', `${IMG}/product4.png`, 120, 160, 'per piece', '200 pieces', 'Gentle foaming cleanser with neem, tulsi and tea tree for oily and acne-prone skin. Sulphate and paraben free.', { origin: 'Kerala', leadTime: '7-10 days', shelfLife: '24 months', packaging: '100 ml tube', stock: 'in stock', rating: 4.6, ratingCount: 11 }),
-  P(1, 'hair-care', 'cold-pressed-virgin-coconut-oil', 'Cold-Pressed Virgin Coconut Oil', `${IMG}/product5.png`, 320, 420, 'per litre', '50 litre', 'Single-origin virgin coconut oil, cold-pressed within 24 hours of harvest. Food and cosmetic grade.', { origin: 'Kerala', leadTime: '3-5 days', shelfLife: '18 months', packaging: '1 l / 5 l / 20 l', stock: 'in stock', rating: 4.9, ratingCount: 27 }),
-  P(1, 'soaps-body-care', 'handmade-organic-turmeric-soap', 'Handmade Organic Turmeric Soap', `${IMG}/product6.png`, 55, 75, 'per piece', '500 pieces', 'Cold-process soap with organic turmeric, coconut oil and shea butter. Hand cut, cured for 6 weeks.', { origin: 'Kerala', leadTime: '10-14 days', shelfLife: '24 months', packaging: '100 g, paper wrapped', stock: 'in stock' }),
-  P(2, 'flours-atta', 'organic-ragi-finger-millet-flour', 'Organic Ragi (Finger Millet) Flour', `${IMG}/product-2.png`, 70, 95, 'per kg', '100 kg', 'Stone-ground ragi flour from Uttarakhand hill farms. High in calcium and fibre, gluten free.', { featured: true, origin: 'Uttarakhand', leadTime: '3-5 days', shelfLife: '8 months', packaging: '1 kg / 5 kg / 25 kg', stock: 'in stock', rating: 4.8, ratingCount: 16, specs: [['Grind', 'Stone (chakki)'], ['Gluten', 'Free'], ['Certification', 'USDA / EU / NPOP']] }),
-  P(2, 'sweeteners', 'organic-himalayan-multiflora-honey', 'Organic Himalayan Multiflora Honey', `${IMG}/product-3.png`, 450, 600, 'per kg', '50 kg', 'Raw, unheated honey from Apis cerana hives in the Garhwal Himalaya. NMR tested, no added sugar.', { origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '36 months', packaging: '250 g – 25 kg', stock: 'limited', rating: 5, ratingCount: 33 }),
-  P(2, 'pickles-jams-sauces', 'organic-plum-jam-no-added-sugar', 'Organic Plum Jam (No Added Sugar)', `${IMG}/product7.png`, 140, 180, 'per piece', '120 pieces', 'Slow-cooked hill plums sweetened only with apple concentrate. 70% fruit.', { origin: 'Uttarakhand', leadTime: '7-10 days', shelfLife: '12 months', packaging: '250 g glass jar', stock: 'in stock', rating: 4.7, ratingCount: 8 }),
-  P(2, 'ready-to-cook', 'organic-millet-khichdi-mix', 'Organic Millet Khichdi Mix', `${IMG}/product8.png`, 95, 130, 'per piece', '200 pieces', 'Ready-to-cook mix of foxtail millet, moong dal and hill spices. Cooks in 15 minutes.', { origin: 'Uttarakhand', leadTime: '7-10 days', shelfLife: '9 months', packaging: '300 g pouch', stock: 'in stock' }),
-  P(2, 'beverages-tea', 'organic-green-tea-tulsi', 'Organic Green Tea with Tulsi', `${IMG}/product-5.png`, 380, 520, 'per kg', '25 kg', 'Whole-leaf green tea from Kausani gardens blended with organic tulsi. Loose leaf and tea bags.', { featured: true, origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '24 months', packaging: 'Bulk 5 kg / retail 100 g', stock: 'in stock', rating: 4.8, ratingCount: 12 }),
-  P(3, 'spices-herbs', 'organic-turmeric-powder-high-curcumin', 'Organic Turmeric Powder (5% Curcumin)', `${IMG}/product9.png`, 160, 210, 'per kg', '100 kg', 'Lakadong-type turmeric with curcumin above 5%. Steam sterilised, lab tested for heavy metals.', { featured: true, origin: 'Telangana', leadTime: '3-5 days', shelfLife: '24 months', packaging: '25 kg bags', stock: 'in stock', rating: 4.7, ratingCount: 19, specs: [['Curcumin', '≥ 5%'], ['Mesh', '60-80'], ['Sterilisation', 'Steam']] }),
-  P(3, 'pulses', 'organic-toor-dal-arhar', 'Organic Toor Dal (Arhar)', `${IMG}/product10.png`, 120, 145, 'per kg', '500 kg', 'Unpolished organic toor dal from certified farmer groups. Uniform size, quick cooking.', { origin: 'Telangana', leadTime: '3-5 days', shelfLife: '12 months', packaging: '30 / 50 kg bags', stock: 'in stock', rating: 4.5, ratingCount: 7 }),
-  P(3, 'dry-fruits-nuts', 'organic-cashew-w320', 'Organic Cashew W320', `${IMG}/single-product.png`, 780, 900, 'per kg', '100 kg', 'Whole organic cashew kernels, W320 grade, vacuum packed. Direct from processing units in Andhra Pradesh.', { origin: 'Andhra Pradesh', leadTime: '5-7 days', shelfLife: '12 months', packaging: '10 kg vacuum tins', stock: 'in stock', rating: 4.8, ratingCount: 15 }),
+  // Organic agriculture — Green Valley Organics (farm, Rajasthan) and Deccan Spice Traders
+  P(0, 'vegetables', 'organic-fresh-vegetables-basket', 'Organic Fresh Vegetables Basket', `${IMG}/product1.png`, 45, 70, 'per kg', '50 kg', 'Seasonal mixed vegetables harvested the same morning — tomato, spinach, carrot, capsicum and more. Chemical-free, PGS-India certified.', { featured: true, origin: 'Rajasthan', leadTime: '1-2 days', shelfLife: '5-7 days (refrigerated)', packaging: 'Crates of 10 kg', stock: 'in stock', rating: 4.8, ratingCount: 14, specs: [['Variety', 'Seasonal mix (6-8 items)'], ['Grading', 'A grade, hand sorted'], ['Harvest', 'Same day'], ['Certification', 'PGS-India']] }),
+  P(0, 'fruit', 'organic-bananas', 'Organic Bananas (G9 Cavendish)', `${IMG}/single-product.png`, 38, 52, 'per kg', '200 kg', 'Naturally ripened organic bananas — no carbide, no ethylene sprays. Uniform hands, firm and sweet.', { gallery: [`${IMG}/p1.png`, `${IMG}/p2.png`, `${IMG}/p3.png`], featured: true, origin: 'Rajasthan', leadTime: '2-3 days', shelfLife: '5-6 days', packaging: '13 kg cartons', stock: 'in stock', rating: 4.6, ratingCount: 9, specs: [['Variety', 'G9 Cavendish'], ['Ripening', 'Natural, carbide-free'], ['Grade', 'Export A']] }),
+  P(0, 'fruit', 'organic-muskmelon', 'Organic Muskmelon', `${IMG}/product-5.png`, 30, 45, 'per kg', '300 kg', 'Sweet, aromatic muskmelons from organic sandy-soil farms. Brix 11+, picked at full slip.', { origin: 'Rajasthan', leadTime: '2-3 days', shelfLife: '7-10 days', packaging: 'Mesh bags / crates', stock: 'limited', rating: 4.5, ratingCount: 6, specs: [['Sweetness', 'Brix 11+'], ['Weight', '0.8–1.5 kg each']] }),
+  P(0, 'oil-seeds', 'organic-black-mustard-seeds', 'Organic Black Mustard Seeds', `${D}/seed-bowl.webp`, 85, 110, 'per kg', '200 kg', 'Bold black mustard seeds, sun-dried and machine cleaned. Suitable for cold-pressing and spice blends.', { origin: 'Rajasthan', leadTime: '3-5 days', shelfLife: '18 months', packaging: '25 / 50 kg bags', stock: 'in stock', rating: 4.4, ratingCount: 5, specs: [['Purity', '99.5%'], ['Oil content', '38–40%'], ['Moisture', '< 7%']] }),
+  P(0, 'dairy-products', 'organic-a2-desi-ghee', 'Organic A2 Desi Cow Ghee', `${D}/ghee-jar.webp`, 1800, 2200, 'per litre', '20 litre', 'Bilona-method ghee from grass-fed Gir cows. Rich aroma, golden colour, no additives.', { featured: true, origin: 'Rajasthan', leadTime: '5-7 days', shelfLife: '9 months', packaging: '500 ml / 1 l glass jars', stock: 'made to order', rating: 5, ratingCount: 21, specs: [['Method', 'Bilona (hand-churned curd)'], ['Cow breed', 'Gir (A2)'], ['Moisture', '< 0.3%']] }),
+  P(0, 'seeds-saplings', 'grafted-fruit-saplings', 'Grafted Fruit Saplings (Mango, Guava, Lemon)', `${D}/saplings.webp`, 60, 180, 'per piece', '100 pieces', 'Nursery-grown grafted saplings raised on organic potting mix. Ideal for new orchards and farm-forestry projects.', { origin: 'Rajasthan', leadTime: '5-7 days', shelfLife: 'Plant within 15 days', packaging: 'Poly bags, 1-1.5 ft', stock: 'in stock', rating: 4.7, ratingCount: 8, specs: [['Age', '8–12 months'], ['Height', '1–1.5 ft'], ['Varieties', 'Kesar, Allahabad Safeda, Kagzi lime']] }),
+  P(0, 'fertilizers-bio-inputs', 'organic-vermicompost', 'Organic Vermicompost', `${D}/compost-bag.webp`, 6, 9, 'per kg', '1 ton', 'Earthworm-processed compost rich in NPK and micro-organisms. Improves soil structure and water retention.', { origin: 'Rajasthan', leadTime: '3-5 days', shelfLife: '12 months', packaging: '25 / 50 kg bags', stock: 'in stock', rating: 4.6, ratingCount: 11, specs: [['Organic carbon', '> 18%'], ['Moisture', '30–35%'], ['NPK', '1.5 : 1 : 1.2']] }),
+  P(3, 'spices-herbs', 'organic-turmeric-powder-high-curcumin', 'Organic Turmeric Powder (5% Curcumin)', `${D}/spice-pouch.webp`, 160, 210, 'per kg', '100 kg', 'Lakadong-type turmeric with curcumin above 5%. Steam sterilised, lab tested for heavy metals.', { featured: true, origin: 'Telangana', leadTime: '3-5 days', shelfLife: '24 months', packaging: '25 kg bags', stock: 'in stock', rating: 4.7, ratingCount: 19, specs: [['Curcumin', '≥ 5%'], ['Mesh', '60-80'], ['Sterilisation', 'Steam']] }),
+  P(3, 'dry-fruits-nuts', 'organic-cashew-w320', 'Organic Cashew W320', `${IMG}/product5.png`, 780, 900, 'per kg', '100 kg', 'Whole organic cashew kernels, W320 grade, vacuum packed. Direct from processing units in Andhra Pradesh.', { origin: 'Andhra Pradesh', leadTime: '5-7 days', shelfLife: '12 months', packaging: '10 kg vacuum tins', stock: 'in stock', rating: 4.8, ratingCount: 15, specs: [['Grade', 'W320'], ['Broken', '< 5%'], ['Moisture', '< 5%']] }),
+  // Organic beauty — Kerala Natural Care
+  P(1, 'cream-moisturisers', 'organic-aloe-saffron-moisturiser', 'Organic Aloe & Saffron Moisturiser', `${D}/cream-jar.webp`, 180, 240, 'per piece', '100 pieces', 'Light, non-greasy daily moisturiser with organic aloe vera, Kashmiri saffron and kokum butter. Private label ready.', { featured: true, origin: 'Kerala', leadTime: '7-10 days', shelfLife: '24 months', packaging: '50 g / 100 g jars', stock: 'in stock', rating: 4.7, ratingCount: 18, specs: [['Skin type', 'All'], ['Preservative', 'Natural (ECOCERT approved)'], ['Private label', 'MOQ 500 pcs']] }),
+  P(1, 'face-wash-cleansers', 'organic-neem-tulsi-face-wash', 'Organic Neem & Tulsi Face Wash', `${D}/facewash-tube.webp`, 120, 160, 'per piece', '200 pieces', 'Gentle foaming cleanser with neem, tulsi and tea tree for oily and acne-prone skin. Sulphate and paraben free.', { origin: 'Kerala', leadTime: '7-10 days', shelfLife: '24 months', packaging: '100 ml tube', stock: 'in stock', rating: 4.6, ratingCount: 11, specs: [['Skin type', 'Oily / acne-prone'], ['Free from', 'SLS, parabens, silicones']] }),
+  P(1, 'hair-care', 'cold-pressed-virgin-coconut-oil', 'Cold-Pressed Virgin Coconut Oil', `${D}/oil-bottle.webp`, 320, 420, 'per litre', '50 litre', 'Single-origin virgin coconut oil, cold-pressed within 24 hours of harvest. Food and cosmetic grade.', { origin: 'Kerala', leadTime: '3-5 days', shelfLife: '18 months', packaging: '1 l / 5 l / 20 l', stock: 'in stock', rating: 4.9, ratingCount: 27, specs: [['Process', 'Cold-pressed, unrefined'], ['Grade', 'Food & cosmetic']] }),
+  P(1, 'soaps-body-care', 'handmade-organic-turmeric-soap', 'Handmade Organic Turmeric Soap', `${D}/soap-bar.webp`, 55, 75, 'per piece', '500 pieces', 'Cold-process soap with organic turmeric, coconut oil and shea butter. Hand cut, cured for 6 weeks.', { origin: 'Kerala', leadTime: '10-14 days', shelfLife: '24 months', packaging: '100 g, paper wrapped', stock: 'in stock', rating: 4.5, ratingCount: 7, specs: [['Process', 'Cold process, 6-week cure'], ['Weight', '100 g']] }),
+  P(1, 'essential-oils', 'lavender-essential-oil', 'Lavender Essential Oil', `${D}/essential-oil.webp`, 2200, 2800, 'per litre', '5 litre', 'Steam-distilled lavender oil from Himalayan farms. GC-MS report with every batch; aromatherapy and cosmetic grade.', { origin: 'Kerala', leadTime: '5-7 days', shelfLife: '36 months', packaging: '1 l aluminium bottles', stock: 'limited', rating: 4.8, ratingCount: 6, specs: [['Extraction', 'Steam distillation'], ['Linalool', '30–35%']] }),
+  P(1, 'herbal-cosmetics', 'herbal-multani-mitti-face-pack', 'Herbal Multani Mitti Face Pack', `${D}/herbal-pack.webp`, 90, 130, 'per piece', '300 pieces', 'Multani mitti with neem, rose petal and sandalwood powders. Oil control and gentle exfoliation, no synthetic fragrance.', { origin: 'Kerala', leadTime: '7-10 days', shelfLife: '24 months', packaging: '100 g pouch', stock: 'in stock', rating: 4.4, ratingCount: 5 }),
+  // Organic processed food — Himalayan Harvest Foods
+  P(2, 'flours-atta', 'organic-whole-wheat-atta', 'Organic Whole Wheat Chakki Atta', `${IMG}/product10.png`, 48, 62, 'per kg', '500 kg', 'Stone-ground whole wheat atta from certified organic Sharbati wheat. Soft rotis, high fibre, no maida.', { featured: true, origin: 'Uttarakhand', leadTime: '3-5 days', shelfLife: '4 months', packaging: '5 / 10 / 25 kg bags', stock: 'in stock', rating: 4.8, ratingCount: 16, specs: [['Grind', 'Stone (chakki)'], ['Wheat', 'Sharbati'], ['Certification', 'USDA / EU / NPOP']] }),
+  P(2, 'sweeteners', 'organic-himalayan-multiflora-honey', 'Organic Himalayan Multiflora Honey', `${D}/honey-jar.webp`, 450, 600, 'per kg', '50 kg', 'Raw, unheated honey from Apis cerana hives in the Garhwal Himalaya. NMR tested, no added sugar.', { origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '36 months', packaging: '250 g – 25 kg', stock: 'limited', rating: 5, ratingCount: 33, specs: [['Type', 'Raw, unheated'], ['Test', 'NMR, C4 sugar negative']] }),
+  P(2, 'beverages-tea', 'organic-green-tea-tulsi', 'Organic Green Tea & Wellness Drinks Combo', `${IMG}/product3.png`, 380, 520, 'per kg', '25 kg', 'Whole-leaf green tea from Kausani gardens with tulsi, plus ready-to-drink fruit beverages for retail combos.', { origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '12 months', packaging: 'Retail combo boxes', stock: 'in stock', rating: 4.8, ratingCount: 12 }),
+  P(2, 'beverages-tea', 'organic-apple-juice', 'Organic Apple Juice (100% Juice)', `${IMG}/product-1.png`, 140, 180, 'per litre', '200 litre', 'Cold-pressed Himachal apples, no added sugar or preservatives. Pasteurised, PET or glass bottles.', { origin: 'Uttarakhand', leadTime: '7-10 days', shelfLife: '9 months', packaging: '1 l / 2 l bottles', stock: 'in stock', rating: 4.5, ratingCount: 8 }),
+  P(2, 'beverages-tea', 'organic-orange-juice', 'Organic Orange Juice (Not from Concentrate)', `${IMG}/product-3.png`, 150, 190, 'per litre', '200 litre', 'Freshly squeezed Nagpur oranges, not from concentrate. Gently pasteurised.', { origin: 'Maharashtra', leadTime: '7-10 days', shelfLife: '6 months', packaging: '1 l bottles', stock: 'in stock', rating: 4.4, ratingCount: 6 }),
+  P(2, 'snacks', 'organic-millet-snacks', 'Organic Millet Snacks Assortment', `${IMG}/product9.png`, 85, 120, 'per piece', '500 pieces', 'Baked ragi, jowar and bajra snacks — no palm oil, no maida. Retail packs of 100 g.', { origin: 'Uttarakhand', leadTime: '7-10 days', shelfLife: '6 months', packaging: '100 g pouches, 40 per carton', stock: 'in stock', rating: 4.6, ratingCount: 10 }),
+  P(2, 'snacks', 'organic-multigrain-bakery-box', 'Organic Multigrain Bakery Box', `${IMG}/product7.png`, 220, 300, 'per piece', '100 pieces', 'Multigrain cookies, rusk and tea cake made with organic atta and jaggery. Ideal for cafés and gifting.', { origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '3 months', packaging: '500 g gift box', stock: 'made to order', rating: 4.5, ratingCount: 7 }),
+  P(2, 'ready-to-cook', 'organic-margherita-pizza-base', 'Organic Margherita Pizza (Ready to Bake)', `${IMG}/product-4.png`, 160, 210, 'per piece', '200 pieces', 'Thin-crust pizza with organic wheat base, tomato sauce and mozzarella. Frozen, bake in 10 minutes.', { origin: 'Uttarakhand', leadTime: '5-7 days', shelfLife: '6 months (frozen)', packaging: 'Single box, 12 per carton', stock: 'in stock', rating: 4.3, ratingCount: 5 }),
+  P(2, 'ready-to-cook', 'organic-baby-food-combo', 'Organic Baby Food Combo', `${IMG}/product2.png`, 350, 450, 'per piece', '100 pieces', 'Sprouted ragi, rice and dal cereal mixes for 6 months+. No added sugar or salt. Combo of three packs.', { origin: 'Uttarakhand', leadTime: '7-10 days', shelfLife: '9 months', packaging: 'Combo box (3 × 300 g)', stock: 'in stock', rating: 4.7, ratingCount: 9 }),
 ];
+// slugs of the first demo version that were replaced (removed only when they still belong to a demo seller)
+const OLD_SLUGS = ['organic-whole-wheat-sharbati', 'organic-ragi-finger-millet-flour', 'organic-plum-jam-no-added-sugar', 'organic-millet-khichdi-mix', 'organic-toor-dal-arhar'];
 
 const REQUIREMENTS = [
   { cat: 'grains-cereals', title: 'Organic Wheat Flour — 20 tons monthly', details: 'Looking for NPOP certified organic chakki atta for our retail brand. Need monthly supply, lab reports and packaging in 5 kg bags.', quantity: '20', unit: 'ton', budgetMin: 40, budgetMax: 48, city: 'Mumbai', state: 'Maharashtra', featured: true },
@@ -50,11 +64,36 @@ const REVIEWS = [
   ['organic-aloe-saffron-moisturiser', 'Sarah Lee', 4, 'Great for private label', 'Smooth texture and the ECOCERT paperwork was ready. Lead time was 12 days instead of 10, otherwise perfect.'],
   ['organic-himalayan-multiflora-honey', 'Rohit Mehra', 5, 'Genuine raw honey', 'NMR report shared before shipping. Crystallises naturally in winter which is exactly what raw honey should do.'],
   ['organic-turmeric-powder-high-curcumin', 'Fatima Khan', 5, 'Lab reports provided', 'Curcumin tested 5.3% in our own lab. Clean, bright colour, consistent across 3 orders.'],
-  ['organic-ragi-finger-millet-flour', 'Anil Kumar', 4, 'Good quality, quick dispatch', 'Dispatched in 3 days. Flour is fine and fresh. Would like 10 kg packs as well.'],
+  ['organic-whole-wheat-atta', 'Anil Kumar', 4, 'Good quality, quick dispatch', 'Dispatched in 3 days. Atta is fine and fresh, rotis stay soft. Would like 10 kg packs as well.'],
 ];
 
+const DEMO_VERSION = 2;
+
+function productData(p, sellerId, categoryId) {
+  const seller = SELLERS[p.seller];
+  return {
+    sellerId, categoryId, name: p.name, summary: p.summary,
+    description: `<p>${p.summary}</p><p>Supplied by <strong>${seller.companyName}</strong>, ${seller.city}. Samples available on request; bulk pricing for orders above the MOQ. All lots come with certification copies and a lab report.</p>`,
+    images: JSON.stringify([p.image, ...(p.gallery || [])]), priceMin: p.priceMin, priceMax: p.priceMax, priceUnit: p.priceUnit, moq: p.moq, stock: p.stock || 'in stock',
+    specs: JSON.stringify((p.specs || []).map(([label, value]) => ({ label, value }))), certifications: JSON.stringify(seller.certs.slice(0, 2)),
+    origin: p.origin || seller.state, brand: seller.companyName, packaging: p.packaging || null, shelfLife: p.shelfLife || null, leadTime: p.leadTime || null,
+    status: 'approved', featured: !!p.featured, ratingAvg: p.rating || 0, ratingCount: p.ratingCount || 0,
+  };
+}
+
+/**
+ * Demo marketplace. Fresh database: everything is created. Later versions top up the demo sellers'
+ * catalogue (new products, corrected photos) — real sellers' data is never touched.
+ */
 export async function seedDemo(prisma) {
-  if ((await prisma.product.count()) > 0) return;
+  const mark = await prisma.setting.findUnique({ where: { key: 'demoSeed' } }).catch(() => null);
+  const done = mark ? Number(JSON.parse(mark.value || '{}').v || 0) : 0;
+  if (done >= DEMO_VERSION) return;
+  const fresh = (await prisma.product.count()) === 0;
+  const demoUser = await prisma.user.findUnique({ where: { email: 'seller1@demo.shrijaiv.com' } });
+  const saveMark = () => prisma.setting.upsert({ where: { key: 'demoSeed' }, update: { value: JSON.stringify({ v: DEMO_VERSION }) }, create: { key: 'demoSeed', value: JSON.stringify({ v: DEMO_VERSION }) } });
+  if (!fresh && !demoUser) return saveMark(); // a real marketplace without demo data: leave it alone
+
   const hash = await bcrypt.hash(DEMO_PASSWORD, 10);
   const cats = new Map((await prisma.category.findMany({ select: { id: true, slug: true } })).map((c) => [c.slug, c.id]));
   const sellers = [];
@@ -74,33 +113,34 @@ export async function seedDemo(prisma) {
     });
     sellers.push(profile);
   }
+  const demoIds = sellers.map((s) => s.id);
+  await prisma.product.deleteMany({ where: { slug: { in: OLD_SLUGS }, sellerId: { in: demoIds } } });
   const bySlug = new Map();
+  let created = 0;
   for (const p of PRODUCTS) {
-    const gallery = [p.image, `${IMG}/p${(PRODUCTS.indexOf(p) % 3) + 1}.png`];
-    const row = await prisma.product.create({
-      data: {
-        sellerId: sellers[p.seller].id, categoryId: cats.get(p.cat) || null, slug: p.slug, name: p.name, summary: p.summary,
-        description: `<p>${p.summary}</p><p>Supplied by <strong>${SELLERS[p.seller].companyName}</strong>, ${SELLERS[p.seller].city}. Samples available on request; bulk pricing for orders above the MOQ. All lots come with certification copies and a lab report.</p>`,
-        images: JSON.stringify(gallery), priceMin: p.priceMin, priceMax: p.priceMax, priceUnit: p.priceUnit, moq: p.moq, stock: p.stock || 'in stock',
-        specs: JSON.stringify((p.specs || []).map(([label, value]) => ({ label, value }))), certifications: JSON.stringify(SELLERS[p.seller].certs.slice(0, 2)),
-        origin: p.origin || SELLERS[p.seller].state, brand: SELLERS[p.seller].companyName, packaging: p.packaging, shelfLife: p.shelfLife, leadTime: p.leadTime,
-        status: 'approved', featured: !!p.featured, views: 120 + Math.floor(Math.random() * 900), ratingAvg: p.rating || 0, ratingCount: p.ratingCount || 0,
-      },
-    });
+    const data = productData(p, sellers[p.seller].id, cats.get(p.cat) || null);
+    const existing = await prisma.product.findUnique({ where: { slug: p.slug } });
+    let row;
+    if (!existing) {
+      row = await prisma.product.create({ data: { ...data, slug: p.slug, views: 120 + Math.floor(Math.random() * 900) } });
+      created++;
+    } else if (demoIds.includes(existing.sellerId)) {
+      row = await prisma.product.update({ where: { id: existing.id }, data });
+    } else continue; // a real seller already uses this address
     bySlug.set(p.slug, row);
   }
   // demo buyer + buy leads
   const bu = await prisma.user.upsert({ where: { email: 'buyer@demo.shrijaiv.com' }, update: {}, create: { name: 'Organic Basket Retail', email: 'buyer@demo.shrijaiv.com', role: 'BUYER', passwordHash: hash, phone: '9876543210' } });
   const buyer = await prisma.buyerProfile.upsert({ where: { userId: bu.id }, update: {}, create: { userId: bu.id, companyName: 'Organic Basket Retail', buyerType: 'retailer', city: 'Mumbai', state: 'Maharashtra', phone: bu.phone, whatsapp: bu.phone, verified: true } });
-  if ((await prisma.requirement.count()) === 0) {
-    for (const r of REQUIREMENTS) {
-      await prisma.requirement.create({ data: { buyerId: buyer.id, categoryId: cats.get(r.cat) || null, title: r.title, details: r.details, quantity: r.quantity, unit: r.unit, budgetMin: r.budgetMin, budgetMax: r.budgetMax, deliveryCity: r.city, deliveryState: r.state, status: 'open', featured: !!r.featured, views: 40 + Math.floor(Math.random() * 300), expiresAt: new Date(Date.now() + 45 * 86_400_000) } });
-    }
+  for (const r of REQUIREMENTS) {
+    if (await prisma.requirement.findFirst({ where: { buyerId: buyer.id, title: r.title } })) continue;
+    await prisma.requirement.create({ data: { buyerId: buyer.id, categoryId: cats.get(r.cat) || null, title: r.title, details: r.details, quantity: r.quantity, unit: r.unit, budgetMin: r.budgetMin, budgetMax: r.budgetMax, deliveryCity: r.city, deliveryState: r.state, status: 'open', featured: !!r.featured, views: 40 + Math.floor(Math.random() * 300), expiresAt: new Date(Date.now() + 45 * 86_400_000) } });
   }
   for (const [slug, authorName, rating, title, body] of REVIEWS) {
     const p = bySlug.get(slug);
-    if (!p) continue;
+    if (!p || (await prisma.review.findFirst({ where: { productId: p.id, authorName } }))) continue;
     await prisma.review.create({ data: { sellerId: p.sellerId, productId: p.id, buyerId: buyer.id, authorName, rating, title, body, status: 'approved', verifiedPurchase: true } });
   }
-  console.log(`✔ Demo marketplace: ${SELLERS.length} sellers, ${PRODUCTS.length} products, ${REQUIREMENTS.length} buy leads, ${REVIEWS.length} reviews (demo logins: seller1@demo.shrijaiv.com / buyer@demo.shrijaiv.com, password ${DEMO_PASSWORD})`);
+  await saveMark();
+  console.log(`✔ Demo marketplace v${DEMO_VERSION}: ${SELLERS.length} sellers, ${PRODUCTS.length} products (${created} new), ${REQUIREMENTS.length} buy leads, ${REVIEWS.length} reviews (demo logins: seller1@demo.shrijaiv.com / buyer@demo.shrijaiv.com, password ${DEMO_PASSWORD})`);
 }
