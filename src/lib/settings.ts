@@ -11,13 +11,17 @@ import {
   HeaderSettings,
   FooterSettings,
   SmtpSettings,
+  defaultApp,
+  defaultOAuth,
+  AppSettings,
+  OAuthSettings,
 } from './defaults';
 import { defaultDesign, DesignSettings } from './design';
 import { defaultFees, FeeSettings, feeLabelLists } from './fees';
 import { defaultOffer, OfferSettings, OFFER_TEXT_KEYS } from './offer';
 
-type Map = { site: SiteSettings; header: HeaderSettings; footer: FooterSettings; smtp: SmtpSettings; translation: TranslationSettings; design: DesignSettings; fees: FeeSettings; offer: OfferSettings };
-const DEFAULTS: Map = { site: defaultSite, header: defaultHeader, footer: defaultFooter, smtp: defaultSmtp, translation: defaultTranslation, design: defaultDesign, fees: defaultFees, offer: defaultOffer };
+type Map = { site: SiteSettings; header: HeaderSettings; footer: FooterSettings; smtp: SmtpSettings; translation: TranslationSettings; design: DesignSettings; fees: FeeSettings; offer: OfferSettings; app: AppSettings; oauth: OAuthSettings };
+const DEFAULTS: Map = { site: defaultSite, header: defaultHeader, footer: defaultFooter, smtp: defaultSmtp, translation: defaultTranslation, design: defaultDesign, fees: defaultFees, offer: defaultOffer, app: defaultApp, oauth: defaultOAuth };
 
 function deepMerge<T>(base: T, over: any): T {
   if (Array.isArray(base)) return (Array.isArray(over) ? over : base) as T;

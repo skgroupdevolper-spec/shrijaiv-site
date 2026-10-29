@@ -1,6 +1,7 @@
 import { getI18n } from '@/lib/i18n/server';
 import AuthShell from '@/components/portal/AuthShell';
 import { RegisterForm } from '@/components/portal/AuthForms';
+import GoogleButton from '@/components/portal/GoogleButton';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { getCategoryTree } from '@/lib/marketplace/data';
 import { getCurrentUser, homeFor } from '@/lib/auth';
@@ -19,6 +20,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const role = as === 'seller' ? 'seller' : 'buyer';
   return (
     <AuthShell title={role === 'seller' ? 'Start selling on SHRIJAIV' : 'Create your buyer account'} subtitle={role === 'seller' ? 'List your organic products and receive inquiries from buyers across India.' : 'Find verified organic sellers, post requirements and compare quotes.'}>
+      <GoogleButton />
       <RegisterForm initialRole={role} sellerTypes={mp.sellerTypes} buyerTypes={mp.buyerTypes} categories={tree.map((c) => ({ id: c.id, name: c.name }))} />
     </AuthShell>
   );

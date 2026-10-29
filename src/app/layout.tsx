@@ -11,6 +11,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { BACKDROP_CSS } from '@/lib/backdrop-css';
 import Analytics from '@/components/site/Analytics';
 import PwaRegister from '@/components/site/PwaRegister';
+import { googleConfig } from '@/lib/google-auth';
+import { BRAND_COIN } from '@/components/site/Logo';
 
 // Always render with live data from the database (admin changes appear instantly)
 export const dynamic = 'force-dynamic';
@@ -49,7 +51,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const site = await getSetting('site');
+  const [site, app, google] = await Promise.all([getSetting('site'), getSetting('app'), googleConfig()]);
   const locale = await getLocale();
   const info = localeInfo(locale);
   const c = site.colors;
@@ -66,7 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
         {site.seo.gtmId && <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${site.seo.gtmId}`} height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} /></noscript>}
-        <PwaRegister />
+        <PwaRegister app={app} googleEnabled={google.enabled} logo={site.favicon || BRAND_COIN} />
       </body>
     </html>
   );

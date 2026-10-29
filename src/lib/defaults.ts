@@ -1,5 +1,57 @@
 // Default settings. Everything here is editable from Admin → Settings / Header / Footer.
 
+/** Install-app bar and the welcome (splash) screen shown when the installed app opens the first time */
+export type AppSettings = {
+  installBar: boolean;
+  installTitle: string;
+  installText: string;
+  installButton: string;
+  iosHint: string;
+  splashEnabled: boolean;
+  splashLogo: string;
+  splashTitle: string;
+  splashText: string;
+  splashBg: string;
+  splashSlides: { image: string; title?: string; text?: string }[];
+  splashSeconds: number;
+  showGoogle: boolean;
+  showEmail: boolean;
+  showSkip: boolean;
+  googleLabel: string;
+  emailLabel: string;
+  signupLabel: string;
+  skipLabel: string;
+};
+export const defaultApp: AppSettings = {
+  installBar: true,
+  installTitle: 'Install SHRIJAIV app',
+  installText: 'Faster, full screen, works like an app.',
+  installButton: 'Install',
+  iosHint: 'Tap Share, then “Add to Home Screen”.',
+  splashEnabled: true,
+  splashLogo: '',
+  splashTitle: 'Welcome to SHRIJAIV Organic',
+  splashText: "India's organic B2B marketplace — verified sellers, buy leads and direct deals.",
+  splashBg: '#0B6B2C',
+  splashSlides: [
+    { image: '/images/site/slider-01.webp', title: 'Buy organic in bulk', text: 'Verified sellers of agriculture, beauty and food.' },
+    { image: '/images/site/slider-02.webp', title: 'Sell to all of India', text: 'Free showroom, inquiries on WhatsApp and email.' },
+    { image: '/images/site/banner-6.webp', title: 'Post what you need', text: 'Sellers send quotes to your dashboard.' },
+  ],
+  splashSeconds: 4,
+  showGoogle: true,
+  showEmail: true,
+  showSkip: true,
+  googleLabel: 'Continue with Google',
+  emailLabel: 'Continue with email',
+  signupLabel: 'Create a free account',
+  skipLabel: 'Skip',
+};
+
+/** Sign-in with Google (server only — never sent to the browser) */
+export type OAuthSettings = { googleEnabled: boolean; googleClientId: string; googleClientSecret: string; newUserRole: 'BUYER' | 'SELLER' };
+export const defaultOAuth: OAuthSettings = { googleEnabled: false, googleClientId: '', googleClientSecret: '', newUserRole: 'BUYER' };
+
 export type NavLink = { label: string; href: string; description?: string; icon?: string; children?: NavLink[] };
 
 export type SiteSettings = {

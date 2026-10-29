@@ -44,6 +44,7 @@ import {
   BadgePercent,
   SlidersHorizontal,
   ScrollText,
+  Smartphone,
 } from 'lucide-react';
 import { Toaster, toast } from './ui';
 import { cn, formatDateTime } from '@/lib/utils';
@@ -104,6 +105,7 @@ const NAV = [
       { href: '/admin/languages', label: 'Languages', icon: Languages },
       { href: '/admin/redirects', label: 'Redirects', icon: ExternalLink, adminOnly: true },
       { href: '/admin/settings', label: 'Site settings & SEO', icon: Settings, adminOnly: true },
+      { href: '/admin/app', label: 'App & splash screen', icon: Smartphone, adminOnly: true },
       { href: '/admin/backup', label: 'Backup & move', icon: DatabaseBackup, adminOnly: true },
     ],
   },

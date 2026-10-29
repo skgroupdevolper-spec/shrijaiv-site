@@ -3,14 +3,14 @@ import { getSetting } from '@/lib/settings';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const site = await getSetting('site');
+  const [site, app] = await Promise.all([getSetting('site'), getSetting('app')]);
   const m = {
     name: site.name,
     short_name: 'SHRIJAIV',
     description: site.seo.description,
     start_url: '/?source=pwa',
     display: 'standalone',
-    background_color: '#ffffff',
+    background_color: app.splashBg || '#ffffff',
     theme_color: '#009A35',
     lang: 'en',
     icons: [
@@ -23,5 +23,5 @@ export async function GET() {
       { name: 'Seller dashboard', url: '/seller' },
     ],
   };
-  return new Response(JSON.stringify(m), { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'public, max-age=3600' } });
+  return new Response(JSON.stringify(m), { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'public, max-age=300' } });
 }
