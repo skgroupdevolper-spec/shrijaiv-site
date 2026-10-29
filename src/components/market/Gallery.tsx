@@ -34,9 +34,9 @@ export default function Gallery({ images, alt }: { images: string[]; alt: string
           className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {images.map((src, k) => (
-            <div key={src + k} className="aspect-square w-full shrink-0 snap-center">
+            <div key={src + k} className="group/img aspect-square w-full shrink-0 snap-center overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={k === 0 ? alt : ''} loading={k === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain p-4 sm:p-6" />
+              <img src={src} alt={k === 0 ? alt : ''} loading={k === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain p-4 transition-transform duration-700 ease-out sm:p-6 lg:group-hover/img:scale-110" />
             </div>
           ))}
         </div>

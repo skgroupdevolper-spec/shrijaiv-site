@@ -13,6 +13,7 @@ import { formatDate, cn } from '@/lib/utils';
 import ShopSlider from '@/components/market/ShopSlider';
 import ShopSearch from '@/components/market/ShopSearch';
 import HeroCategories, { type HeroCat } from '@/components/market/HeroCategories';
+import LeafField from '@/components/site/LeafField';
 import { Rating } from '@/components/market/Rating';
 
 type P = { data: any; site: SiteSettings };
@@ -45,6 +46,7 @@ export async function ShopHero({ data, site }: P) {
   return (
     <section id={data.anchor || undefined} className="theme-light relative pt-[7.6rem] sm:pt-[8.2rem]">
       <div className="hero-aurora" />
+      <LeafField count={6} className="hidden sm:block" />
       <div className="hdr-width relative">
         <div className="grid items-stretch gap-5 lg:grid-cols-[290px_1fr]">
           {/* popular categories — same height as the search + slider column */}
@@ -83,7 +85,7 @@ function RowHead({ title, href, label, sub }: { title: string; href?: string; la
     <div className="reveal mb-6 flex items-end justify-between gap-4">
       <div className="min-w-0">
         <h2 className="font-display text-[1.2rem] font-semibold leading-tight tracking-tight text-ink sm:text-[1.75rem]">{title}</h2>
-        <span className="mt-2 block h-1 w-14 rounded-full" style={{ background: 'var(--gold-grad)' }} />
+        <span className="row-bar mt-2 block h-1 w-14 rounded-full" style={{ background: 'var(--gold-grad)' }} />
         {sub && <p className="mt-2 text-sm text-ink/55">{sub}</p>}
       </div>
       {href && (

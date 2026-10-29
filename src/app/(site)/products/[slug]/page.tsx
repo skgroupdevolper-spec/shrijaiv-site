@@ -7,7 +7,6 @@ import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { absUrl } from '@/lib/seo';
-import ListingHeader from '@/components/market/ListingHeader';
 import Gallery from '@/components/market/Gallery';
 import InquiryForm from '@/components/market/InquiryForm';
 import ReviewForm from '@/components/market/ReviewForm';
@@ -67,19 +66,29 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="hidden lg:block">
-        <ListingHeader compact crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} eyebrow={p.category?.name} title={p.name} />
-      </div>
-      {/* phones: slim back bar instead of the big page header */}
-      <div className="container-x flex items-center gap-2 pb-3 pt-[6.6rem] text-[0.8rem] text-ink/55 lg:hidden">
-        <SmartLink href={p.category ? `/category/${p.category.slug}` : '/products'} className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm ring-1 ring-ink/5">
+      {/* slim breadcrumb (all screens) — the product itself starts right below the header */}
+      <div className="pdp-top container-x pb-3 pt-[6.6rem] sm:pt-[7.4rem]">
+        <SmartLink href={p.category ? `/category/${p.category.slug}` : '/products'} className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[0.8rem] font-semibold text-ink shadow-sm ring-1 ring-ink/5 sm:hidden">
           <ChevronLeft className="h-4 w-4" /> {p.category?.name || t('Products')}
         </SmartLink>
+        <nav aria-label="Breadcrumb" className="hidden flex-wrap items-center gap-1.5 text-[0.82rem] text-ink/55 sm:flex">
+          <SmartLink href="/" className="hover:text-ink">{t('Home')}</SmartLink>
+          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+          <SmartLink href="/products" className="hover:text-ink">{t('Products')}</SmartLink>
+          {p.category && (
+            <>
+              <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+              <SmartLink href={`/category/${p.category.slug}`} className="hover:text-ink">{p.category.name}</SmartLink>
+            </>
+          )}
+          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+          <span className="line-clamp-1 text-ink">{p.name}</span>
+        </nav>
       </div>
-      <section className="theme-sand pb-28 pt-1 sm:pb-24 lg:pt-4">
-        <div className="container-x grid items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-10 [&>*]:min-w-0">
+      <section className="pdp theme-sand pb-28 pt-1 sm:pb-24 lg:pt-3">
+        <div className="container-x grid items-start gap-6 sm:gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12 [&>*]:min-w-0">
           {/* the gallery stays in view while the details on the right scroll */}
-          <div className="lg:sticky lg:top-28">
+          <div className="pdp-in lg:sticky lg:top-28" style={{ ['--d' as any]: '0s' }}>
             <Gallery images={imgs} alt={p.name} />
             {p.video && (
               <div className="card mt-4 overflow-hidden">
@@ -88,7 +97,8 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
           <div>
-            <h2 className="mb-3 font-display text-[1.45rem] font-semibold leading-tight text-ink lg:hidden">{p.name}</h2>
+            {p.category && <p className="pdp-in text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-gold-deep" style={{ ['--d' as any]: '.05s' }}>{p.category.name}</p>}
+            <h1 className="pdp-in mb-3 mt-1.5 font-display text-[1.55rem] font-semibold leading-[1.12] tracking-tight text-ink sm:text-[2.1rem] lg:text-[2.4rem]" style={{ ['--d' as any]: '.1s' }}>{p.name}</h1>
             <div className="flex flex-wrap items-center gap-2">
               {s.verified && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-100">
@@ -101,7 +111,7 @@ export default async function ProductPage({ params }: Props) {
                 </span>
               ))}
             </div>
-            <div className="pdp-price mt-4">
+            <div className="pdp-price pdp-in mt-4" style={{ ['--d' as any]: '.2s' }}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-ink/45">{t('Price')}</p>
@@ -117,7 +127,7 @@ export default async function ProductPage({ params }: Props) {
               )}
             </div>
             {p.summary && <p className="mt-4 text-[1.02rem] leading-relaxed text-ink/75">{p.summary}</p>}
-            <dl className="mt-5 grid grid-cols-2 gap-2 text-sm sm:gap-3">
+            <dl className="pdp-in mt-5 grid grid-cols-2 gap-2 text-sm sm:gap-3" style={{ ['--d' as any]: '.28s' }}>
               {[
                 [Package, t('MOQ'), p.moq],
                 [Tag, t('Brand'), p.brand],
@@ -139,7 +149,7 @@ export default async function ProductPage({ params }: Props) {
                 ))}
             </dl>
 
-            <div id="inquiry" className="card mt-6 scroll-mt-28 p-5 md:mt-8 md:p-6">
+            <div id="inquiry" className="pdp-in card mt-6 scroll-mt-28 p-5 md:mt-8 md:p-6" style={{ ['--d' as any]: '.36s' }}>
               <p className="font-display text-xl font-semibold text-ink">{t('Get the best price')}</p>
               <p className="mb-4 mt-1 text-sm text-ink/60">{t('Your inquiry goes straight to')} {s.companyName}.</p>
               <InquiryForm sellerId={s.id} sellerName={s.companyName} productId={p.id} productName={p.name} user={user ? { name: user.name, email: user.email, phone: user.phone } : null} compact />

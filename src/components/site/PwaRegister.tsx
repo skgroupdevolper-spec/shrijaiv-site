@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { Download, X, Share, Mail } from 'lucide-react';
 import type { AppSettings } from '@/lib/defaults';
 import { cn } from '@/lib/utils';
+import LeafField from './LeafField';
 
 type Props = { app: AppSettings; googleEnabled: boolean; logo: string };
 
@@ -110,77 +111,97 @@ export default function PwaRegister({ app, googleEnabled, logo }: Props) {
   );
 }
 
-/** First-open welcome screen of the installed app: images, logo, Google / email sign-in, skip */
+/** First-open welcome screen of the installed app: launch animation, sliding photos, sign-in, skip */
 function Welcome({ app, logo, googleEnabled, done }: { app: AppSettings; logo: string; googleEnabled: boolean; done: () => void }) {
   const slides = (app.splashSlides || []).filter((s) => s?.image);
+  const secs = Math.max(2, Number(app.splashSeconds) || 4);
   const [i, setI] = useState(0);
+  const [phase, setPhase] = useState<'launch' | 'main' | 'out'>('launch');
   useEffect(() => {
-    if (slides.length < 2) return;
-    const t = setInterval(() => setI((x) => (x + 1) % slides.length), Math.max(2, Number(app.splashSeconds) || 4) * 1000);
-    return () => clearInterval(t);
-  }, [slides.length, app.splashSeconds]);
-  useEffect(() => {
+    const t = setTimeout(() => setPhase('main'), 1400);
     document.documentElement.style.overflow = 'hidden';
     return () => {
+      clearTimeout(t);
       document.documentElement.style.overflow = '';
     };
   }, []);
-  const go = (href: string) => {
-    done();
-    window.location.href = href;
+  useEffect(() => {
+    if (phase !== 'main' || slides.length < 2) return;
+    const t = setTimeout(() => setI((x) => (x + 1) % slides.length), secs * 1000);
+    return () => clearTimeout(t);
+  }, [i, phase, slides.length, secs]);
+  const finish = (href?: string) => {
+    setPhase('out');
+    setTimeout(() => {
+      done();
+      if (href) window.location.href = href;
+    }, 420);
   };
   const cur = slides[i];
   return (
-    <div className="welcome" style={{ ['--wbg' as any]: app.splashBg || '#0B6B2C' }} role="dialog" aria-modal="true" aria-label={app.splashTitle}>
+    <div className="welcome" data-phase={phase} style={{ ['--wbg' as any]: app.splashBg || '#0B6B2C', ['--secs' as any]: `${secs}s` }} role="dialog" aria-modal="true" aria-label={app.splashTitle}>
+      <span className="welcome-glow" aria-hidden />
+      {/* launch: logo zooms in like a native app start */}
+      <div className="welcome-launch" aria-hidden>
+        <span className="welcome-ring" />
+        <span className="welcome-ring" style={{ animationDelay: '.5s' }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logo} alt="" className="relative h-28 w-28 rounded-full bg-white object-contain p-1.5 shadow-2xl" />
+      </div>
+
       <div className="welcome-media">
         {slides.map((s, k) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={k} src={s.image} alt="" className={cn('absolute inset-0 h-full w-full object-cover transition-all duration-1000', k === i ? 'scale-100 opacity-100' : 'scale-105 opacity-0')} />
+          <img key={k} src={s.image} alt="" className={cn('welcome-img', k === i && 'is-on', k % 2 ? 'kb-b' : 'kb-a')} />
         ))}
-        <span className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[var(--wbg)]" />
+        <span className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-[var(--wbg)]" />
+        <LeafField tone="light" count={6} />
+        {slides.length > 1 && (
+          <div className="absolute inset-x-4 top-[calc(12px+env(safe-area-inset-top))] flex gap-1.5">
+            {slides.map((_, k) => (
+              <button key={k} onClick={() => setI(k)} className="welcome-bar" aria-label={`Image ${k + 1}`}>
+                <span key={`${k}-${i}`} className={cn(k < i && 'is-done', k === i && phase === 'main' && 'is-run')} />
+              </button>
+            ))}
+          </div>
+        )}
         {app.showSkip && (
-          <button onClick={done} className="absolute end-4 top-[calc(14px+env(safe-area-inset-top))] rounded-full bg-black/30 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur">
+          <button onClick={() => finish()} className="absolute end-4 top-[calc(28px+env(safe-area-inset-top))] rounded-full bg-black/35 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur transition active:scale-95">
             {app.skipLabel || 'Skip'}
           </button>
         )}
         {cur?.title && (
-          <div key={i} className="absolute inset-x-6 bottom-6 text-white" style={{ animation: 'fx-up .6s var(--ease) both' }}>
-            <p className="font-display text-xl font-semibold drop-shadow">{cur.title}</p>
+          <div key={`cap-${i}`} className="welcome-cap absolute inset-x-6 bottom-8 text-white">
+            <p className="font-display text-[1.35rem] font-semibold leading-tight drop-shadow">{cur.title}</p>
             {cur.text && <p className="mt-1 text-sm text-white/85 drop-shadow">{cur.text}</p>}
           </div>
         )}
       </div>
+
       <div className="welcome-panel">
-        {slides.length > 1 && (
-          <div className="mb-4 flex justify-center gap-1.5">
-            {slides.map((_, k) => (
-              <button key={k} onClick={() => setI(k)} className={cn('h-1.5 rounded-full transition-all', k === i ? 'w-6 bg-white' : 'w-1.5 bg-white/40')} aria-label={`Image ${k + 1}`} />
-            ))}
-          </div>
-        )}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logo} alt="" className="mx-auto -mt-1 h-20 w-20 rounded-full bg-white object-contain p-1 shadow-xl" style={{ animation: 'pop .6s cubic-bezier(.2,.8,.2,1) both' }} />
-        <h1 className="mt-4 text-center font-display text-[1.6rem] font-semibold leading-tight text-white">{app.splashTitle}</h1>
-        {app.splashText && <p className="mx-auto mt-2 max-w-sm text-center text-sm text-white/80">{app.splashText}</p>}
+        <img src={logo} alt="" className="welcome-logo mx-auto -mt-14 h-20 w-20 rounded-full bg-white object-contain p-1 shadow-xl ring-4 ring-[var(--wbg)]" />
+        <h1 className="welcome-up mt-3 text-center font-display text-[1.55rem] font-semibold leading-tight text-white" style={{ ['--d' as any]: '.15s' }}>{app.splashTitle}</h1>
+        {app.splashText && <p className="welcome-up mx-auto mt-2 max-w-sm text-center text-sm leading-relaxed text-white/80" style={{ ['--d' as any]: '.25s' }}>{app.splashText}</p>}
         <div className="mx-auto mt-6 grid w-full max-w-sm gap-2.5">
           {app.showGoogle && googleEnabled && (
-            <button onClick={() => go('/api/auth/google')} className="welcome-btn bg-white text-ink">
+            <button onClick={() => finish('/api/auth/google')} className="welcome-btn welcome-up welcome-shine bg-white text-ink" style={{ ['--d' as any]: '.35s' }}>
               <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>
               {app.googleLabel || 'Continue with Google'}
             </button>
           )}
           {app.showEmail && (
-            <button onClick={() => go('/login')} className="welcome-btn bg-white/15 text-white ring-1 ring-white/30 backdrop-blur">
+            <button onClick={() => finish('/login')} className={cn('welcome-btn welcome-up ring-1 ring-white/30 backdrop-blur', app.showGoogle && googleEnabled ? 'bg-white/15 text-white' : 'welcome-shine bg-white text-ink')} style={{ ['--d' as any]: '.45s' }}>
               <Mail className="h-5 w-5" /> {app.emailLabel || 'Continue with email'}
             </button>
           )}
           {app.showEmail && (
-            <button onClick={() => go('/register')} className="py-1 text-center text-sm font-semibold text-white/85 underline-offset-4 hover:underline">
+            <button onClick={() => finish('/register')} className="welcome-up py-1 text-center text-sm font-semibold text-white/85 underline-offset-4 hover:underline" style={{ ['--d' as any]: '.55s' }}>
               {app.signupLabel || 'Create a free account'}
             </button>
           )}
-          {app.showSkip && !app.showEmail && !app.showGoogle && (
-            <button onClick={done} className="welcome-btn bg-white text-ink">{app.skipLabel || 'Skip'}</button>
+          {app.showSkip && !app.showEmail && !(app.showGoogle && googleEnabled) && (
+            <button onClick={() => finish()} className="welcome-btn welcome-up bg-white text-ink" style={{ ['--d' as any]: '.35s' }}>{app.skipLabel || 'Skip'}</button>
           )}
         </div>
       </div>

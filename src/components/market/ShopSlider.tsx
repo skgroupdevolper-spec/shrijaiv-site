@@ -25,7 +25,7 @@ export default function ShopSlider({ slides, interval = 6 }: { slides: Slide[]; 
             <img src={s.image} alt="" className={cn('absolute inset-0 h-full w-full object-cover transition-transform duration-[6s]', k === i && 'scale-105')} />
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent sm:from-black/45 sm:via-black/10" />
-          <div className="relative flex h-full max-w-[68%] flex-col justify-center p-5 pb-9 sm:max-w-[60%] sm:p-10">
+          <div key={k === i ? `on-${i}` : `off-${k}`} className={cn('relative flex h-full max-w-[68%] flex-col justify-center p-5 pb-9 sm:max-w-[60%] sm:p-10', k === i && 'slide-in')}>
             {s.badge && <span className="w-max rounded-full bg-white/90 px-2.5 py-0.5 text-[0.68rem] font-bold text-ink shadow sm:px-3 sm:py-1 sm:text-xs">{s.badge}</span>}
             {s.title && <h2 className="mt-2 line-clamp-3 font-display text-[clamp(1.15rem,0.7rem+2.4vw,2.8rem)] font-semibold leading-[1.1] text-white drop-shadow-md sm:mt-3">{s.title}</h2>}
             {s.text && <p className="mt-2 hidden max-w-md text-sm text-white/90 min-[480px]:line-clamp-2 sm:text-base">{s.text}</p>}
@@ -39,6 +39,7 @@ export default function ShopSlider({ slides, interval = 6 }: { slides: Slide[]; 
         <>
           <button type="button" onClick={() => setI((i - 1 + n) % n)} className="absolute left-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/70 text-ink opacity-0 backdrop-blur transition group-hover:opacity-100" aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
           <button type="button" onClick={() => setI((i + 1) % n)} className="absolute right-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/70 text-ink opacity-0 backdrop-blur transition group-hover:opacity-100" aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
+          <span key={`p-${i}`} className="slide-progress" style={{ animationDuration: `${Math.max(3, interval)}s` }} aria-hidden />
           <div className="absolute bottom-3 right-4 flex gap-1.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2">
             {slides.map((_, k) => <button key={k} type="button" onClick={() => setI(k)} className={cn('h-2 rounded-full transition-all', k === i ? 'w-6 bg-white' : 'w-2 bg-white/50')} aria-label={`Slide ${k + 1}`} />)}
           </div>
