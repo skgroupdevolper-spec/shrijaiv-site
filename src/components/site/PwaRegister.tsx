@@ -44,7 +44,12 @@ export default function PwaRegister({ app, googleEnabled, logo }: Props) {
   const [splash, setSplash] = useState(false);
 
   useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') navigator.serviceWorker.register('/sw.js').catch(() => null);
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((r) => r.update()).catch(() => null);
+    const okTimer = window.setTimeout(() => {
+      try {
+        sessionStorage.removeItem('err-reload');
+      } catch {}
+    }, 4000);
     const standalone = isStandalone();
     setInstalled(standalone);
     if (standalone && app.splashEnabled && !store.get('app-welcome-done')) setSplash(true);
@@ -63,6 +68,7 @@ export default function PwaRegister({ app, googleEnabled, logo }: Props) {
     window.addEventListener('beforeinstallprompt', onPrompt);
     window.addEventListener('appinstalled', onInstalled);
     return () => {
+      clearTimeout(okTimer);
       window.removeEventListener('beforeinstallprompt', onPrompt);
       window.removeEventListener('appinstalled', onInstalled);
     };

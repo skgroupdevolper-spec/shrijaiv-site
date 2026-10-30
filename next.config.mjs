@@ -25,6 +25,8 @@ const nextConfig = {
   async headers() {
     const https = (process.env.NEXT_PUBLIC_SITE_URL || '').startsWith('https') || !!process.env.VERCEL;
     return [
+      // the service worker must never be cached, so fixes reach every browser on the next visit
+      { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }] },
       {
         source: '/:path*',
         headers: [
