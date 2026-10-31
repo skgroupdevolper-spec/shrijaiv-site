@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const ctx = await requireBuyer();
   if (!ctx) return fail('Unauthorized', 401);
-  const items = await prisma.requirement.findMany({ where: { buyerId: ctx.buyer.id }, orderBy: { createdAt: 'desc' }, include: { category: { select: { name: true } }, _count: { select: { quotes: true } } } });
+  const items = await prisma.requirement.findMany({ where: { buyerId: ctx.buyer.id }, orderBy: { createdAt: 'desc' }, include: { category: { select: { name: true } }, _count: { select: { quotes: { where: { status: { notIn: ['review', 'rejected'] } } } } } } });
   return ok({ items });
 }
 

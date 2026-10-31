@@ -86,11 +86,11 @@ jobs:
           curl -sf -b cookies.txt "http://localhost:3000/api/admin/pages?take=200" | grep -q '"slug":"about"'
           code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt http://localhost:3000/admin); echo "/admin -> $code"; [ "$code" = "200" ]
           # --- marketplace: seller & buyer accounts and dashboards ---
-          curl -sf -c seller.txt -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{"role":"seller","name":"Ravi Seller","company":"Green Farms","email":"seller@example.com","phone":"9876543210","password":"SellerPass123","state":"Gujarat","city":"Surat"}' | grep -q '"redirect":"/seller"'
+          curl -sf -c seller.txt -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{"role":"seller","name":"Ravi Seller","company":"Green Farms","email":"seller@example.com","phone":"9876543210","password":"SellerPass123","state":"Gujarat","city":"Surat","agree":"1"}' | grep -q '"redirect":"/seller"'
           echo "seller registered"
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller); echo "/seller -> $code"; [ "$code" = "200" ]
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/buyer); echo "/buyer as seller -> $code (redirect)"; [ "$code" = "307" ]
-          curl -sf -c buyer.txt -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{"role":"buyer","name":"Meena Buyer","email":"buyer@example.com","phone":"9876501234","password":"BuyerPass123"}' | grep -q '"redirect":"/buyer"'
+          curl -sf -c buyer.txt -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{"role":"buyer","name":"Meena Buyer","email":"buyer@example.com","phone":"9876501234","password":"BuyerPass123","agree":"1"}' | grep -q '"redirect":"/buyer"'
           echo "buyer registered"
           code=$(curl -s -o /dev/null -w "%{http_code}" -b buyer.txt http://localhost:3000/buyer); echo "/buyer -> $code"; [ "$code" = "200" ]
           code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/seller); echo "/seller anonymous -> $code (redirect to login)"; [ "$code" = "307" ]
@@ -111,12 +111,20 @@ jobs:
           # buyer posts a requirement, seller quotes, buyer accepts
           RID=$(curl -sf -b buyer.txt -X POST http://localhost:3000/api/buyer/requirements -H 'Content-Type: application/json' -d '{"title":"Need 500 kg organic turmeric monthly","quantity":"500","unit":"kg","deliveryState":"Maharashtra"}' | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")
           check "/requirements/$RID" 200
-          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/leads/$RID/quote -H 'Content-Type: application/json' -d '{"price":195,"priceUnit":"per kg","deliveryTime":"7 days","message":"Fresh lot available"}' | grep -q '"item"'
+          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/leads/$RID/quote -H 'Content-Type: application/json' -d '{"price":195,"priceUnit":"per kg","deliveryTime":"7 days","message":"Fresh lot available"}' | grep -q '"held":true'
+          # admin-first: the quote waits in the review queue until the admin forwards it
+          QH=$(curl -sf -b buyer.txt http://localhost:3000/api/buyer/requirements | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0]._count.quotes))"); echo "quotes visible before review: $QH"; [ "$QH" = "0" ]
+          RQ=$(curl -sf -b cookies.txt http://localhost:3000/api/admin/review | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).quotes[0].id))")
+          curl -sf -b cookies.txt -X POST http://localhost:3000/api/admin/review -H 'Content-Type: application/json' -d "{\"kind\":\"quote\",\"id\":\"$RQ\",\"action\":\"forward\"}" | grep -q '"ok":true'
+          echo "admin forwarded the quote"
           QID=$(curl -sf -b buyer.txt "http://localhost:3000/buyer/requirements/$RID" >/dev/null; curl -sf -b buyer.txt http://localhost:3000/api/buyer/requirements | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0]._count.quotes))"); echo "quotes on requirement: $QID"; [ "$QID" = "1" ]
           # guest inquiry on the product + buyer inquiry
           SID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/profile | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")
           curl -sf -X POST http://localhost:3000/api/inquiries -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"productId\":\"$PID\",\"name\":\"Guest Buyer\",\"email\":\"guest@example.com\",\"phone\":\"9000000000\",\"message\":\"Please send your best price for 200 kg\"}" | grep -q '"refNo"'
           curl -sf -b buyer.txt -X POST http://localhost:3000/api/inquiries -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"message\":\"Do you ship to Pune?\"}" | grep -q '"href":"/buyer/inquiries/'
+          SEEN=$(curl -sf -b seller.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items.length))"); echo "inquiries visible to seller before review: $SEEN"; [ "$SEEN" = "0" ]
+          for RI in $(curl -sf -b cookies.txt http://localhost:3000/api/admin/review | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).inquiries.map(i=>i.id).join(' ')))"); do curl -sf -b cookies.txt -X POST http://localhost:3000/api/admin/review -H 'Content-Type: application/json' -d "{\"kind\":\"inquiry\",\"id\":\"$RI\",\"action\":\"forward\"}" | grep -q '"ok":true'; done
+          echo "admin forwarded the inquiries"
           IID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))")
           curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/inquiries/$IID/messages -H 'Content-Type: application/json' -d '{"body":"Yes, we ship all India."}' | grep -q '"item"'
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/inquiries/$IID); echo "/seller/inquiries/ID -> $code"; [ "$code" = "200" ]
