@@ -227,7 +227,7 @@ export default async function ProductPage({ params }: Props) {
             {specs.length > 0 && (
               <div className="card p-5 md:p-8">
                 <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">{t('Specifications')}</h2>
-                <table className="table-nice mt-4 w-full table-fixed text-sm">
+                <table className="table-nice spec-table mt-4 w-full table-fixed text-sm">
                   <tbody>
                     {specs.map((r) => (
                       <tr key={r.label}>
