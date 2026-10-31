@@ -16,15 +16,16 @@ export async function GET() {
     prisma.application.findMany({ where: { seen: false }, orderBy: { updatedAt: 'desc' }, take: 5, select: { id: true, refNo: true, fullName: true, service: true, updatedAt: true } }),
     prisma.message.findMany({ where: { fromAdmin: false, read: false }, orderBy: { createdAt: 'desc' }, take: 5, select: { id: true, body: true, createdAt: true, applicationId: true, application: { select: { refNo: true, fullName: true } } } }),
   ]);
-  const [pendingSellers, pendingProducts, newInquiries, pendingReviews, latest] = await Promise.all([
+  const [pendingSellers, pendingProducts, newInquiries, pendingReviews, latest, toReview] = await Promise.all([
     prisma.sellerProfile.count({ where: { status: 'pending' } }),
     prisma.product.count({ where: { status: 'pending' } }),
     prisma.inquiry.count({ where: { seenByAdmin: false } }),
     prisma.review.count({ where: { status: 'pending' } }),
     prisma.notification.findMany({ where: { userId: null }, orderBy: { createdAt: 'desc' }, take: 12 }),
+    Promise.all([prisma.inquiry.count({ where: { status: 'review' } }), prisma.quote.count({ where: { status: 'review' } })]).then(([a, b]) => a + b),
   ]);
   const unreadNotes = latest.filter((n) => !n.read).length;
-  return ok({ newLeads, newApps, unreadMsgs, latestLeads, latestApps, latestMsgs, pendingSellers, pendingProducts, newInquiries, pendingReviews, latest, unreadNotes, at: Date.now() });
+  return ok({ newLeads, newApps, unreadMsgs, latestLeads, latestApps, latestMsgs, pendingSellers, pendingProducts, newInquiries, pendingReviews, toReview, latest, unreadNotes, at: Date.now() });
 }
 
 /** Mark admin notifications as read */

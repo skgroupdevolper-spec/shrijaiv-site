@@ -52,9 +52,11 @@ export async function POST(req: Request) {
   }
   if (!mp.showBuyerContactToSeller && e.paidPlans && e.status !== 'active' && e.status !== 'trial') contactUnlocked = false;
 
+  const held = !!mp.approval?.inquiries;
   const inq = await prisma.inquiry.create({
     data: {
       refNo: makeRef(),
+      status: held ? 'review' : 'new',
       sellerId: seller.id,
       buyerId,
       productId: product?.id || null,
@@ -71,6 +73,6 @@ export async function POST(req: Request) {
     },
   });
   if (product) prisma.product.update({ where: { id: product.id }, data: { inquiryCount: { increment: 1 } } }).catch(() => null);
-  onNewInquiry(inq, seller, product?.name).catch((err) => console.error('[inquiry] notify failed:', err?.message));
-  return ok({ ok: true, refNo: inq.refNo, href: buyerId ? `/buyer/inquiries/${inq.id}` : undefined });
+  onNewInquiry(inq, seller, product?.name, held).catch((err) => console.error('[inquiry] notify failed:', err?.message));
+  return ok({ ok: true, held, refNo: inq.refNo, href: buyerId ? `/buyer/inquiries/${inq.id}` : undefined });
 }

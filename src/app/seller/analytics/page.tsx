@@ -5,6 +5,7 @@ import { PageTitle, Card } from '@/components/admin/ui';
 import { Stat } from '@/components/dashboard/Stat';
 import { Eye, Inbox, Package, Percent, Star, Lock } from 'lucide-react';
 import Link from 'next/link';
+import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function SellerAnalytics() {
   const { seller } = (await requireSeller())!;
@@ -12,10 +13,10 @@ export default async function SellerAnalytics() {
   const since30 = new Date(Date.now() - 30 * 86_400_000);
   const [products, inquiries30, inquiriesAll, quotes30, byStatus] = await Promise.all([
     prisma.product.findMany({ where: { sellerId: seller.id }, orderBy: { views: 'desc' }, select: { id: true, name: true, views: true, inquiryCount: true, status: true, ratingAvg: true, ratingCount: true } }),
-    prisma.inquiry.count({ where: { sellerId: seller.id, createdAt: { gte: since30 } } }),
-    prisma.inquiry.count({ where: { sellerId: seller.id } }),
+    prisma.inquiry.count({ where: { sellerId: seller.id, ...SELLER_VISIBLE, createdAt: { gte: since30 } } }),
+    prisma.inquiry.count({ where: { sellerId: seller.id, ...SELLER_VISIBLE } }),
     prisma.quote.count({ where: { sellerId: seller.id, createdAt: { gte: since30 } } }),
-    prisma.inquiry.groupBy({ by: ['status'], where: { sellerId: seller.id }, _count: { _all: true } }),
+    prisma.inquiry.groupBy({ by: ['status'], where: { sellerId: seller.id, ...SELLER_VISIBLE }, _count: { _all: true } }),
   ]);
   const views = products.reduce((a, p) => a + p.views, 0) + seller.views;
   const conv = views ? ((inquiriesAll / views) * 100).toFixed(1) : '0';
@@ -26,7 +27,7 @@ export default async function SellerAnalytics() {
     d.setDate(d.getDate() - (13 - i));
     return d;
   });
-  const recent = await prisma.inquiry.findMany({ where: { sellerId: seller.id, createdAt: { gte: days[0] } }, select: { createdAt: true } });
+  const recent = await prisma.inquiry.findMany({ where: { sellerId: seller.id, ...SELLER_VISIBLE, createdAt: { gte: days[0] } }, select: { createdAt: true } });
   const series = days.map((d) => recent.filter((r) => r.createdAt >= d && r.createdAt < new Date(d.getTime() + 86_400_000)).length);
   const max = Math.max(1, ...series);
   return (

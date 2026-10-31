@@ -6,10 +6,11 @@ import { inr } from '@/lib/marketplace/data';
 import { PageTitle } from '@/components/admin/ui';
 import { StatusPill } from '@/components/dashboard/fields';
 import { formatDate } from '@/lib/utils';
+import { BUYER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function BuyerQuotes() {
   const { buyer } = (await requireBuyer())!;
-  const items = await prisma.quote.findMany({ where: { requirement: { buyerId: buyer.id } }, orderBy: { createdAt: 'desc' }, include: { seller: { select: { companyName: true, verified: true } }, requirement: { select: { id: true, title: true } } }, take: 300 });
+  const items = await prisma.quote.findMany({ where: { ...BUYER_VISIBLE, requirement: { buyerId: buyer.id } }, orderBy: { createdAt: 'desc' }, include: { seller: { select: { companyName: true, verified: true } }, requirement: { select: { id: true, title: true } } }, take: 300 });
   return (
     <>
       <PageTitle title="Quotes received" subtitle="All quotes across your requirements. Open a requirement to compare and accept." />

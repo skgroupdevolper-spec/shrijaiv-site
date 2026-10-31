@@ -16,7 +16,7 @@ export default async function BuyerRequirement({ params, searchParams }: { param
   const { id } = await params;
   const { edit } = await searchParams;
   const { buyer } = (await requireBuyer())!;
-  const r = await prisma.requirement.findFirst({ where: { id, buyerId: buyer.id }, include: { category: { select: { name: true } }, quotes: { orderBy: [{ status: 'asc' }, { createdAt: 'desc' }], include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, ratingAvg: true, ratingCount: true, logo: true, phone: true, whatsapp: true, email: true, user: { select: { email: true } } } } } } } });
+  const r = await prisma.requirement.findFirst({ where: { id, buyerId: buyer.id }, include: { category: { select: { name: true } }, quotes: { where: { status: { notIn: ['review', 'rejected'] } }, orderBy: [{ status: 'asc' }, { createdAt: 'desc' }], include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, ratingAvg: true, ratingCount: true, logo: true, phone: true, whatsapp: true, email: true, user: { select: { email: true } } } } } } } });
   if (!r) notFound();
   await prisma.quote.updateMany({ where: { requirementId: id, seenByBuyer: false }, data: { seenByBuyer: true } });
   if (edit === '1') {

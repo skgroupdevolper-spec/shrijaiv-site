@@ -9,6 +9,8 @@ import ListingHeader from '@/components/market/ListingHeader';
 import RequirementCard from '@/components/market/RequirementCard';
 import SmartLink from '@/components/ui/SmartLink';
 import { formatDate } from '@/lib/utils';
+import ContactAdminForm from '@/components/market/ContactAdminForm';
+import { Rating } from '@/components/market/Rating';
 
 export const dynamic = 'force-dynamic';
 type Props = { params: Promise<{ id: string }> };
@@ -29,6 +31,9 @@ export default async function RequirementPage({ params }: Props) {
   const user = await getCurrentUser();
   const similar = (await listRequirements({ categoryIds: r.categoryId ? [r.categoryId] : undefined, take: 5 })).items.filter((x) => x.id !== r.id).slice(0, 4);
   const open = r.status === 'open';
+  // seller responses (names masked like the original design)
+  const responses = await prisma.quote.findMany({ where: { requirementId: r.id, status: { notIn: ['review', 'rejected'] } }, orderBy: { createdAt: 'desc' }, take: 12, select: { id: true, createdAt: true, seller: { select: { companyName: true, state: true, verified: true, ratingAvg: true, subscriptions: { where: { status: { in: ['active', 'trial'] } }, take: 1, select: { plan: { select: { name: true } } } } } } } }).catch(() => [] as any[]);
+  const mask = (n: string) => n.split(/\s+/).slice(0, 2).map((w) => `${w.charAt(0)}***`).join(' ');
   return (
     <>
       <ListingHeader compact crumbs={[{ label: t('Buy leads'), href: '/requirements' }, ...(r.category ? [{ label: r.category.name, href: `/requirements?cat=${r.category.slug}` }] : []), { label: r.title }]} eyebrow={r.category?.name || t('Requirement')} title={r.title} />
@@ -67,6 +72,30 @@ export default async function RequirementPage({ params }: Props) {
                 </>
               )}
             </div>
+            <div className="card p-6 md:p-8">
+              <h2 className="font-display text-xl font-semibold text-ink">{t('Seller responses')} <span className="text-ink/40">({responses.length} {t('total')})</span></h2>
+              {responses.length === 0 ? (
+                <p className="mt-2 text-sm text-ink/55">{t('No quotes yet — be the first seller to respond.')}</p>
+              ) : (
+                <ul className="mt-4 divide-y divide-ink/5">
+                  {responses.map((q: any) => (
+                    <li key={q.id} className="flex items-center justify-between gap-3 py-3">
+                      <div className="min-w-0">
+                        <p className="flex items-center gap-2 font-semibold text-ink">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/images/site/india.png" alt="" className="h-4 w-4" /> {mask(q.seller.companyName)} <Rating value={q.seller.ratingAvg || 4} />
+                        </p>
+                        <p className="text-xs text-ink/55">
+                          {q.seller.subscriptions?.[0]?.plan?.name ? <span className="font-bold text-amber-600">★ {q.seller.subscriptions[0].plan.name} member · </span> : null}
+                          {q.seller.verified ? t('Verified supplier') : t('Supplier')} {t('from')} {q.seller.state || 'India'}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-xs text-ink/45">{formatDate(q.createdAt)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             {similar.length > 0 && (
               <div>
                 <h2 className="font-display text-xl font-semibold text-ink">{t('Similar requirements')}</h2>
@@ -96,6 +125,11 @@ export default async function RequirementPage({ params }: Props) {
                 </>
               )}
             </div>
+            {open && user?.role !== 'SELLER' && (
+              <div className="card p-6">
+                <ContactAdminForm subject={`Contact buyer: ${r.title}`} title={t('Contact Buyer')} compact />
+              </div>
+            )}
             <div className="card p-6 text-sm text-ink/70">
               <p className="font-display text-lg font-semibold text-ink">{t('About the buyer')}</p>
               <dl className="mt-3 space-y-2">

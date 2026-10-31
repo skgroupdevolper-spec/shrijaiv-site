@@ -8,7 +8,7 @@ import { formatDate } from '@/lib/utils';
 
 export default async function BuyerRequirements() {
   const { buyer } = (await requireBuyer())!;
-  const items = await prisma.requirement.findMany({ where: { buyerId: buyer.id }, orderBy: { createdAt: 'desc' }, include: { category: { select: { name: true } }, quotes: { select: { id: true, seenByBuyer: true } } } });
+  const items = await prisma.requirement.findMany({ where: { buyerId: buyer.id }, orderBy: { createdAt: 'desc' }, include: { category: { select: { name: true } }, quotes: { where: { status: { notIn: ['review', 'rejected'] } }, select: { id: true, seenByBuyer: true } } } });
   return (
     <>
       <PageTitle title="My requirements" subtitle="Each requirement is a buy lead for sellers. Compare the quotes you receive and accept the best one." actions={<Link href="/buyer/requirements/new" className="btn btn-gold"><PlusCircle className="h-4 w-4" /> Post a requirement</Link>} />

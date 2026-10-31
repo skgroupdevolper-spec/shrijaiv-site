@@ -27,13 +27,25 @@ export async function emailHtml(title: string, intro: string, rows: [string, str
   </div>`;
 }
 
-export async function onNewInquiry(inq: { id: string; refNo: string; name: string; email?: string | null; phone?: string | null; message: string; quantity?: string | null }, seller: { userId: string; companyName: string; email?: string | null }, productName?: string | null) {
-  const rows: [string, string | null | undefined][] = [['Reference', inq.refNo], ['Product', productName || 'General inquiry'], ['From', inq.name], ['Quantity', inq.quantity], ['Message', inq.message]];
+type InqLite = { id: string; refNo: string; name: string; email?: string | null; phone?: string | null; message: string; quantity?: string | null };
+type SellerLite = { userId: string; companyName: string; email?: string | null };
+const inqRows = (inq: InqLite, productName?: string | null): [string, string | null | undefined][] => [['Reference', inq.refNo], ['Product', productName || 'General inquiry'], ['From', inq.name], ['Quantity', inq.quantity], ['Message', inq.message]];
+
+/** Tell the seller about an inquiry (immediately, or when the admin forwards it) */
+export async function deliverInquiry(inq: InqLite, seller: SellerLite, productName?: string | null) {
+  const rows = inqRows(inq, productName);
   await notifyUser(seller.userId, { type: 'inquiry', title: `New inquiry from ${inq.name}${productName ? ` · ${productName}` : ''}`, body: inq.message.slice(0, 140), href: `/seller/inquiries/${inq.id}` });
-  await notifyAdmins({ type: 'inquiry', title: `Inquiry ${inq.refNo}: ${inq.name} → ${seller.companyName}`, body: inq.message.slice(0, 140), href: `/admin/inquiries/${inq.id}` });
   const sellerUser = await prisma.user.findUnique({ where: { id: seller.userId }, select: { email: true } });
   const to = seller.email || sellerUser?.email;
   if (to) sendMail({ to, subject: `New inquiry ${inq.refNo}${productName ? ` for ${productName}` : ''}`, html: await emailHtml('You have a new inquiry', `${inq.name} is interested in your products. Reply quickly — buyers usually choose the first good answer.`, rows, { label: 'Reply in your dashboard', href: `/seller/inquiries/${inq.id}` }), replyTo: inq.email || undefined }).catch(() => null);
-  notifyAdmin(`New inquiry ${inq.refNo}: ${inq.name} → ${seller.companyName}`, rowsTable(rows), inq.email || undefined, 'leads');
   if (inq.email) sendMail({ to: inq.email, subject: `Your inquiry ${inq.refNo} was sent to ${seller.companyName}`, html: await emailHtml('Inquiry sent', `We delivered your inquiry to ${seller.companyName}. They will reply by email, WhatsApp or in your SHRIJAIV dashboard.`, rows) }).catch(() => null);
+}
+
+/** New inquiry: admins always hear about it; the seller only when it is not held for review */
+export async function onNewInquiry(inq: InqLite, seller: SellerLite, productName?: string | null, held = false) {
+  const rows = inqRows(inq, productName);
+  await notifyAdmins({ type: 'inquiry', title: `${held ? 'Review: ' : ''}Inquiry ${inq.refNo}: ${inq.name} → ${seller.companyName}`, body: inq.message.slice(0, 140), href: `/admin/inquiries/${inq.id}` });
+  notifyAdmin(`${held ? '[Needs review] ' : ''}New inquiry ${inq.refNo}: ${inq.name} → ${seller.companyName}`, rowsTable(rows), inq.email || undefined, 'leads');
+  if (!held) return deliverInquiry(inq, seller, productName);
+  if (inq.email) sendMail({ to: inq.email, subject: `We received your inquiry ${inq.refNo}`, html: await emailHtml('Inquiry received', `Thank you! Our team checks every inquiry and forwards it to ${seller.companyName} shortly — usually within a few working hours.`, rows) }).catch(() => null);
 }

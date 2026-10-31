@@ -13,6 +13,12 @@ export default async function AdminInquiry({ params }: { params: Promise<{ id: s
   return (
     <div className="max-w-6xl">
       <Link href="/admin/inquiries" className="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-gray-900"><ArrowLeft className="h-4 w-4" /> Inquiries</Link>
+      {q.status === 'review' && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+          <span><b>Waiting for your review.</b> The seller cannot see this inquiry until you forward it.</span>
+          <Link href="/admin/review" className="rounded-xl bg-amber-500 px-4 py-2 font-bold text-white">Open review queue</Link>
+        </div>
+      )}
       <div className="mb-4 rounded-2xl bg-white p-5 ring-1 ring-gray-200/70">
         <p className="text-xs text-gray-400">{q.refNo} · {formatDateTime(q.createdAt)} · status {q.status}{q.contactUnlocked ? '' : ' · contact locked for the seller'}</p>
         <p className="mt-1 font-bold text-gray-900">{q.name}{q.company ? ` (${q.company})` : ''} → <Link href={`/admin/sellers/${q.seller.id}`} className="text-gold-deep">{q.seller.companyName}</Link>{q.product ? ` · ${q.product.name}` : ''}</p>

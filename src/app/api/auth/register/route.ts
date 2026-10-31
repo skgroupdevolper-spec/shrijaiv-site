@@ -27,7 +27,11 @@ export async function POST(req: Request) {
   const website = str('website');
   const address = str('address', 300);
   const pincode = str('pincode', 10);
-  const about = str('about', 2000);
+  const deals = str('deals', 500);
+  const services = str('services', 300);
+  const turnover = str('turnover', 60);
+  const certNames = String(b.certs || '').split(/[,;\n]/).map((x) => x.trim()).filter(Boolean).slice(0, 10);
+  const about = str('about', 2000) || ([deals ? `Supplier of: ${deals}.` : '', services ? `Trade services: ${services}.` : ''].filter(Boolean).join(' ') || null);
   const employees = str('employees', 20);
   const yearRaw = Number(b.year);
   const year = yearRaw >= 1900 && yearRaw <= new Date().getFullYear() ? yearRaw : null;
@@ -37,6 +41,7 @@ export async function POST(req: Request) {
   if (!phone || phone.replace(/\D/g, '').length < 10) return fail('Please enter a valid mobile number');
   if (password.length < 8) return fail('Password must be at least 8 characters');
   if (role === 'SELLER' && !company) return fail('Please enter your company / farm / brand name');
+  if (!b.agree) return fail('Please accept the Terms & Conditions');
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) return fail('An account with this email already exists. Please log in.');
 
@@ -46,14 +51,14 @@ export async function POST(req: Request) {
   if (role === 'SELLER') {
     const slug = await uniqueSlug(company, async (s) => !!(await prisma.sellerProfile.findUnique({ where: { slug: s }, select: { id: true } })));
     await prisma.sellerProfile.create({
-      data: { userId: user.id, slug, companyName: company, businessType: type || null, phone, whatsapp, email, city: city || null, state: state || null, gstNumber: gst, fssaiNumber: fssai, website, address, pincode, about, employees, yearEstablished: year, status: mp.approval.sellers ? 'pending' : 'approved' },
+      data: { userId: user.id, slug, companyName: company, businessType: type || null, phone, whatsapp, email, city: city || null, state: state || null, gstNumber: gst, fssaiNumber: fssai, website, address, pincode, about, employees, yearEstablished: year, annualTurnover: turnover, certifications: JSON.stringify(certNames.map((name) => ({ name, number: '', file: '' }))), status: mp.approval.sellers ? 'pending' : 'approved' },
     });
   } else {
     await prisma.buyerProfile.create({ data: { userId: user.id, companyName: company || null, buyerType: type || null, phone, whatsapp, city: city || null, state: state || null, gstNumber: gst, address, pincode, interests: JSON.stringify(categories) } });
   }
 
-  await prisma.notification.create({ data: { type: role === 'SELLER' ? 'seller' : 'buyer', title: `New ${role === 'SELLER' ? 'seller' : 'buyer'}: ${company || name}`, body: `${name} · ${email} · ${phone}${city ? ` · ${city}` : ''}`, href: role === 'SELLER' ? '/admin/sellers' : '/admin/buyers' } }).catch(() => null);
+  await prisma.notification.create({ data: { type: role === 'SELLER' ? 'seller' : 'buyer', title: `New ${role === 'SELLER' ? 'seller' : 'buyer'}: ${company || name}`, body: `${name} · ${email} · ${phone}${city ? ` · ${city}` : ''}${deals ? ` · ${role === 'SELLER' ? 'sells' : 'buys'}: ${deals}` : ''}`, href: role === 'SELLER' ? '/admin/sellers' : '/admin/buyers' } }).catch(() => null);
   await startSession(user);
-  notifyAdmin(`New ${role === 'SELLER' ? 'seller' : 'buyer'} account: ${company || name}`, rowsTable([['Name', name], ['Company', company], ['Type', type], ['Email', email], ['Phone', phone], ['City', city], ['State', state]]), email, 'accounts');
+  notifyAdmin(`New ${role === 'SELLER' ? 'seller' : 'buyer'} account: ${company || name}`, rowsTable([['Name', name], ['Company', company], ['Type', type], [role === 'SELLER' ? 'Supplier of' : 'Buyer of', deals], ['Email', email], ['Phone', phone], ['City', city], ['State', state], ['GST', gst]]), email, 'accounts');
   return ok({ ok: true, role, redirect: homeFor(role) });
 }

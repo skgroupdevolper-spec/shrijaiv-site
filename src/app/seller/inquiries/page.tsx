@@ -11,7 +11,7 @@ const TABS = [['', 'All'], ['new', 'New'], ['replied', 'Replied'], ['quoted', 'Q
 export default async function SellerInquiries({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const { seller } = (await requireSeller())!;
   const { status } = await searchParams;
-  const items = await prisma.inquiry.findMany({ where: { sellerId: seller.id, ...(status ? { status } : { status: { not: 'spam' } }) }, orderBy: { lastMessageAt: 'desc' }, include: { product: { select: { name: true } }, messages: { where: { senderRole: { in: ['buyer', 'admin'] }, read: false }, select: { id: true } } }, take: 300 });
+  const items = await prisma.inquiry.findMany({ where: { sellerId: seller.id, ...(status && !['review', 'rejected'].includes(status) ? { status } : { status: { notIn: ['spam', 'review', 'rejected'] } }) }, orderBy: { lastMessageAt: 'desc' }, include: { product: { select: { name: true } }, messages: { where: { senderRole: { in: ['buyer', 'admin'] }, read: false }, select: { id: true } } }, take: 300 });
   return (
     <>
       <PageTitle title="Inquiries" subtitle="Every inquiry also reaches your email and WhatsApp. Reply here to keep the conversation in one place." />

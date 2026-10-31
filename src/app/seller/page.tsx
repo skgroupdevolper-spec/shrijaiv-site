@@ -6,17 +6,18 @@ import { entitlements } from '@/lib/marketplace/plans';
 import { Stat } from '@/components/dashboard/Stat';
 import { Card, PageTitle } from '@/components/admin/ui';
 import { formatDate } from '@/lib/utils';
+import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function SellerOverview() {
   const { seller } = (await requireSeller())!;
   const [products, approved, inquiries, newInquiries, openLeads, e, latest] = await Promise.all([
     prisma.product.count({ where: { sellerId: seller.id } }),
     prisma.product.count({ where: { sellerId: seller.id, status: 'approved' } }),
-    prisma.inquiry.count({ where: { sellerId: seller.id } }),
-    prisma.inquiry.count({ where: { sellerId: seller.id, status: 'new' } }),
+    prisma.inquiry.count({ where: { sellerId: seller.id, ...SELLER_VISIBLE } }),
+    prisma.inquiry.count({ where: { sellerId: seller.id, ...SELLER_VISIBLE, status: 'new' } }),
     prisma.requirement.count({ where: { status: 'open' } }),
     entitlements(seller.id),
-    prisma.inquiry.findMany({ where: { sellerId: seller.id }, orderBy: { createdAt: 'desc' }, take: 6, include: { product: { select: { name: true } } } }),
+    prisma.inquiry.findMany({ where: { sellerId: seller.id, ...SELLER_VISIBLE }, orderBy: { createdAt: 'desc' }, take: 6, include: { product: { select: { name: true } } } }),
   ]);
   const profileSteps = [
     { ok: !!seller.about, label: 'Write about your company', href: '/seller/profile' },

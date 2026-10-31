@@ -81,6 +81,8 @@ export default function MarketplaceSettings() {
             <Row label="New sellers need approval" hint="off = sellers go live immediately"><Toggle checked={m.approval.sellers} onChange={(v) => setM({ ...m, approval: { ...m.approval, sellers: v } })} /></Row>
             <Row label="New / edited products need approval"><Toggle checked={m.approval.products} onChange={(v) => setM({ ...m, approval: { ...m.approval, products: v } })} /></Row>
             <Row label="Buyer requirements need approval"><Toggle checked={m.approval.requirements} onChange={(v) => setM({ ...m, approval: { ...m.approval, requirements: v } })} /></Row>
+            <Row label="Inquiries go to admin first" hint="new buyer inquiries wait in Review queue; you forward them to the seller"><Toggle checked={m.approval.inquiries} onChange={(v) => setM({ ...m, approval: { ...m.approval, inquiries: v } })} /></Row>
+            <Row label="Quotes go to admin first" hint="seller quotes on buy leads wait in Review queue; you forward them to the buyer"><Toggle checked={m.approval.quotes} onChange={(v) => setM({ ...m, approval: { ...m.approval, quotes: v } })} /></Row>
             <Row label="Reviews need approval"><Toggle checked={m.approval.reviews} onChange={(v) => setM({ ...m, approval: { ...m.approval, reviews: v } })} /></Row>
             <Row label="Guests can send inquiries" hint="without an account (name, email, mobile)"><Toggle checked={m.allowGuestInquiry} onChange={(v) => setM({ ...m, allowGuestInquiry: v })} /></Row>
             <Row label="Visitors can rate & review" hint="with name and email, no account needed (reviews still follow the approval switch above)"><Toggle checked={m.allowGuestReview} onChange={(v) => setM({ ...m, allowGuestReview: v })} /></Row>

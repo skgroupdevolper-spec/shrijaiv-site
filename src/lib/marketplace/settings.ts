@@ -6,7 +6,7 @@ export type MarketplaceSettings = {
   paidPlans: boolean;
   /** What a seller may do without an active plan when paidPlans is on */
   freeTier: { maxProducts: number; maxInquiries: number; maxQuotes: number };
-  approval: { sellers: boolean; products: boolean; requirements: boolean; reviews: boolean }; // true = admin approves first
+  approval: { sellers: boolean; products: boolean; requirements: boolean; reviews: boolean; inquiries: boolean; quotes: boolean }; // true = admin approves first (inquiries / quotes: admin forwards them)
   allowGuestInquiry: boolean; // visitors can send an inquiry without an account
   allowGuestRequirement: boolean; // visitors can post a requirement (creates a buyer account)
   allowGuestReview: boolean; // visitors can rate and review with their name and email (no account)
@@ -23,7 +23,7 @@ export type MarketplaceSettings = {
 export const defaultMarketplace: MarketplaceSettings = {
   paidPlans: false,
   freeTier: { maxProducts: 3, maxInquiries: 5, maxQuotes: 5 },
-  approval: { sellers: true, products: true, requirements: false, reviews: true },
+  approval: { sellers: true, products: true, requirements: false, reviews: true, inquiries: true, quotes: true },
   allowGuestInquiry: true,
   allowGuestRequirement: true,
   allowGuestReview: true,

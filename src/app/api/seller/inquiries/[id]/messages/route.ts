@@ -3,6 +3,7 @@ import { ok, fail, rateLimit, clientIp } from '@/lib/api';
 import { requireSeller } from '@/lib/auth';
 import { sendMail } from '@/lib/mail';
 import { emailHtml, notifyUser } from '@/lib/marketplace/notify';
+import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
 
 type P = { params: Promise<{ id: string }> };
 
@@ -15,7 +16,7 @@ export async function POST(req: Request, { params }: P) {
   const b = await req.json().catch(() => ({}));
   const body = String(b.body || '').trim().slice(0, 4000);
   if (!body) return fail('Please write a message');
-  const inq = await prisma.inquiry.findFirst({ where: { id, sellerId: ctx.seller.id }, include: { buyer: { select: { userId: true } }, product: { select: { name: true } } } });
+  const inq = await prisma.inquiry.findFirst({ where: { id, sellerId: ctx.seller.id, ...SELLER_VISIBLE }, include: { buyer: { select: { userId: true } }, product: { select: { name: true } } } });
   if (!inq) return fail('Not found', 404);
   const attachments = Array.isArray(b.attachments) ? b.attachments.filter((x: any) => typeof x === 'string').slice(0, 5) : [];
   const msg = await prisma.inquiryMessage.create({ data: { inquiryId: id, senderId: ctx.session.sub, senderRole: 'seller', body, attachments: JSON.stringify(attachments) } });

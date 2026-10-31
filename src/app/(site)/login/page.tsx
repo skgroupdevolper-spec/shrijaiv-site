@@ -16,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const user = await getCurrentUser();
   if (user) redirect(homeFor(user.role));
   return (
-    <AuthShell title="Welcome back" subtitle="Sign in to your buyer or seller dashboard.">
+    <AuthShell tab="login" title="Welcome back" subtitle="Sign in to your buyer or seller dashboard.">
       <GoogleButton next={sp.next} error={sp.error} />
       <Suspense>
         <LoginForm />

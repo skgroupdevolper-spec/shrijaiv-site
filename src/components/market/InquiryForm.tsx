@@ -8,18 +8,19 @@ import SmartLink from '@/components/ui/SmartLink';
 export default function InquiryForm({ sellerId, sellerName, productId, productName, user, compact }: { sellerId: string; sellerName: string; productId?: string; productName?: string; user?: { name: string; email: string; phone?: string | null } | null; compact?: boolean }) {
   const t = useT();
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState<null | { ref: string; href?: string }>(null);
+  const [done, setDone] = useState<null | { ref: string; href?: string; held?: boolean }>(null);
   const [error, setError] = useState('');
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const body = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const f = Object.fromEntries(new FormData(e.currentTarget).entries()) as Record<string, string>;
+    const body = { ...f, city: [f.city, f.country && f.country !== 'India' ? f.country : ''].filter(Boolean).join(', ') };
     try {
       const r = await fetch('/api/inquiries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, sellerId, productId }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Error');
-      setDone({ ref: d.refNo, href: d.href });
+      setDone({ ref: d.refNo, href: d.href, held: !!d.held });
     } catch (err: any) {
       setError(err.message);
     }
@@ -29,8 +30,11 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
     return (
       <div className="rounded-3xl bg-emerald-50 p-6 text-center ring-1 ring-emerald-100">
         <CircleCheck className="mx-auto h-10 w-10 text-emerald-600" />
-        <p className="mt-3 font-display text-xl font-semibold text-ink">{t('Inquiry sent!')}</p>
-        <p className="mt-1 text-sm text-ink/65">{t('Reference')} <b>{done.ref}</b>. {sellerName} {t('will reply by email, WhatsApp or in your dashboard.')}</p>
+        <p className="mt-3 font-display text-xl font-semibold text-ink">{done.held ? t('Inquiry received!') : t('Inquiry sent!')}</p>
+        <p className="mt-1 text-sm text-ink/65">
+          {t('Reference')} <b>{done.ref}</b>.{' '}
+          {done.held ? `${t('Our team checks it and forwards it to')} ${sellerName} ${t('shortly — you will get an email.')}` : `${sellerName} ${t('will reply by email, WhatsApp or in your dashboard.')}`}
+        </p>
         {done.href && <SmartLink href={done.href} className="btn btn-gold btn-sm mt-4">{t('Open conversation')}</SmartLink>}
       </div>
     );
@@ -43,16 +47,23 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
             <input name="email" type="email" required placeholder={t('Email')} className="field" autoComplete="email" />
             <input name="phone" required inputMode="tel" placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />
           </div>
-          {!compact && (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input name="company" placeholder={t('Company (optional)')} className="field" autoComplete="organization" />
-              <input name="city" placeholder={t('City')} className="field" autoComplete="address-level2" />
-            </div>
-          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <select name="country" className="field" defaultValue="India" aria-label={t('Country')}>
+              {['India', 'UAE', 'Saudi Arabia', 'USA', 'UK', 'Nepal', 'Bangladesh', 'Sri Lanka', 'Other'].map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <input name="city" placeholder={t('City / State')} className="field" autoComplete="address-level2" />
+          </div>
+          {!compact && <input name="company" placeholder={t('Company (optional)')} className="field" autoComplete="organization" />}
         </>
       )}
       <input name="quantity" placeholder={t('Quantity needed (e.g. 500 kg / month)')} className="field" />
-      <textarea name="message" required rows={compact ? 3 : 4} placeholder={productName ? `${t('I am interested in')} ${productName}. ${t('Please share your best price, MOQ and delivery time.')}` : t('Tell the seller what you need: product, quantity, packaging, delivery location…')} className="field" />
+      <textarea name="message" required minLength={10} rows={compact ? 3 : 4} defaultValue={productName ? `${t('I am interested in')} ${productName}. ${t('Please share your best price, MOQ and delivery time.')}` : ''} placeholder={t('Tell the seller what you need: product, quantity, packaging, delivery location…')} className="field" />
+      <label className="flex items-start gap-2 text-xs text-ink/60">
+        <input type="checkbox" required defaultChecked={!!user} className="mt-0.5 h-4 w-4 accent-[var(--brand-gold)]" />
+        <span>{t('I have read and agree to the')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms & Conditions')}</SmartLink>.</span>
+      </label>
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
       <button disabled={loading} className="btn btn-gold w-full">
         {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {t('Send inquiry')}

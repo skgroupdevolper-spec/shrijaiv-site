@@ -5,6 +5,7 @@ import { getMarketplace } from '@/lib/marketplace/settings';
 import { getPlans } from '@/lib/marketplace/data';
 import { PageTitle } from '@/components/admin/ui';
 import Membership from '@/components/seller/Membership';
+import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function SellerMembership({ searchParams }: { searchParams: Promise<{ plan?: string; reason?: string; paid?: string }> }) {
   const { seller } = (await requireSeller())!;
@@ -18,7 +19,7 @@ export default async function SellerMembership({ searchParams }: { searchParams:
   ]);
   const [products, inquiriesMonth, quotesMonth] = await Promise.all([
     prisma.product.count({ where: { sellerId: seller.id, status: { not: 'hidden' } } }),
-    prisma.inquiry.count({ where: { sellerId: seller.id, contactUnlocked: true, createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
+    prisma.inquiry.count({ where: { sellerId: seller.id, ...SELLER_VISIBLE, contactUnlocked: true, createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
     prisma.quote.count({ where: { sellerId: seller.id, createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
   ]);
   return (

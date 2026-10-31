@@ -8,7 +8,7 @@ type Opt = { value: string; label: string };
 export type FilterDef = { key: string; label: string; type: 'select' | 'check' | 'text'; options?: Opt[] };
 
 /** Sidebar filters that write to the URL query (server renders the results) */
-export default function Filters({ defs, sorts, total, kindLabel, children }: { defs: FilterDef[]; sorts?: Opt[]; total: number; kindLabel: string; children: React.ReactNode }) {
+export default function Filters({ defs, sorts, total, kindLabel, children, aside }: { defs: FilterDef[]; sorts?: Opt[]; total: number; kindLabel: string; children: React.ReactNode; aside?: React.ReactNode }) {
   const t = useT();
   const router = useRouter();
   const pathname = usePathname();
@@ -76,7 +76,10 @@ export default function Filters({ defs, sorts, total, kindLabel, children }: { d
       </div>
       <div className="lg:grid lg:grid-cols-[250px_1fr] lg:gap-8">
         <div className="hidden lg:block">
-          <aside className="card sticky top-24 p-5">{panel}</aside>
+          <div className="sticky top-24 space-y-4">
+            <aside className="card p-5">{panel}</aside>
+            {aside}
+          </div>
         </div>
         <div className="min-w-0">{children}</div>
       </div>

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { ok, fail } from '@/lib/api';
 import { requireBuyer } from '@/lib/auth';
 import { notifyUser } from '@/lib/marketplace/notify';
+import { BUYER_VISIBLE } from '@/lib/marketplace/moderation';
 
 type P = { params: Promise<{ id: string }> };
 
@@ -13,7 +14,7 @@ export async function PUT(req: Request, { params }: P) {
   const b = await req.json().catch(() => ({}));
   const status = ['shortlisted', 'accepted', 'rejected', 'sent'].includes(b.status) ? b.status : null;
   if (!status) return fail('Invalid status');
-  const q = await prisma.quote.findFirst({ where: { id, requirement: { buyerId: ctx.buyer.id } }, include: { seller: { select: { userId: true, companyName: true } }, requirement: { select: { id: true, title: true } } } });
+  const q = await prisma.quote.findFirst({ where: { id, ...BUYER_VISIBLE, requirement: { buyerId: ctx.buyer.id } }, include: { seller: { select: { userId: true, companyName: true } }, requirement: { select: { id: true, title: true } } } });
   if (!q) return fail('Not found', 404);
   const item = await prisma.quote.update({ where: { id }, data: { status, seenByBuyer: true } });
   if (status === 'accepted') {

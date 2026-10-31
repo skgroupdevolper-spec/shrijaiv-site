@@ -20,7 +20,7 @@ export default async function PostRequirementPage() {
   if (s?.role === 'SELLER') redirect('/seller/leads');
   const mp = await getMarketplace();
   return (
-    <AuthShell title="Post a requirement" subtitle="Create a free buyer account (one minute) — then describe what you need and verified sellers will send you quotes.">
+    <AuthShell wide title="Post a requirement" subtitle="Create a free buyer account (one minute) — then describe what you need and verified sellers will send you quotes.">
       <RegisterForm initialRole="buyer" sellerTypes={mp.sellerTypes} buyerTypes={mp.buyerTypes} />
     </AuthShell>
   );

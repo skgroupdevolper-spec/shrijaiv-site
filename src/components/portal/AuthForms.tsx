@@ -102,13 +102,23 @@ export function AdminSetupForm() {
 
 const INDIAN_STATES = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman & Nicobar', 'Chandigarh', 'Dadra & Nagar Haveli and Daman & Diu', 'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'];
 
+function Lbl({ children, req }: { children: React.ReactNode; req?: boolean }) {
+  return (
+    <span className="mb-1.5 block text-[0.82rem] font-semibold text-ink/75">
+      {children}
+      {req && <span className="text-rose-500"> *</span>}
+    </span>
+  );
+}
+
+/** Seller / buyer registration ("Put your organization" + contact details + login) */
 export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTypes = [], categories = [] }: { initialRole?: 'buyer' | 'seller'; sellerTypes?: string[]; buyerTypes?: string[]; categories?: { id: string; name: string }[] }) {
   const t = useT();
   const [role, setRole] = useState<'buyer' | 'seller'>(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const types = role === 'seller' ? sellerTypes : buyerTypes;
-  const [more, setMore] = useState(false);
+  const seller = role === 'seller';
+  const types = seller ? sellerTypes : buyerTypes;
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -124,86 +134,162 @@ export function RegisterForm({ initialRole = 'buyer', sellerTypes = [], buyerTyp
     }
   }
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-5">
       <div className="grid grid-cols-2 gap-2 rounded-2xl bg-ink/5 p-1.5" role="tablist" aria-label={t('I want to')}>
-        {(['buyer', 'seller'] as const).map((r) => (
-          <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => setRole(r)} className={`rounded-xl px-4 py-3 text-sm font-bold transition ${role === r ? 'bg-white text-ink shadow-sm ring-1 ring-ink/10' : 'text-ink/55 hover:text-ink'}`}>
-            {r === 'buyer' ? t('I want to buy') : t('I want to sell')}
+        {(['seller', 'buyer'] as const).map((r) => (
+          <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => setRole(r)} className={`rounded-xl px-4 py-3 text-sm font-bold transition ${role === r ? (r === 'seller' ? 'bg-gold text-white shadow-sm' : 'bg-amber-400 text-amber-950 shadow-sm') : 'text-ink/55 hover:text-ink'}`}>
+            {r === 'buyer' ? t('I am a Buyer') : t('I am a Supplier')}
           </button>
         ))}
       </div>
-      <input name="name" required placeholder={t('Full name')} className="field" autoComplete="name" />
-      <input name="company" required={role === 'seller'} placeholder={role === 'seller' ? t('Company / farm / brand name') : t('Company name (optional)')} className="field" autoComplete="organization" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input name="email" type="email" required placeholder={t('Email address')} className="field" autoComplete="email" />
-        <input name="phone" required inputMode="tel" placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <select name="type" className="field" defaultValue="">
-          <option value="">{role === 'seller' ? t('Business type') : t('Buyer type')}</option>
-          {types.map((x) => (
-            <option key={x} value={x}>{x}</option>
-          ))}
-        </select>
-        <select name="state" className="field" defaultValue="">
-          <option value="">{t('State')}</option>
-          {INDIAN_STATES.map((x) => (
-            <option key={x} value={x}>{x}</option>
-          ))}
-        </select>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input name="city" placeholder={t('City')} className="field" autoComplete="address-level2" />
-        <input name="pincode" inputMode="numeric" placeholder={t('PIN code')} className="field" autoComplete="postal-code" />
-      </div>
-      {categories.length > 0 && (
-        <div>
-          <p className="mb-1.5 text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-ink/45">{role === 'seller' ? t('I sell') : t('I buy')}</p>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((c) => (
-              <label key={c.id} className="cursor-pointer">
-                <input type="checkbox" name="categories" value={c.id} className="peer sr-only" />
-                <span className="inline-block rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-sm font-semibold text-ink/70 transition peer-checked:border-transparent peer-checked:bg-ink peer-checked:text-white">{c.name}</span>
+
+      <fieldset className="space-y-3">
+        <legend className="mb-1 font-display text-lg font-semibold text-ink">{t('Your organization')}</legend>
+        <label className="block">
+          <Lbl req={seller}>{t('Company name')}</Lbl>
+          <input name="company" required={seller} placeholder={seller ? t('Company / farm / brand name') : t('Company name (optional for individuals)')} className="field" autoComplete="organization" />
+        </label>
+        <label className="block">
+          <Lbl req>{seller ? t("I'm a supplier of") : t("I'm a buyer of")}</Lbl>
+          <input name="deals" required placeholder={seller ? t('e.g. organic wheat, turmeric, cold-pressed oils') : t('e.g. organic atta, honey, A2 ghee')} className="field" />
+        </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <Lbl req>{seller ? t('Your primary business') : t('Buyer type')}</Lbl>
+            <select name="type" required className="field" defaultValue="">
+              <option value="" disabled>{t('Select…')}</option>
+              {types.map((x) => (
+                <option key={x} value={x}>{x}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <Lbl>{t('GST number')}</Lbl>
+            <input name="gst" placeholder="22AAAAA0000A1Z5" className="field uppercase" maxLength={15} />
+          </label>
+        </div>
+        {seller && (
+          <>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <Lbl>{t('Year your business was established')}</Lbl>
+                <input name="year" inputMode="numeric" placeholder="2018" className="field" maxLength={4} />
               </label>
-            ))}
-          </div>
-        </div>
-      )}
-      <button type="button" onClick={() => setMore((v) => !v)} className="flex w-full items-center justify-between rounded-2xl bg-ink/5 px-4 py-3 text-sm font-bold text-ink">
-        {role === 'seller' ? t('Business details (GST, FSSAI, website…)') : t('More details (optional)')}
-        <span className="text-ink/50">{more ? '−' : '+'}</span>
-      </button>
-      {more && (
-        <div className="space-y-3 rounded-2xl border border-ink/10 p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input name="gst" placeholder={t('GST number')} className="field uppercase" maxLength={15} />
-            {role === 'seller' ? <input name="fssai" placeholder={t('FSSAI licence (food)')} className="field" maxLength={14} /> : <input name="whatsapp" inputMode="tel" placeholder={t('WhatsApp (if different)')} className="field" />}
-          </div>
-          {role === 'seller' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input name="year" inputMode="numeric" placeholder={t('Year established')} className="field" maxLength={4} />
-              <select name="employees" className="field" defaultValue="">
-                <option value="">{t('Employees')}</option>
-                {['1-10', '11-50', '51-200', '201-500', '500+'].map((x) => (
-                  <option key={x} value={x}>{x}</option>
-                ))}
-              </select>
+              <label className="block">
+                <Lbl>{t('Approx. annual sales (₹)')}</Lbl>
+                <select name="turnover" className="field" defaultValue="">
+                  <option value="">{t('Select…')}</option>
+                  {['Up to 40 lakh', '40 lakh – 1.5 crore', '1.5 – 5 crore', '5 – 25 crore', '25 – 100 crore', 'Above 100 crore'].map((x) => (
+                    <option key={x} value={x}>{x}</option>
+                  ))}
+                </select>
+              </label>
             </div>
-          )}
-          {role === 'seller' && <input name="website" type="url" placeholder={t('Website (https://…)')} className="field" />}
-          {role === 'seller' && <input name="whatsapp" inputMode="tel" placeholder={t('WhatsApp (if different from mobile)')} className="field" />}
-          <input name="address" placeholder={t('Address')} className="field" autoComplete="street-address" />
-          <textarea name="about" rows={3} placeholder={role === 'seller' ? t('About your company — products, certifications, capacity') : t('What do you usually buy, and how much?')} className="field" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <Lbl>{t('Certifications your company received')}</Lbl>
+                <input name="certs" placeholder={t('NPOP, PGS-India, FSSAI, USDA…')} className="field" />
+              </label>
+              <label className="block">
+                <Lbl>{t('Trade services you provide')}</Lbl>
+                <input name="services" placeholder={t('Export, private label, cold storage…')} className="field" />
+              </label>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <Lbl>{t('FSSAI licence (food)')}</Lbl>
+                <input name="fssai" className="field" maxLength={14} />
+              </label>
+              <label className="block">
+                <Lbl>{t('Employees')}</Lbl>
+                <select name="employees" className="field" defaultValue="">
+                  <option value="">{t('Select…')}</option>
+                  {['1-10', '11-50', '51-200', '201-500', '500+'].map((x) => (
+                    <option key={x} value={x}>{x}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <label className="block">
+              <Lbl>{t('Website')}</Lbl>
+              <input name="website" type="url" placeholder="https://" className="field" />
+            </label>
+          </>
+        )}
+        {categories.length > 0 && (
+          <div>
+            <Lbl>{seller ? t('Categories you sell') : t('Categories you buy')}</Lbl>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((c) => (
+                <label key={c.id} className="cursor-pointer">
+                  <input type="checkbox" name="categories" value={c.id} className="peer sr-only" />
+                  <span className="inline-block rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-sm font-semibold text-ink/70 transition peer-checked:border-transparent peer-checked:bg-ink peer-checked:text-white">{c.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+      </fieldset>
+
+      <fieldset className="space-y-3">
+        <legend className="mb-1 font-display text-lg font-semibold text-ink">{t('Contact details')}</legend>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <Lbl req>{t('Your name')}</Lbl>
+            <input name="name" required className="field" autoComplete="name" />
+          </label>
+          <label className="block">
+            <Lbl req>{t('Phone number')}</Lbl>
+            <input name="phone" required inputMode="tel" placeholder="+91" className="field" autoComplete="tel" />
+          </label>
         </div>
-      )}
-      <PasswordInput name="password" required minLength={8} placeholder={t('Password (min 8 characters)')} autoComplete="new-password" />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <Lbl req>{t('Email')}</Lbl>
+            <input name="email" type="email" required className="field" autoComplete="email" />
+          </label>
+          <label className="block">
+            <Lbl>{t('WhatsApp (if different)')}</Lbl>
+            <input name="whatsapp" inputMode="tel" className="field" />
+          </label>
+        </div>
+        <label className="block">
+          <Lbl req={seller}>{t('Address')}</Lbl>
+          <input name="address" required={seller} className="field" autoComplete="street-address" />
+        </label>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="block">
+            <Lbl req>{t('State')}</Lbl>
+            <select name="state" required className="field" defaultValue="">
+              <option value="" disabled>{t('Select…')}</option>
+              {INDIAN_STATES.map((x) => (
+                <option key={x} value={x}>{x}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <Lbl req>{t('City')}</Lbl>
+            <input name="city" required className="field" autoComplete="address-level2" />
+          </label>
+          <label className="block">
+            <Lbl>{t('PIN code')}</Lbl>
+            <input name="pincode" inputMode="numeric" maxLength={6} className="field" autoComplete="postal-code" />
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset className="space-y-3">
+        <legend className="mb-1 font-display text-lg font-semibold text-ink">{t('Login')}</legend>
+        <PasswordInput name="password" required minLength={8} placeholder={t('Password (min 8 characters)')} autoComplete="new-password" />
+      </fieldset>
+
       <label className="flex items-start gap-2 text-xs text-ink/60">
         <input type="checkbox" name="agree" required className="mt-0.5 h-4 w-4 accent-[var(--brand-gold)]" />
-        <span>{t('I agree to the')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms')}</SmartLink> {t('and')} <SmartLink href="/privacy" className="font-bold text-gold-deep">{t('Privacy Policy')}</SmartLink>, {t('and to receive inquiries and updates by email / WhatsApp.')}</span>
+        <span>{t('I have read and agree to the')} <SmartLink href="/terms" className="font-bold text-gold-deep">{t('Terms & Conditions')}</SmartLink> {t('and')} <SmartLink href="/privacy" className="font-bold text-gold-deep">{t('Privacy Policy')}</SmartLink>, {t('and to receive inquiries and updates by email / WhatsApp.')}</span>
       </label>
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
       <button disabled={loading} className="btn btn-gold w-full">
-        {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {role === 'seller' ? t('Create my seller account') : t('Create my buyer account')}
+        {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {seller ? t('Become a Seller') : t('Create my buyer account')}
       </button>
       <p className="text-center text-sm text-ink/60">
         {t('Already have an account?')} <SmartLink href="/login" className="font-bold text-gold-deep">{t('Sign in')}</SmartLink>

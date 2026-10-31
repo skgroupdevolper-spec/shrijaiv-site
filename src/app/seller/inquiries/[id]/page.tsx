@@ -8,11 +8,12 @@ import { waLink, formatDateTime } from '@/lib/utils';
 import Thread from '@/components/dashboard/Thread';
 import InquiryStatus from '@/components/seller/InquiryStatus';
 import { StatusPill } from '@/components/dashboard/fields';
+import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function SellerInquiry({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { seller } = (await requireSeller())!;
-  const q = await prisma.inquiry.findFirst({ where: { id, sellerId: seller.id }, include: { product: { select: { name: true, slug: true, images: true } }, messages: { orderBy: { createdAt: 'asc' } }, buyer: { select: { companyName: true, buyerType: true, city: true, state: true, verified: true } } } });
+  const q = await prisma.inquiry.findFirst({ where: { id, sellerId: seller.id, ...SELLER_VISIBLE }, include: { product: { select: { name: true, slug: true, images: true } }, messages: { orderBy: { createdAt: 'asc' } }, buyer: { select: { companyName: true, buyerType: true, city: true, state: true, verified: true } } } });
   if (!q) notFound();
   await prisma.inquiry.update({ where: { id }, data: { seenBySeller: true } });
   await prisma.inquiryMessage.updateMany({ where: { inquiryId: id, senderRole: { in: ['buyer', 'admin'] }, read: false }, data: { read: true } });

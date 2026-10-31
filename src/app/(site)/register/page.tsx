@@ -19,7 +19,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const [mp, tree] = await Promise.all([getMarketplace(), getCategoryTree().catch(() => [])]);
   const role = as === 'seller' ? 'seller' : 'buyer';
   return (
-    <AuthShell title={role === 'seller' ? 'Start selling on SHRIJAIV' : 'Create your buyer account'} subtitle={role === 'seller' ? 'List your organic products and receive inquiries from buyers across India.' : 'Find verified organic sellers, post requirements and compare quotes.'}>
+    <AuthShell tab="register" wide title={role === 'seller' ? 'Start selling on SHRIJAIV' : 'Create your buyer account'} subtitle={role === 'seller' ? 'List your organic products and receive inquiries from buyers across India.' : 'Find verified organic sellers, post requirements and compare quotes.'}>
       <GoogleButton />
       <RegisterForm initialRole={role} sellerTypes={mp.sellerTypes} buyerTypes={mp.buyerTypes} categories={tree.map((c) => ({ id: c.id, name: c.name }))} />
     </AuthShell>

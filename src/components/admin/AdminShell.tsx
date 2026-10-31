@@ -45,11 +45,12 @@ import {
   SlidersHorizontal,
   ScrollText,
   Smartphone,
+  ListChecks,
 } from 'lucide-react';
 import { Toaster, toast } from './ui';
 import { cn, formatDateTime } from '@/lib/utils';
 
-type Counts = { newLeads: number; newApps: number; unreadMsgs: number; latestLeads: any[]; latestApps: any[]; latestMsgs: any[]; pendingSellers: number; pendingProducts: number; newInquiries: number; pendingReviews: number; latest: any[]; unreadNotes: number };
+type Counts = { newLeads: number; newApps: number; unreadMsgs: number; latestLeads: any[]; latestApps: any[]; latestMsgs: any[]; pendingSellers: number; pendingProducts: number; newInquiries: number; pendingReviews: number; toReview?: number; latest: any[]; unreadNotes: number };
 
 const NAV = [
   { group: '', items: [{ href: '/admin', label: 'Dashboard', icon: LayoutDashboard }] },
@@ -61,6 +62,7 @@ const NAV = [
       { href: '/admin/products', label: 'Products', icon: Package, badge: 'products' },
       { href: '/admin/categories', label: 'Categories', icon: FolderKanban },
       { href: '/admin/requirements', label: 'Buy leads (RFQ)', icon: Megaphone },
+      { href: '/admin/review', label: 'Review queue', icon: ListChecks, badge: 'review' },
       { href: '/admin/inquiries', label: 'Inquiries', icon: Inbox, badge: 'inquiries' },
       { href: '/admin/reviews', label: 'Reviews & ratings', icon: Star, badge: 'reviews' },
       { href: '/admin/reports', label: 'Reports & flags', icon: Flag },
@@ -197,6 +199,7 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
     if (k === 'products') return counts.pendingProducts || 0;
     if (k === 'inquiries') return counts.newInquiries || 0;
     if (k === 'reviews') return counts.pendingReviews || 0;
+    if (k === 'review') return counts.toReview || 0;
     return 0;
   };
   const totalBell = (counts?.unreadNotes || 0) + (counts?.newLeads || 0) + (counts?.unreadMsgs || 0);

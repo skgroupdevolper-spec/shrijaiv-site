@@ -7,6 +7,8 @@ import Filters from '@/components/market/Filters';
 import ProductCard from '@/components/market/ProductCard';
 import Pagination from '@/components/market/Pagination';
 import QuickChips from '@/components/market/QuickChips';
+import ListingSwitch from '@/components/market/ListingSwitch';
+import ContactAdminForm from '@/components/market/ContactAdminForm';
 import SmartLink from '@/components/ui/SmartLink';
 
 export const dynamic = 'force-dynamic';
@@ -39,6 +41,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: SP 
       <ListingHeader crumbs={[{ label: t('Products') }]} eyebrow={t('Marketplace')} title={cat ? cat.node.name : sp.q ? `${t('Results for')} “${sp.q}”` : t('Organic products')} lead={cat?.node.description || t('Every product is listed by a seller on SHRIJAIV. Send an inquiry to get prices, samples and delivery details.')} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
+          <ListingSwitch active="supplier" supplierLabel={t('Supplier')} buyerLabel={t('Buyer')} />
           <QuickChips
             base="/products"
             params={sp}
@@ -86,6 +89,16 @@ export default async function ProductsPage({ searchParams }: { searchParams: SP 
               <Pagination page={res.page} pages={res.pages} base="/products" params={sp} />
             </Filters>
           </Suspense>
+          {/* "All your need please inquire here" + offer banner (original Buyer page) */}
+          <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-[1.4fr_1fr]">
+            <div className="card p-6 sm:p-8">
+              <ContactAdminForm subject="Sourcing inquiry (Shop page)" title={t('All your needs — please inquire here')} />
+            </div>
+            <SmartLink href="/pricing" className="tilt group relative block overflow-hidden rounded-[24px] shadow-lg" data-tilt="4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/site/ad-square.png" alt={t('Advertise on SHRIJAIV')} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+            </SmartLink>
+          </div>
         </div>
       </section>
     </>

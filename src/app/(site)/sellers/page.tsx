@@ -8,6 +8,7 @@ import Filters from '@/components/market/Filters';
 import SellerCard from '@/components/market/SellerCard';
 import Pagination from '@/components/market/Pagination';
 import QuickChips from '@/components/market/QuickChips';
+import ListingSwitch from '@/components/market/ListingSwitch';
 import SmartLink from '@/components/ui/SmartLink';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,7 @@ export default async function SellersPage({ searchParams }: { searchParams: SP }
       <ListingHeader crumbs={[{ label: t('Sellers') }]} eyebrow={t('Marketplace')} title={sp.q ? `${t('Sellers for')} “${sp.q}”` : t('Organic sellers')} lead={t('Farmers, FPOs, manufacturers, wholesalers and exporters — verified by our team. Visit a showroom and contact the seller directly.')} right={<SmartLink href="/register?as=seller" className="btn btn-gold">{t('Become a seller')}</SmartLink>} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
+          <ListingSwitch active="supplier" supplierLabel={t('Supplier')} buyerLabel={t('Buyer')} />
           <QuickChips
             base="/sellers"
             params={sp}

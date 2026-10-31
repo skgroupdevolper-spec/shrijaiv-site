@@ -7,6 +7,8 @@ import Filters from '@/components/market/Filters';
 import RequirementCard from '@/components/market/RequirementCard';
 import Pagination from '@/components/market/Pagination';
 import QuickChips from '@/components/market/QuickChips';
+import ListingSwitch from '@/components/market/ListingSwitch';
+import { Store, ListChecks, Send } from 'lucide-react';
 import SmartLink from '@/components/ui/SmartLink';
 
 export const dynamic = 'force-dynamic';
@@ -28,6 +30,7 @@ export default async function RequirementsPage({ searchParams }: { searchParams:
       <ListingHeader crumbs={[{ label: t('Buy leads') }]} eyebrow={t('Requirements')} title={t('Buyers are looking for')} lead={t('Fresh requirements from retailers, brands, exporters and restaurants. Sellers quote directly; buyers compare and choose.')} right={<SmartLink href="/post-requirement" className="btn btn-gold">{t('Post a requirement')}</SmartLink>} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
+          <ListingSwitch active="buyer" supplierLabel={t('Supplier')} buyerLabel={t('Buyer')} />
           <QuickChips
             base="/requirements"
             params={sp}
@@ -42,6 +45,13 @@ export default async function RequirementsPage({ searchParams }: { searchParams:
             <Filters
               total={res.total}
               kindLabel={t('open requirements')}
+              aside={
+                <div className="card space-y-1 p-3">
+                  <SmartLink href="/register?as=seller" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-ink hover:bg-ink/5"><Store className="h-4 w-4 text-gold-deep" /> {t('List your business here')}</SmartLink>
+                  <SmartLink href="/requirements" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-ink hover:bg-ink/5"><ListChecks className="h-4 w-4 text-gold-deep" /> {t('View all buyer leads')}</SmartLink>
+                  <SmartLink href="/inquire" className="btn btn-gold btn-sm mt-2 w-full"><Send className="h-4 w-4" /> {t('Inquire Now')}</SmartLink>
+                </div>
+              }
               defs={[
                 { key: 'q', label: t('Search'), type: 'text' },
                 { key: 'cat', label: t('Category'), type: 'select', options: flattenTree(tree).map((c) => ({ value: c.slug, label: c.parentId ? `– ${c.name}` : c.name })) },

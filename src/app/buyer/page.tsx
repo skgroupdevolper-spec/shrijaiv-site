@@ -5,6 +5,7 @@ import { requireBuyer } from '@/lib/auth';
 import { Stat } from '@/components/dashboard/Stat';
 import { Card, PageTitle } from '@/components/admin/ui';
 import { formatDate } from '@/lib/utils';
+import { BUYER_VISIBLE } from '@/lib/marketplace/moderation';
 
 export default async function BuyerOverview() {
   const { session, buyer } = (await requireBuyer())!;
@@ -12,9 +13,9 @@ export default async function BuyerOverview() {
     prisma.requirement.count({ where: { buyerId: buyer.id } }),
     prisma.requirement.count({ where: { buyerId: buyer.id, status: 'open' } }),
     prisma.inquiry.count({ where: { buyerId: buyer.id } }),
-    prisma.quote.count({ where: { requirement: { buyerId: buyer.id } } }),
+    prisma.quote.count({ where: { ...BUYER_VISIBLE, requirement: { buyerId: buyer.id } } }),
     prisma.favourite.count({ where: { buyerId: buyer.id } }),
-    prisma.quote.findMany({ where: { requirement: { buyerId: buyer.id } }, orderBy: { createdAt: 'desc' }, take: 5, include: { seller: { select: { companyName: true, slug: true, verified: true } }, requirement: { select: { title: true, id: true } } } }),
+    prisma.quote.findMany({ where: { ...BUYER_VISIBLE, requirement: { buyerId: buyer.id } }, orderBy: { createdAt: 'desc' }, take: 5, include: { seller: { select: { companyName: true, slug: true, verified: true } }, requirement: { select: { title: true, id: true } } } }),
     prisma.inquiry.findMany({ where: { buyerId: buyer.id }, orderBy: { lastMessageAt: 'desc' }, take: 5, include: { seller: { select: { companyName: true } }, product: { select: { name: true } } } }),
   ]);
   return (
