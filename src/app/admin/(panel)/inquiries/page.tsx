@@ -61,7 +61,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                   <span className="line-clamp-1 text-sm font-bold text-gray-900">{p!.name}</span>
                   <span className="block truncate text-[0.7rem] text-gray-400">{p!.seller.companyName}</span>
                   <span className="mt-0.5 block text-[0.72rem] font-semibold text-emerald-700">
-                    {total} inquiries{month ? ` · ${month} in 30 days` : ''}
+                    {total} {total === 1 ? "inquiry" : "inquiries"}{month ? ` · ${month} in 30 days` : ''}
                   </span>
                 </span>
               </Link>
