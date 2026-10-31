@@ -236,7 +236,7 @@ export default function AdminShell({ user, siteName, children }: { user: { name:
                   <Link key={i.href} href={i.href} className={cn('group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[0.85rem] font-semibold transition', isActive(i.href) ? 'admin-nav-on' : 'admin-nav text-gray-600 hover:text-gray-900')}>
                     <i.icon className="h-[18px] w-[18px]" />
                     <span className="flex-1">{i.label}</span>
-                    {n > 0 && <span className={cn('rounded-full px-2 py-0.5 text-[0.65rem] font-extrabold', isActive(i.href) ? 'bg-white text-gold-deep' : 'bg-red-500 text-white')}>{n}</span>}
+                    {n > 0 && <span className={cn('rounded-full px-2 py-0.5 text-[0.65rem] font-extrabold', isActive(i.href) ? 'bg-ink text-white' : 'bg-red-500 text-white')}>{n}</span>}
                   </Link>
                 );
               })}
