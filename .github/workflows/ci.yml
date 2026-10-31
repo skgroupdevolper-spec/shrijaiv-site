@@ -128,8 +128,15 @@ jobs:
           IID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))")
           curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/inquiries/$IID/messages -H 'Content-Type: application/json' -d '{"body":"Yes, we ship all India."}' | grep -q '"item"'
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/inquiries/$IID); echo "/seller/inquiries/ID -> $code"; [ "$code" = "200" ]
-          for pth in /seller/products /seller/inquiries /seller/leads /seller/reviews /seller/profile /seller/membership /seller/analytics /seller/ai /seller/settings; do code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
-          for pth in /buyer/requirements /buyer/requirements/new "/buyer/requirements/$RID" /buyer/inquiries /buyer/quotes /buyer/favourites /buyer/reviews /buyer/profile /buyer/settings; do code=$(curl -s -o /dev/null -w "%{http_code}" -b buyer.txt "http://localhost:3000$pth"); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          for pth in /seller/products /seller/inquiries /seller/leads /seller/reviews /seller/profile /seller/membership /seller/analytics /seller/ai /seller/settings /seller/report "/report?type=overview"; do code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          for pth in /buyer/requirements /buyer/requirements/new "/buyer/requirements/$RID" /buyer/inquiries /buyer/quotes /buyer/favourites /buyer/reviews /buyer/profile /buyer/settings /buyer/report /buyer/become-seller; do code=$(curl -s -o /dev/null -w "%{http_code}" -b buyer.txt "http://localhost:3000$pth"); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          # reports: every admin report as JSON, Excel (.xlsx = zip) and CSV
+          for rt in overview sellers buyers products inquiries requirements quotes revenue subscriptions reviews leads; do curl -sf -b cookies.txt "http://localhost:3000/api/report?type=$rt" | grep -q '"sections"' || { echo "::error title=Report failed::$rt"; exit 1; }; done
+          curl -sf -b cookies.txt "http://localhost:3000/api/report?type=overview&format=xlsx" -o r.xlsx && head -c 2 r.xlsx | grep -q PK && echo "xlsx ok"
+          curl -sf -b cookies.txt "http://localhost:3000/api/report?type=products&format=csv" | grep -q 'Products' && echo "csv ok"
+          for rt in overview products inquiries quotes reviews payments; do curl -sf -b seller.txt "http://localhost:3000/api/report?type=$rt" | grep -q '"sections"'; done; echo "seller reports ok"
+          for rt in overview requirements quotes inquiries reviews; do curl -sf -b buyer.txt "http://localhost:3000/api/report?type=$rt" | grep -q '"sections"'; done; echo "buyer reports ok"
+          code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000/api/report"); echo "/api/report anonymous -> $code"; [ "$code" = "401" ]
           # buyer review on the seller
           curl -sf -b buyer.txt -X POST http://localhost:3000/api/reviews -H 'Content-Type: application/json' -d "{\"sellerId\":\"$SID\",\"rating\":5,\"body\":\"Great quality turmeric, fast dispatch.\"}" | grep -q '"status"'
           # --- design system, calculator & SEO ---

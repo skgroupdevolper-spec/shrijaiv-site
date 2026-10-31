@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Store, ShoppingBag, Package, Megaphone, Inbox, Star, Crown, Settings, ArrowRight, AlertTriangle, IndianRupee, Users, FileText } from 'lucide-react';
+import { Store, ShoppingBag, Package, Megaphone, Inbox, Star, Crown, Settings, ArrowRight, AlertTriangle, IndianRupee, Users, FileText, Plus, FolderKanban, Newspaper, CircleHelp, MessageSquareQuote, BadgePercent, Building, ShieldCheck, FileBarChart } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { formatDateTime, formatDate } from '@/lib/utils';
@@ -86,6 +86,37 @@ export default async function Dashboard() {
           </div>
         </div>
       )}
+
+
+      {/* Quick add — every "add" form one click away */}
+      <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200/70">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="flex items-center gap-2 font-bold text-gray-900"><Plus className="h-4 w-4 text-gold-deep" /> Quick add</p>
+          <Link href="/admin/report" className="inline-flex items-center gap-1.5 rounded-xl bg-ink px-3.5 py-2 text-xs font-bold text-white hover:opacity-90"><FileBarChart className="h-4 w-4" /> Generate report</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            ['/admin/products?new=1', 'Product', Package],
+            ['/admin/sellers?new=1', 'Seller', Store],
+            ['/admin/buyers?new=1', 'Buyer', ShoppingBag],
+            ['/admin/requirements?new=1', 'Buy lead', Megaphone],
+            ['/admin/categories?new=1', 'Category', FolderKanban],
+            ['/admin/posts/new', 'Blog post', Newspaper],
+            ['/admin/pages?new=1', 'Page', FileText],
+            ['/admin/plans?new=1', 'Membership plan', Crown],
+            ['/admin/coupons?new=1', 'Coupon', BadgePercent],
+            ['/admin/faqs?new=1', 'FAQ', CircleHelp],
+            ['/admin/testimonials?new=1', 'Testimonial', MessageSquareQuote],
+            ['/admin/partners?new=1', 'Partner logo', Building],
+            ['/admin/users?new=1', 'Admin user', ShieldCheck],
+          ].map(([href, label, I]: any) => (
+            <Link key={href} href={href} className="group flex items-center gap-2.5 rounded-xl bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-800 ring-1 ring-gray-100 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md hover:ring-gold/40">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold-deep transition group-hover:bg-gold group-hover:text-white"><I className="h-4 w-4" /></span>
+              <span className="truncate">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => (

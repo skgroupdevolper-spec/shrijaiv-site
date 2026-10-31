@@ -15,6 +15,8 @@ export type ResourceConfig = {
   singular: string;
   columns: Column[];
   fields: Field[];
+  /** extra fields shown only when creating a new item (e.g. owner account, seller picker) */
+  createFields?: Field[];
   defaults?: Record<string, any>;
   filters?: { key: string; label: string; options: { value: string; label: string }[] }[];
   exportType?: string;
@@ -40,6 +42,18 @@ export default function ResourceManager({ config }: { config: ResourceConfig }) 
   const [saving, setSaving] = useState(false);
   const canCreate = config.canCreate !== false;
   const canEdit = config.canEdit !== false;
+  // /admin/xxx?new=1 (from Dashboard → Quick add) opens the "add" form straight away
+  useEffect(() => {
+    try {
+      const u = new URL(window.location.href);
+      if (canCreate && u.searchParams.get('new') === '1') {
+        setEditing({ ...(config.defaults || {}) });
+        u.searchParams.delete('new');
+        window.history.replaceState(null, '', u.pathname + (u.search || ''));
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -220,7 +234,7 @@ export default function ResourceManager({ config }: { config: ResourceConfig }) 
           </>
         }
       >
-        {editing && <FieldGroup fields={config.fields} data={editing} onChange={setEditing} />}
+        {editing && <FieldGroup fields={!editing.id && config.createFields ? [...config.createFields, ...config.fields] : config.fields} data={editing} onChange={setEditing} />}
       </Modal>
     </div>
   );

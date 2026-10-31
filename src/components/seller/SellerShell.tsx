@@ -1,6 +1,6 @@
 'use client';
 import DashboardShell, { type DashNavGroup } from '@/components/dashboard/DashboardShell';
-import { LayoutDashboard, Package, Inbox, Megaphone, Star, Building2, Crown, BarChart3, Settings, Sparkles, AlertTriangle } from 'lucide-react';
+import { LayoutDashboard, Package, Inbox, Megaphone, Star, Building2, Crown, BarChart3, Settings, Sparkles, AlertTriangle , FileBarChart } from 'lucide-react';
 import Link from 'next/link';
 
 const NAV: DashNavGroup[] = [
@@ -20,6 +20,7 @@ const NAV: DashNavGroup[] = [
       { href: '/seller/profile', label: 'Company profile', icon: Building2 },
       { href: '/seller/membership', label: 'Membership', icon: Crown },
       { href: '/seller/analytics', label: 'Analytics', icon: BarChart3 },
+      { href: '/seller/report', label: 'Reports (PDF / Excel)', icon: FileBarChart },
       { href: '/seller/ai', label: 'AI tools', icon: Sparkles },
       { href: '/seller/settings', label: 'Settings', icon: Settings },
     ],

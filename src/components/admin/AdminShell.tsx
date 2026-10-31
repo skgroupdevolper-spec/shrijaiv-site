@@ -46,6 +46,7 @@ import {
   ScrollText,
   Smartphone,
   ListChecks,
+  FileBarChart,
 } from 'lucide-react';
 import { Toaster, toast } from './ui';
 import { cn, formatDateTime } from '@/lib/utils';
@@ -65,6 +66,7 @@ const NAV = [
       { href: '/admin/review', label: 'Review queue', icon: ListChecks, badge: 'review' },
       { href: '/admin/inquiries', label: 'Inquiries', icon: Inbox, badge: 'inquiries' },
       { href: '/admin/reviews', label: 'Reviews & ratings', icon: Star, badge: 'reviews' },
+      { href: '/admin/report', label: 'Generate report', icon: FileBarChart },
       { href: '/admin/reports', label: 'Reports & flags', icon: Flag },
     ],
   },

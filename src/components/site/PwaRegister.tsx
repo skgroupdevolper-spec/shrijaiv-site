@@ -74,7 +74,7 @@ export default function PwaRegister({ app, googleEnabled, logo }: Props) {
     };
   }, [app.splashEnabled]);
 
-  const onAdmin = path.startsWith('/admin');
+  const onAdmin = path.startsWith('/admin') || path.startsWith('/report');
   const showBar = app.installBar && !installed && !closed && !onAdmin && (prompt || ios);
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 import DashboardShell, { type DashNavGroup } from '@/components/dashboard/DashboardShell';
-import { LayoutDashboard, Megaphone, Inbox, FileText, Heart, Star, CircleUser, Settings, Store } from 'lucide-react';
+import { LayoutDashboard, Megaphone, Inbox, FileText, Heart, Star, CircleUser, Settings, Store, FileBarChart } from 'lucide-react';
 
 const NAV: DashNavGroup[] = [
   { group: '', items: [{ href: '/buyer', label: 'Overview', icon: LayoutDashboard, exact: true }] },
@@ -12,6 +12,7 @@ const NAV: DashNavGroup[] = [
       { href: '/buyer/quotes', label: 'Quotes received', icon: FileText },
       { href: '/buyer/favourites', label: 'Favourites', icon: Heart },
       { href: '/buyer/reviews', label: 'My reviews', icon: Star },
+      { href: '/buyer/report', label: 'Reports (PDF / Excel)', icon: FileBarChart },
     ],
   },
   {

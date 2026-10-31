@@ -33,6 +33,23 @@ function useCategoryOptions() {
   return cats;
 }
 
+/** Sellers / buyers as select options (for adding products or buy leads on their behalf) */
+function useOwnerOptions(kind: 'sellers' | 'buyers') {
+  const [opts, setOpts] = useState<{ value: string; label: string }[]>([]);
+  useEffect(() => {
+    api<{ items: any[] }>(`/api/admin/${kind}?take=500`).then((d) => setOpts(d.items.map((x) => ({ value: x.id, label: kind === 'sellers' ? `${x.companyName}${x.city ? ` · ${x.city}` : ''}` : `${x.user?.name || x.companyName || 'Buyer'}${x.companyName ? ` (${x.companyName})` : ''}` })))).catch(() => null);
+  }, [kind]);
+  return opts;
+}
+
+const ACCOUNT_FIELDS: Field[] = [
+  { name: '_acc', label: 'Login account (the owner signs in with this email)', type: 'heading' },
+  { name: 'ownerName', label: 'Owner name', type: 'text', half: true },
+  { name: 'ownerEmail', label: 'Login email', type: 'text', half: true },
+  { name: 'ownerPhone', label: 'Mobile', type: 'text', half: true },
+  { name: 'ownerPassword', label: 'Password (min 8, leave empty to send a set-password link)', type: 'text', half: true },
+];
+
 /** Quick approve / reject buttons used in several lists */
 function Approve({ row, resource, reload, approved = 'approved', rejected = 'rejected' }: { row: any; resource: string; reload: () => void; approved?: string; rejected?: string }) {
   async function set(status: string) {
@@ -118,7 +135,7 @@ export function SellersManager({ initialStatus }: { initialStatus?: string }) {
   return (
     <ResourceManager
       config={{
-        resource: 'sellers', exportType: 'sellers', title: 'Sellers', subtitle: 'Approve new sellers, award the Verified badge, suspend or delete. Click a seller to see documents.', singular: 'Seller', fields, canCreate: false, pageSize: 50,
+        resource: 'sellers', exportType: 'sellers', title: 'Sellers', subtitle: 'Approve new sellers, award the Verified badge, suspend or delete. Click a seller to see documents.', singular: 'Seller', fields, createFields: ACCOUNT_FIELDS, defaults: { status: 'approved', verified: false }, pageSize: 50,
         initialFilters: initialStatus ? { status: initialStatus } : undefined,
         filters: [{ key: 'status', label: 'Status', options: opts(['pending', 'approved', 'suspended', 'rejected']) }, { key: 'state', label: 'States', options: stateOpts }],
         columns: [
@@ -152,7 +169,7 @@ export function BuyersManager() {
   return (
     <ResourceManager
       config={{
-        resource: 'buyers', exportType: 'buyers', title: 'Buyers', subtitle: 'Buyer accounts. Suspend spammers, mark trusted buyers as verified.', singular: 'Buyer', fields, canCreate: false, pageSize: 50,
+        resource: 'buyers', exportType: 'buyers', title: 'Buyers', subtitle: 'Buyer accounts. Suspend spammers, mark trusted buyers as verified.', singular: 'Buyer', fields, createFields: ACCOUNT_FIELDS, defaults: { status: 'approved' }, pageSize: 50,
         filters: [{ key: 'status', label: 'Status', options: opts(['approved', 'suspended']) }, { key: 'state', label: 'States', options: stateOpts }],
         columns: [
           { key: 'user', label: 'Buyer', render: (r) => <div><p className="flex items-center gap-1 font-semibold text-gray-900">{r.user?.name} {r.verified && <BadgeCheck className="h-4 w-4 text-emerald-600" />}{!r.seen && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.companyName || '—'} · {r.user?.email} · {r.user?.phone}</p></div> },
@@ -169,6 +186,7 @@ export function BuyersManager() {
 /* ---------------------------------------------------------------- products */
 export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
   const cats = useCategoryOptions();
+  const sellers = useOwnerOptions('sellers');
   const fields: Field[] = [
     { name: '_h', label: 'Moderation', type: 'heading' },
     { name: 'status', label: 'Status', type: 'select', options: opts(['pending', 'approved', 'rejected', 'hidden', 'draft']), half: true },
@@ -184,6 +202,13 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
     { name: 'priceMax', label: 'Price to (₹)', type: 'number', half: true },
     { name: 'priceUnit', label: 'Unit', type: 'text', half: true },
     { name: 'moq', label: 'MOQ', type: 'text', half: true },
+    { name: 'images', label: 'Photos (first one is the main photo)', type: 'list', itemLabel: 'Photo', fields: [{ name: 'url', label: 'Photo', type: 'image' }] },
+    { name: 'stock', label: 'Availability', type: 'select', options: opts(['in stock', 'made to order', 'limited']), half: true },
+    { name: 'origin', label: 'Origin (state / region)', type: 'text', half: true },
+    { name: 'brand', label: 'Brand', type: 'text', half: true },
+    { name: 'packaging', label: 'Packaging', type: 'text', half: true },
+    { name: 'shelfLife', label: 'Shelf life', type: 'text', half: true },
+    { name: 'leadTime', label: 'Lead time', type: 'text', half: true },
     { name: 'tags', label: 'Tags', type: 'text' },
     { name: 'metaTitle', label: 'Google title', type: 'text' },
     { name: 'metaDescription', label: 'Google description', type: 'textarea' },
@@ -191,7 +216,9 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
   return (
     <ResourceManager
       config={{
-        resource: 'products', exportType: 'products', title: 'Products', subtitle: 'Approve, feature, edit or delete any product on the marketplace.', singular: 'Product', fields, canCreate: false, pageSize: 50,
+        resource: 'products', exportType: 'products', title: 'Products', subtitle: 'Approve, feature, edit or delete any product on the marketplace.', singular: 'Product', fields, createFields: [{ name: 'sellerId', label: 'Seller (who sells this product)', type: 'select', options: sellers }], defaults: { status: 'approved', stock: 'in stock', images: [] },
+        transformBeforeEdit: (r) => { let imgs: string[] = []; try { imgs = JSON.parse(r.images || '[]'); } catch {} return { ...r, images: imgs.map((url) => ({ url })) }; },
+        pageSize: 50,
         initialFilters: initialStatus ? { status: initialStatus } : undefined,
         filters: [{ key: 'status', label: 'Status', options: opts(['pending', 'approved', 'rejected', 'hidden', 'draft']) }, { key: 'categoryId', label: 'Categories', options: cats }],
         columns: [
@@ -211,6 +238,7 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
 /* ---------------------------------------------------------------- requirements */
 export function RequirementsManager() {
   const cats = useCategoryOptions();
+  const buyers = useOwnerOptions('buyers');
   const fields: Field[] = [
     { name: 'status', label: 'Status', type: 'select', options: opts(['pending', 'open', 'closed', 'expired', 'rejected']), half: true },
     { name: 'featured', label: 'Hot lead (highlighted)', type: 'boolean', half: true },
@@ -228,7 +256,7 @@ export function RequirementsManager() {
   return (
     <ResourceManager
       config={{
-        resource: 'requirements', exportType: 'requirements', title: 'Requirements (buy leads)', subtitle: 'Moderate, highlight or close requirements posted by buyers.', singular: 'Requirement', fields, canCreate: false, pageSize: 50,
+        resource: 'requirements', exportType: 'requirements', title: 'Requirements (buy leads)', subtitle: 'Moderate, highlight or close requirements posted by buyers.', singular: 'Requirement', fields, createFields: [{ name: 'buyerId', label: 'Buyer (posted on behalf of)', type: 'select', options: buyers }], defaults: { status: 'open' }, pageSize: 50,
         filters: [{ key: 'status', label: 'Status', options: opts(['pending', 'open', 'closed', 'expired', 'rejected']) }, { key: 'categoryId', label: 'Categories', options: cats }],
         columns: [
           { key: 'title', label: 'Requirement', render: (r) => <div><p className="font-semibold text-gray-900">{r.title}{!r.seen && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.buyer?.user?.name} · {r.buyer?.companyName || r.buyer?.buyerType || ''} · {[r.deliveryCity, r.deliveryState].filter(Boolean).join(', ')}</p></div> },

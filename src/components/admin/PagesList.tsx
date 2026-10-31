@@ -26,6 +26,11 @@ export default function PagesList() {
     const t = setTimeout(load, 200);
     return () => clearTimeout(t);
   }, [load]);
+  useEffect(() => {
+    try {
+      if (new URL(window.location.href).searchParams.get('new') === '1') setCreating({ title: '', slug: '', from: '' });
+    } catch {}
+  }, []);
 
   async function create() {
     if (!creating?.title) return toast('Enter a title', 'error');
