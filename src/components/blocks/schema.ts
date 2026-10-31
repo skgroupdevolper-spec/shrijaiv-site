@@ -155,10 +155,10 @@ export const BLOCKS: BlockSchema[] = [
   {
     type: 'regions',
     label: 'Suppliers by region',
-    description: 'State cards with the India flag linking to sellers of that state',
+    description: 'A swipeable slider of state cards; each card opens the sellers of that state',
     group: 'Marketplace',
-    fields: [heading, link('cta', '"View all" button'), { name: 'states', label: 'States (one per line; empty = all)', type: 'lines' }, { name: 'limit', label: 'How many', type: 'number' }],
-    defaults: { theme: 'light', heading: 'Suppliers By Region', limit: 14, cta: { label: 'View all', href: '/sellers' } },
+    fields: [heading, link('cta', '"View all" button'), { name: 'states', label: 'States (one per line; empty = all states)', type: 'lines' }, { name: 'autoplay', label: 'Slide automatically', type: 'boolean', half: true }, { name: 'sort', label: 'Order', type: 'select', options: opt(['sellers', 'States with sellers first'], ['alpha', 'A–Z']), half: true }],
+    defaults: { theme: 'light', heading: 'Suppliers By Region', autoplay: true, sort: 'sellers', cta: { label: 'View all', href: '/regions' } },
   },
   {
     type: 'trustLogos',

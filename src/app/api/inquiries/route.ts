@@ -24,11 +24,13 @@ export async function POST(req: Request) {
   let email = String(b.email || '').toLowerCase().trim();
   let phone = String(b.phone || '').trim();
   let buyerId: string | null = null;
+  let savePhoneFor: string | null = null;
   if (session) {
     const user = await prisma.user.findUnique({ where: { id: session.sub }, include: { buyer: true, seller: { select: { id: true } } } });
     if (user) {
       name = name || user.name;
       email = email || user.email;
+      if (!user.phone && phone) savePhoneFor = user.id;
       phone = phone || user.phone || '';
       buyerId = user.buyer?.id || null;
       if (user.seller && !user.buyer && user.role === 'SELLER' && user.seller.id === sellerId) return fail('You cannot send an inquiry to yourself');
@@ -39,6 +41,7 @@ export async function POST(req: Request) {
   if (!name) return fail('Please enter your name');
   if (!isEmail(email)) return fail('Please enter a valid email');
   if (!phone || phone.replace(/\D/g, '').length < 10) return fail('Please enter a valid mobile number');
+  if (savePhoneFor) prisma.user.update({ where: { id: savePhoneFor }, data: { phone: phone.slice(0, 30) } }).catch(() => null);
 
   // seller plan: buyer contact unlocked?
   const e = await entitlements(seller.id);

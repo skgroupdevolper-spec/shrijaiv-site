@@ -5,8 +5,10 @@ import type { SiteSettings } from '@/lib/defaults';
 import SmartLink from '@/components/ui/SmartLink';
 import { Icon } from '@/components/ui/Icon';
 import { Btn, Head, Section, lines, hasLink } from './parts';
-import { getCategoryTree, listProducts, listRequirements, listSellers, INDIAN_STATES } from '@/lib/marketplace/data';
-import { images as imgs, priceLabel } from '@/lib/marketplace/format';
+import { getCategoryTree, listProducts, listRequirements, listSellers, INDIAN_STATES, LIVE_SELLER } from '@/lib/marketplace/data';
+import { images as imgs, priceLabel, stateCode } from '@/lib/marketplace/format';
+import { prisma } from '@/lib/db';
+import RegionSlider, { type RegionItem } from '@/components/market/RegionSlider';
 import { getPartners } from '@/lib/data';
 import { getI18n } from '@/lib/i18n/server';
 import { formatDate, cn } from '@/lib/utils';
@@ -214,29 +216,26 @@ export function AdBanner({ data }: P) {
 /* ------------------------------------------------------------------ suppliers by region */
 export async function Regions({ data }: P) {
   const states = lines(data.states).length ? lines(data.states) : INDIAN_STATES;
-  const counts = new Map<string, number>();
+  const stats = new Map<string, { sellers: number; products: number }>();
   try {
-    const { items } = await listSellers({ take: 60 });
-    for (const s of items) if (s.state) counts.set(s.state, (counts.get(s.state) || 0) + 1);
+    const rows = await prisma.sellerProfile.findMany({ where: LIVE_SELLER, select: { state: true, _count: { select: { products: { where: { status: 'approved' } } } } } });
+    for (const r of rows) {
+      if (!r.state) continue;
+      const v = stats.get(r.state) || { sellers: 0, products: 0 };
+      v.sellers += 1;
+      v.products += r._count.products;
+      stats.set(r.state, v);
+    }
   } catch {}
-  const list = data.limit ? states.slice(0, Number(data.limit)) : states;
+  let list = states; // a slider shows every state
+  // states with sellers first (busiest first), then the rest in A–Z order
+  if (data.sort !== 'alpha') list = [...list].sort((a, b) => (stats.get(b)?.sellers || 0) - (stats.get(a)?.sellers || 0));
+  const items: RegionItem[] = list.map((name) => ({ name, code: stateCode(name), sellers: stats.get(name)?.sellers || 0, products: stats.get(name)?.products || 0 }));
   return (
     <Section data={data} tight>
       <div className="container-x">
-        <RowHead title={data.heading || 'Suppliers By Region'} href={data.cta?.href || '/regions'} label={data.cta?.label || 'All states'} />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          {list.map((s) => (
-            <SmartLink key={s} href={`/sellers?state=${encodeURIComponent(s)}`} className="card card-lift tilt reveal group flex min-h-[104px] flex-col items-center justify-center gap-1.5 p-3 text-center text-[0.9rem] font-semibold text-ink/85">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] font-display text-[0.95rem] font-bold text-gold-deep ring-2 ring-white shadow-sm transition group-hover:scale-110">{s.slice(0, 2).toUpperCase()}</span>
-              <span className="inline-flex items-center gap-1.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={FLAG} alt="" className="h-3.5 w-3.5" />
-                <span className="line-clamp-1">{s}</span>
-              </span>
-              <span className="text-[0.7rem] font-normal text-ink/45">{counts.get(s) ? `${counts.get(s)} sellers` : 'View sellers'}</span>
-            </SmartLink>
-          ))}
-        </div>
+        <RowHead title={data.heading || 'Suppliers By Region'} href={data.cta?.href && data.cta.href !== '/sellers' ? data.cta.href : '/regions'} label={data.cta?.label || 'All states'} />
+        <RegionSlider items={items} flag={FLAG} auto={data.autoplay !== false} />
       </div>
     </Section>
   );

@@ -3,6 +3,7 @@ import { MapPin, Store, Package, ArrowRight } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
 import { prisma } from '@/lib/db';
 import { INDIAN_STATES, LIVE_SELLER } from '@/lib/marketplace/data';
+import { stateCode } from '@/lib/marketplace/format';
 import ListingHeader from '@/components/market/ListingHeader';
 import SmartLink from '@/components/ui/SmartLink';
 
@@ -39,7 +40,7 @@ export default async function RegionsPage() {
               const st = stats.get(s);
               return (
                 <SmartLink key={s} href={`/sellers?state=${encodeURIComponent(s)}`} className="card card-lift tilt reveal group flex items-center gap-3 p-4">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] font-display text-[1.05rem] font-bold text-gold-deep ring-2 ring-white shadow-sm transition group-hover:scale-110">{s.slice(0, 2).toUpperCase()}</span>
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] font-display text-[1.05rem] font-bold text-gold-deep ring-2 ring-white shadow-sm transition group-hover:scale-110">{stateCode(s)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5 font-semibold text-ink">
                       {/* eslint-disable-next-line @next/next/no-img-element */}

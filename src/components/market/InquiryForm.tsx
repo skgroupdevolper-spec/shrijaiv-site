@@ -10,6 +10,7 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState<null | { ref: string; href?: string; held?: boolean }>(null);
   const [error, setError] = useState('');
+  const hasPhone = !!user?.phone && user.phone.replace(/\D/g, '').length >= 10;
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -45,7 +46,7 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
           <input name="name" required placeholder={t('Your name')} className="field" autoComplete="name" />
           <div className="grid gap-3 sm:grid-cols-2">
             <input name="email" type="email" required placeholder={t('Email')} className="field" autoComplete="email" />
-            <input name="phone" required inputMode="tel" placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />
+            <input name="phone" required inputMode="tel" pattern="[0-9+ ()-]{10,}" title={t('Please enter a valid mobile number')} placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <select name="country" className="field" defaultValue="India" aria-label={t('Country')}>
@@ -58,6 +59,16 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
           {!compact && <input name="company" placeholder={t('Company (optional)')} className="field" autoComplete="organization" />}
         </>
       )}
+      {user && (
+        <div className="flex items-center gap-2.5 rounded-2xl bg-cream/70 px-3 py-2.5 ring-1 ring-ink/5">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gold/15 text-sm font-bold text-gold-deep">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
+          <div className="min-w-0 text-xs leading-tight">
+            <p className="text-ink/50">{t('Sending as')}</p>
+            <p className="truncate font-bold text-ink">{user.name} · <span className="font-medium text-ink/60">{user.email}</span></p>
+          </div>
+        </div>
+      )}
+      {user && !hasPhone && <input name="phone" required inputMode="tel" pattern="[0-9+ ()-]{10,}" title={t('Please enter a valid mobile number')} placeholder={t('Mobile / WhatsApp')} className="field" autoComplete="tel" />}
       <input name="quantity" placeholder={t('Quantity needed (e.g. 500 kg / month)')} className="field" />
       <textarea name="message" required minLength={10} rows={compact ? 3 : 4} defaultValue={productName ? `${t('I am interested in')} ${productName}. ${t('Please share your best price, MOQ and delivery time.')}` : ''} placeholder={t('Tell the seller what you need: product, quantity, packaging, delivery location…')} className="field" />
       <label className="flex items-start gap-2 text-xs text-ink/60">

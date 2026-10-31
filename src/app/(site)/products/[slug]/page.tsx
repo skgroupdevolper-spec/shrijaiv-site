@@ -151,7 +151,7 @@ export default async function ProductPage({ params }: Props) {
 
             <div id="inquiry" className="pdp-in card mt-6 scroll-mt-28 p-5 md:mt-8 md:p-6" style={{ ['--d' as any]: '.36s' }}>
               <p className="font-display text-xl font-semibold text-ink">{t('Get the best price')}</p>
-              <p className="mb-4 mt-1 text-sm text-ink/60">{t('Your inquiry goes straight to')} {s.companyName}.</p>
+              <p className="mb-4 mt-1 text-sm text-ink/60">{(await getMarketplace()).approval?.inquiries ? `${t('Our team verifies your inquiry and forwards it to')} ${s.companyName}.` : `${t('Your inquiry goes straight to')} ${s.companyName}.`}</p>
               <InquiryForm sellerId={s.id} sellerName={s.companyName} productId={p.id} productName={p.name} user={user ? { name: user.name, email: user.email, phone: user.phone } : null} compact />
               {s.whatsapp && (
                 <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I saw "${p.name}" on SHRIJAIV and would like a quote.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline mt-3 w-full">
