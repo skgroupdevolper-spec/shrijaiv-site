@@ -154,6 +154,14 @@ export async function buildReport(scope: Scope, type: string, from?: string | nu
         const rows = await prisma.inquiry.findMany({ where: at('createdAt'), orderBy: { createdAt: 'desc' }, include: { seller: { select: { companyName: true } }, product: { select: { name: true } } } });
         const st = (s: string) => rows.filter((x) => x.status === s).length;
         r.summary = [{ label: 'Inquiries', value: num(rows.length) }, { label: 'Waiting for review', value: num(st('review')) }, { label: 'New', value: num(st('new')) }, { label: 'Replied', value: num(st('replied')) }, { label: 'Closed', value: num(st('closed')) }];
+        {
+          const by = new Map<string, number>();
+          for (const q of rows) {
+            const k = q.product?.name || 'General (seller page)';
+            by.set(k, (by.get(k) || 0) + 1);
+          }
+          r.sections.push({ title: 'Inquiries by product', columns: ['Product', 'Seller', 'Inquiries'], rows: [...by.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => [k, rows.find((x) => (x.product?.name || 'General (seller page)') === k)?.seller.companyName || '', n]) });
+        }
         r.sections.push({ title: 'Inquiries', columns: ['Date', 'Ref', 'Buyer', 'Email', 'Phone', 'City', 'Seller', 'Product', 'Quantity', 'Status', 'Message'], rows: rows.map((q) => [d(q.createdAt), q.refNo, q.name, q.email || '', q.phone || '', q.city || '', q.seller.companyName, q.product?.name || 'General', q.quantity || '', q.status, q.message.slice(0, 300)]) });
         break;
       }

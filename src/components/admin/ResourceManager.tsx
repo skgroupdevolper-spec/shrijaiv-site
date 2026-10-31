@@ -28,6 +28,8 @@ export type ResourceConfig = {
   extraActions?: (row: any, reload: () => void) => React.ReactNode;
   actions?: React.ReactNode;
   initialFilters?: Record<string, string>;
+  /** shown between the page title and the table */
+  intro?: React.ReactNode;
 };
 
 export default function ResourceManager({ config }: { config: ResourceConfig }) {
@@ -122,6 +124,7 @@ export default function ResourceManager({ config }: { config: ResourceConfig }) 
           </>
         }
       />
+      {config.intro}
       <Card>
         <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 p-3">
           <div className="relative min-w-[220px] flex-1">

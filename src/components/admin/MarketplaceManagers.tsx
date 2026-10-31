@@ -224,7 +224,7 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
         columns: [
           { key: 'name', label: 'Product', render: (r) => { let img = ''; try { img = JSON.parse(r.images || '[]')[0] || ''; } catch {} return <div className="flex items-center gap-3">{img ? <img src={img} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="h-10 w-10 rounded-lg bg-gray-100" />}<div><p className="font-semibold text-gray-900">{r.name}{!r.seen && r.status === 'pending' && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.seller?.companyName}{r.seller?.verified ? ' ✓' : ''} · {r.category?.name || 'no category'}</p></div></div>; } },
           { key: 'priceMin', label: 'Price', className: 'hidden md:table-cell', render: (r) => <span className="text-gray-700">{r.priceMin != null ? `${inr(r.priceMin)}${r.priceMax != null && r.priceMax !== r.priceMin ? ` – ${inr(r.priceMax)}` : ''} ${r.priceUnit || ''}` : '—'}</span> },
-          { key: 'views', label: 'Views / inq.', className: 'hidden lg:table-cell', render: (r) => <span className="text-xs text-gray-500">{r.views} / {r.inquiryCount}</span> },
+          { key: 'views', label: 'Views / inq.', className: 'hidden lg:table-cell', render: (r) => <span className="text-xs text-gray-500">{r.views} / {r.inquiryCount > 0 ? <Link href={`/admin/inquiries?product=${r.id}`} className="font-bold text-emerald-700 underline-offset-2 hover:underline" title="See the inquiries for this product">{r.inquiryCount} inquiries</Link> : 0}</span> },
           { key: 'featured', label: '★', render: (r) => (r.featured ? <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> : <span className="text-gray-300">—</span>) },
           { key: 'status', label: 'Status', render: (r) => pill(r.status) },
           { key: 'updatedAt', label: 'Updated', className: 'hidden md:table-cell', render: (r) => <span className="text-xs text-gray-400">{formatDate(r.updatedAt)}</span> },
@@ -272,7 +272,15 @@ export function RequirementsManager() {
 }
 
 /* ---------------------------------------------------------------- inquiries */
-export function InquiriesManager() {
+const firstImg = (j?: string | null) => {
+  try {
+    return (JSON.parse(j || '[]') as string[])[0] || '';
+  } catch {
+    return '';
+  }
+};
+
+export function InquiriesManager({ products = [], product = '', intro }: { products?: { value: string; label: string }[]; product?: string; intro?: React.ReactNode }) {
   const fields: Field[] = [
     { name: 'status', label: 'Status', type: 'select', options: opts(['new', 'replied', 'quoted', 'closed', 'spam']), half: true },
     { name: 'contactUnlocked', label: 'Buyer contact visible to the seller', type: 'boolean', half: true },
@@ -282,9 +290,17 @@ export function InquiriesManager() {
     <ResourceManager
       config={{
         resource: 'inquiries', exportType: 'inquiries', title: 'Inquiries', subtitle: 'Every buyer → seller inquiry. Open one to read the conversation and step in.', singular: 'Inquiry', fields, canCreate: false, pageSize: 50,
-        filters: [{ key: 'status', label: 'Status', options: opts(['new', 'replied', 'quoted', 'closed', 'spam']) }],
+        initialFilters: product ? { productId: product } : undefined,
+        intro,
+        filters: [{ key: 'status', label: 'Status', options: opts(['review', 'new', 'replied', 'quoted', 'closed', 'spam']) }, ...(products.length ? [{ key: 'productId', label: 'Products', options: products }] : [])],
         columns: [
-          { key: 'refNo', label: 'Inquiry', render: (r) => <div><p className="font-semibold text-gray-900">{r.name}{r.company ? ` · ${r.company}` : ''}{!r.seenByAdmin && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.refNo} → {r.seller?.companyName}{r.product ? ` · ${r.product.name}` : ''}</p></div> },
+          { key: 'refNo', label: 'Inquiry', render: (r) => <div><p className="font-semibold text-gray-900">{r.name}{r.company ? ` · ${r.company}` : ''}{!r.seenByAdmin && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.refNo} → {r.seller?.companyName}{r.city ? ` · ${r.city}` : ''}</p></div> },
+          { key: 'productId', label: 'Product', render: (r) => r.product ? (
+            <a href={`/products/${r.product.slug}`} target="_blank" rel="noopener" className="flex max-w-[220px] items-center gap-2 rounded-xl bg-emerald-50/70 p-1.5 pr-3 ring-1 ring-emerald-100 hover:ring-emerald-300" title="Open product page">
+              {firstImg(r.product.images) ? <img src={firstImg(r.product.images)} alt="" className="h-9 w-9 shrink-0 rounded-lg object-cover" /> : <span className="h-9 w-9 shrink-0 rounded-lg bg-emerald-100" />}
+              <span className="min-w-0"><span className="line-clamp-2 text-xs font-bold leading-tight text-gray-900">{r.product.name}</span>{r.quantity && <span className="block truncate text-[0.68rem] text-gray-500">Qty: {r.quantity}</span>}</span>
+            </a>
+          ) : <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[0.68rem] font-semibold text-gray-500">General (seller page)</span> },
           { key: 'message', label: 'Message', className: 'hidden md:table-cell max-w-[320px]', render: (r) => <p className="line-clamp-2 text-xs text-gray-500">{r.message}</p> },
           { key: '_count', label: 'Msgs', render: (r) => <span className="inline-flex items-center gap-1 text-xs"><MessageSquare className="h-3 w-3" /> {r._count?.messages}</span> },
           { key: 'status', label: 'Status', render: (r) => pill(r.status) },

@@ -155,8 +155,8 @@ export const RESOURCES: Record<string, ResourceConfig> = {
     search: ['refNo', 'name', 'email', 'phone', 'company', 'message'],
     orderBy: { lastMessageAt: 'desc' },
     fields: { status: 'string', adminNote: 'string', seenByAdmin: 'bool', contactUnlocked: 'bool' },
-    filters: ['status', 'sellerId'],
-    select: { id: true, refNo: true, sellerId: true, buyerId: true, productId: true, name: true, email: true, phone: true, company: true, city: true, quantity: true, message: true, status: true, contactUnlocked: true, seenBySeller: true, seenByBuyer: true, seenByAdmin: true, adminNote: true, lastMessageAt: true, createdAt: true, seller: { select: { companyName: true, slug: true } }, product: { select: { name: true, slug: true } }, _count: { select: { messages: true } } },
+    filters: ['status', 'sellerId', 'productId'],
+    select: { id: true, refNo: true, sellerId: true, buyerId: true, productId: true, name: true, email: true, phone: true, company: true, city: true, quantity: true, message: true, status: true, contactUnlocked: true, seenBySeller: true, seenByBuyer: true, seenByAdmin: true, adminNote: true, lastMessageAt: true, createdAt: true, seller: { select: { companyName: true, slug: true } }, product: { select: { id: true, name: true, slug: true, images: true } }, _count: { select: { messages: true } } },
   },
   reviews: {
     model: 'review',
