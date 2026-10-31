@@ -19,6 +19,8 @@ if [ ! -d .next ] || [ "$(cat /workspaces/shrijaiv-data/.built-sha 2>/dev/null)"
   echo "[start] building version $HEAD_SHA ..."
   npm install --no-audit --no-fund && npm run build && echo "$HEAD_SHA" > /workspaces/shrijaiv-data/.built-sha
 fi
+# starting data that is safe to re-run (new categories / plans / demo products; never overwrites pages)
+npm run seed > /workspaces/shrijaiv-data/seed.log 2>&1 || echo "[start] seed skipped (see seed.log)"
 # stop the old website server (whatever is holding port 3000) before starting the new one
 pkill -f "next start" 2>/dev/null || true
 pkill -f "next-server" 2>/dev/null || true
