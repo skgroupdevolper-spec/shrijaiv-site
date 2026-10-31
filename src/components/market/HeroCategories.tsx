@@ -71,7 +71,7 @@ export default function HeroCategories({ items, title, allLabel, allCatsLabel }:
           })}
         </ul>
       )}
-      <SmartLink href="/products" className="mt-2 flex items-center justify-center gap-1.5 rounded-2xl bg-ink px-3 py-2.5 text-sm font-bold text-white transition hover:bg-gold-deep">
+      <SmartLink href="/categories" className="mt-2 flex items-center justify-center gap-1.5 rounded-2xl bg-ink px-3 py-2.5 text-sm font-bold text-white transition hover:bg-gold-deep">
         {allCatsLabel} <ArrowRight className="h-4 w-4" />
       </SmartLink>
     </>

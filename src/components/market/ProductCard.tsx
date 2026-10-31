@@ -1,5 +1,5 @@
 import SmartLink from '@/components/ui/SmartLink';
-import { BadgeCheck, MapPin } from 'lucide-react';
+import { BadgeCheck, MapPin, Send } from 'lucide-react';
 import { images, priceLabel } from '@/lib/marketplace/format';
 import { Rating } from './Rating';
 import { Coin } from '@/components/site/Logo';
@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 export default function ProductCard({ p, priority, compact }: { p: any; priority?: boolean; compact?: boolean }) {
   const img = images(p.images)[0];
   return (
-    <SmartLink href={`/products/${p.slug}`} className="card card-lift tilt group flex h-full min-w-0 flex-col overflow-hidden !rounded-[18px] sm:!rounded-[24px]">
+    <div className="card card-lift tilt group flex h-full min-w-0 flex-col overflow-hidden !rounded-[18px] sm:!rounded-[24px]">
+    <SmartLink href={`/products/${p.slug}`} className="flex flex-1 flex-col">
       <div className={cn('relative overflow-hidden bg-[#eaf5ec]', compact ? 'aspect-[4/3]' : 'aspect-square')}>
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -41,5 +42,13 @@ export default function ProductCard({ p, priority, compact }: { p: any; priority
         {p.ratingCount > 0 && <Rating value={p.ratingAvg} count={p.ratingCount} className="mt-2" />}
       </div>
     </SmartLink>
+    {!compact && (
+      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+        <SmartLink href={`/inquire?product=${encodeURIComponent(p.slug)}`} className="flex w-full items-center justify-center gap-1.5 rounded-full bg-gold/10 px-3 py-2 text-[0.75rem] font-bold text-gold-deep ring-1 ring-gold/25 transition hover:bg-gold hover:text-white sm:text-[0.82rem]">
+          <Send className="h-3.5 w-3.5" /> Inquire now
+        </SmartLink>
+      </div>
+    )}
+    </div>
   );
 }

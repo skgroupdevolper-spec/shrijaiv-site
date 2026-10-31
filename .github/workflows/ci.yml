@@ -107,6 +107,8 @@ jobs:
           SLUG=$(curl -sf -b seller.txt http://localhost:3000/api/seller/products/$PID | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.slug))")
           check "/products/$SLUG" 200
           curl -s http://localhost:3000/products | grep -q 'Organic Turmeric' || { echo "::error title=Check failed::product in listing"; exit 1; }; echo "product listed"
+          for pth in /categories /regions /reviews /saved /inquire /requirements /sellers; do code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
+          curl -s http://localhost:3000/ | grep -q "region-card" && echo "region slider on home" || echo "region slider not on this home page"
           curl -s "http://localhost:3000/sellers/green-farms" | grep -q 'Green Farms' || { echo "::error title=Check failed::seller showroom"; exit 1; }; echo "showroom ok"
           # buyer posts a requirement, seller quotes, buyer accepts
           RID=$(curl -sf -b buyer.txt -X POST http://localhost:3000/api/buyer/requirements -H 'Content-Type: application/json' -d '{"title":"Need 500 kg organic turmeric monthly","quantity":"500","unit":"kg","deliveryState":"Maharashtra"}' | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).item.id))")

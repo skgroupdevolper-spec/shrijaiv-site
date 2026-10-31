@@ -60,7 +60,7 @@ export default function InquiryForm({ sellerId, sellerName, productId, productNa
         </>
       )}
       {user && (
-        <div className="flex items-center gap-2.5 rounded-2xl bg-cream/70 px-3 py-2.5 ring-1 ring-ink/5">
+        <div className="flex items-center gap-2.5 rounded-2xl bg-sand/70 px-3 py-2.5 ring-1 ring-ink/5">
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gold/15 text-sm font-bold text-gold-deep">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
           <div className="min-w-0 text-xs leading-tight">
             <p className="text-ink/50">{t('Sending as')}</p>

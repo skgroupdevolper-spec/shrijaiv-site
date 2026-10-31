@@ -56,7 +56,7 @@ async function buildSitemap(base: string): Promise<MetadataRoute.Sitemap> {
     for (const p of posts) entry(postPath(p.slug), postLangs.get(p.id) || ['en'], p.updatedAt, 0.7, 'weekly', p.cover);
     // marketplace
     const now = new Date();
-    for (const path of ['/products', '/sellers', '/requirements', '/pricing', '/post-requirement', '/reviews', '/regions', '/inquire']) entry(path, langs, now, 0.8, 'daily');
+    for (const path of ['/products', '/sellers', '/requirements', '/pricing', '/post-requirement', '/reviews', '/regions', '/categories', '/inquire']) entry(path, langs, now, 0.8, 'daily');
     const [cats, products, sellers, reqs] = await Promise.all([
       prisma.category.findMany({ where: { active: true }, select: { slug: true, updatedAt: true, image: true } }),
       prisma.product.findMany({ where: { status: 'approved', seller: { status: 'approved' } }, select: { slug: true, updatedAt: true, images: true }, orderBy: { updatedAt: 'desc' }, take: 5000 }),
