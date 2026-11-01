@@ -156,6 +156,13 @@ jobs:
           check "/products/$OSLUG" 200
           if curl -s "http://localhost:3000/products?q=turmeric" | grep -q "href=\"/products/$OSLUG\""; then echo "::error title=Check failed::offer listed as its own card"; exit 1; fi; echo "one card per catalogue product"
           check /buyers 200
+          # Forward inquiry: one inquiry to more than one seller (each gets an own copy)
+          curl -sf -b cookies.txt -X POST http://localhost:3000/api/admin/review -H 'Content-Type: application/json' -d "{\"kind\":\"inquiry\",\"id\":\"${IQ%% *}\",\"action\":\"forward-more\",\"sellerIds\":[\"$S2\"]}" | grep -q 'Hill Organics'
+          N2=$(curl -sf -b seller2.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items.length))"); echo "inquiries for the second seller: $N2"; [ "$N2" = "1" ]
+          curl -sf -b cookies.txt "http://localhost:3000/api/admin/review?find=Hill" | grep -q 'Hill Organics'
+          curl -s http://localhost:3000/categories | grep -q 'Cereals' && curl -s http://localhost:3000/categories | grep -q 'Beauty Products' || { echo "::error title=Check failed::main categories"; exit 1; }; echo "main categories ok"
+          curl -s http://localhost:3000/admin/login | grep -q 'forgot-password' || { echo "::error title=Check failed::forgot password link on admin login"; exit 1; }
+          curl -sf -X POST http://localhost:3000/api/auth/forgot -H 'Content-Type: application/json' -d '{"email":"buyer@example.com"}' | grep -q '"ok"'
           code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt http://localhost:3000/admin/google); echo "/admin/google -> $code"; [ "$code" = "200" ]
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/inquiries/$IID); echo "/seller/inquiries/ID -> $code"; [ "$code" = "200" ]
           for pth in /seller/products /seller/inquiries /seller/leads /seller/reviews /seller/profile /seller/membership /seller/analytics /seller/ai /seller/settings /seller/report "/report?type=overview"; do code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done

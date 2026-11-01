@@ -53,12 +53,10 @@ export function LoginForm({ admin = false }: { admin?: boolean }) {
       <button disabled={loading} className="btn btn-gold w-full">
         {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {t('Sign in')}
       </button>
-      {!admin && (
-        <div className="flex justify-between text-sm">
-          <SmartLink href="/forgot-password" className="text-ink/60 hover:text-gold-deep">{t('Forgot password?')}</SmartLink>
-          <SmartLink href="/register" className="font-bold text-gold-deep">{t('Create account')}</SmartLink>
-        </div>
-      )}
+      <div className="flex justify-between text-sm">
+        <SmartLink href="/forgot-password" className="font-semibold text-ink/60 hover:text-gold-deep">{t('Forgot password?')}</SmartLink>
+        {!admin && <SmartLink href="/register" className="font-bold text-gold-deep">{t('Create account')}</SmartLink>}
+      </div>
     </form>
   );
 }
@@ -316,12 +314,14 @@ export function ForgotForm() {
       <div className="rounded-2xl bg-white p-6 text-center ring-1 ring-ink/5">
         <CircleCheck className="mx-auto h-10 w-10 text-emerald-500" />
         <p className="mt-3 text-ink/70">{t('If an account exists for that email, we have sent a password reset link. Please check your inbox.')}</p>
+        <p className="mt-2 text-sm text-ink/55">{t('No email after a few minutes? Check the spam folder, or contact us — our team can reset your password for you.')}</p>
         <SmartLink href="/login" className="mt-4 inline-block font-bold text-gold-deep">{t('Back to login')}</SmartLink>
       </div>
     );
   return (
     <form onSubmit={submit} className="space-y-4">
-      <input name="email" type="email" required placeholder={t('Email address')} className="field" />
+      <p className="text-sm text-ink/60">{t('Enter the email you registered with. We send you a link to set a new password.')}</p>
+      <input name="email" type="email" required placeholder={t('Email address')} className="field" autoComplete="email" />
       <button disabled={loading} className="btn btn-gold w-full">
         {loading && <LoaderCircle className="h-4 w-4 animate-spin" />} {t('Send reset link')}
       </button>

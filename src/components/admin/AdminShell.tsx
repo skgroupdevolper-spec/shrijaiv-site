@@ -46,6 +46,7 @@ import {
   ScrollText,
   KeyRound,
   ListChecks,
+  Send,
   FileBarChart,
 } from 'lucide-react';
 import { Toaster, toast } from './ui';
@@ -63,7 +64,7 @@ const NAV = [
       { href: '/admin/products', label: 'Products', icon: Package, badge: 'products' },
       { href: '/admin/categories', label: 'Categories', icon: FolderKanban },
       { href: '/admin/requirements', label: 'Buy leads (RFQ)', icon: Megaphone },
-      { href: '/admin/review', label: 'Review queue', icon: ListChecks, badge: 'review' },
+      { href: '/admin/review', label: 'Forward inquiry', icon: Send, badge: 'review' },
       { href: '/admin/inquiries', label: 'Inquiries', icon: Inbox, badge: 'inquiries' },
       { href: '/admin/reviews', label: 'Reviews & ratings', icon: Star, badge: 'reviews' },
       { href: '/admin/report', label: 'Generate report', icon: FileBarChart },

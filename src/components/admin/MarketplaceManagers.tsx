@@ -285,7 +285,7 @@ export function InquiriesManager({ products = [], product = '', intro }: { produ
   const fields: Field[] = [
     { name: 'status', label: 'Status', type: 'select', options: opts(['new', 'replied', 'quoted', 'closed', 'spam']), half: true },
     { name: 'contactUnlocked', label: 'Buyer contact visible to the seller', type: 'boolean', half: true },
-    { name: 'directChat', label: 'Direct chat (messages skip the review queue)', type: 'boolean', half: true },
+    { name: 'directChat', label: 'Direct chat (messages skip Forward inquiry)', type: 'boolean', half: true },
     { name: 'adminNote', label: 'Internal note', type: 'textarea' },
   ];
   return (

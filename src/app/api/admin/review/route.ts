@@ -1,24 +1,31 @@
 import { prisma } from '@/lib/db';
 import { ok, fail } from '@/lib/api';
 import { requireStaff } from '@/lib/auth';
-import { deliverInquiry } from '@/lib/marketplace/notify';
 import { deliverQuote } from '@/lib/marketplace/quotes';
 import { audit } from '@/lib/marketplace/admin-hooks';
 import { sendMail } from '@/lib/mail';
 import { deliverMessage } from '@/lib/marketplace/chat';
+import { forwardInquiry, suggestSellers } from '@/lib/marketplace/forward';
 
 export const dynamic = 'force-dynamic';
 
-/** Review queue: inquiries and quotes waiting for the admin */
-export async function GET() {
+/** Forward inquiry queue: inquiries, quotes and chat messages waiting for the admin. ?find=… searches sellers. */
+export async function GET(req: Request) {
   const s = await requireStaff();
   if (!s) return fail('Unauthorized', 401);
+  const find = new URL(req.url).searchParams.get('find');
+  if (find !== null) {
+    const q = find.trim();
+    const sellers = await prisma.sellerProfile.findMany({ where: { status: 'approved', ...(q ? { OR: [{ companyName: { contains: q } }, { city: { contains: q } }, { state: { contains: q } }, { products: { some: { name: { contains: q } } } }] } : {}) }, orderBy: [{ verified: 'desc' }, { companyName: 'asc' }], take: 20, select: { id: true, companyName: true, city: true, state: true, verified: true } });
+    return ok({ sellers });
+  }
   const [inquiries, quotes, messages] = await Promise.all([
     prisma.inquiry.findMany({ where: { status: 'review' }, orderBy: { createdAt: 'asc' }, take: 200, include: { seller: { select: { id: true, companyName: true, slug: true } }, product: { select: { name: true, slug: true } } } }),
     prisma.quote.findMany({ where: { status: 'review' }, orderBy: { createdAt: 'asc' }, take: 200, include: { seller: { select: { id: true, companyName: true, slug: true } }, requirement: { select: { id: true, title: true, buyer: { select: { companyName: true, user: { select: { name: true } } } } } } } }),
     prisma.inquiryMessage.findMany({ where: { status: 'pending' }, orderBy: { createdAt: 'asc' }, take: 300, include: { inquiry: { select: { id: true, refNo: true, name: true, seller: { select: { id: true, companyName: true } }, product: { select: { name: true } } } } } }),
   ]);
-  return ok({ inquiries, quotes, messages });
+  const withSuggest = await Promise.all(inquiries.map(async (q) => ({ ...q, suggest: await suggestSellers(q) })));
+  return ok({ inquiries: withSuggest, quotes, messages });
 }
 
 /** Forward (optionally with an edited message) or reject one item */
@@ -27,7 +34,8 @@ export async function POST(req: Request) {
   if (!s) return fail('Unauthorized', 401);
   const b = await req.json().catch(() => ({}));
   const kind = b.kind === 'quote' ? 'quote' : b.kind === 'message' ? 'message' : 'inquiry';
-  const action = b.action === 'reject' ? 'reject' : 'forward';
+  const action = b.action === 'reject' ? 'reject' : b.action === 'forward-more' ? 'forward-more' : 'forward';
+  const sellerIds: string[] = Array.isArray(b.sellerIds) ? b.sellerIds.map(String).slice(0, 50) : [];
   const id = String(b.id || '');
   const text = typeof b.message === 'string' ? b.message.trim().slice(0, 4000) : '';
   const who = { id: s.sub, name: s.name };
@@ -50,6 +58,16 @@ export async function POST(req: Request) {
   if (kind === 'inquiry') {
     const inq = await prisma.inquiry.findUnique({ where: { id }, include: { seller: { select: { userId: true, companyName: true, email: true } }, product: { select: { name: true } }, messages: { orderBy: { createdAt: 'asc' }, take: 1 } } });
     if (!inq) return fail('Inquiry not found', 404);
+    if (action === 'forward-more') {
+      if (!sellerIds.length) return fail('Choose at least one seller');
+      try {
+        const delivered = await forwardInquiry(id, sellerIds);
+        await audit(who, 'forward', 'inquiry', id, delivered.join(', '));
+        return ok({ ok: true, delivered });
+      } catch (e) {
+        return fail((e as Error).message);
+      }
+    }
     if (inq.status !== 'review') return fail('This inquiry was already handled');
     if (action === 'reject') {
       await prisma.inquiry.update({ where: { id }, data: { status: 'rejected', seenByAdmin: true, adminNote: b.reason ? String(b.reason).slice(0, 500) : inq.adminNote } });
@@ -57,12 +75,13 @@ export async function POST(req: Request) {
       await audit(who, 'reject', 'inquiry', id, inq.refNo);
       return ok({ ok: true });
     }
-    const message = text || inq.message;
-    await prisma.inquiry.update({ where: { id }, data: { status: 'new', message, seenByAdmin: true, seenBySeller: false, lastMessageAt: new Date() } });
-    if (text && inq.messages[0]) await prisma.inquiryMessage.update({ where: { id: inq.messages[0].id }, data: { body: message } });
-    await deliverInquiry({ ...inq, message }, inq.seller, inq.product?.name);
-    await audit(who, 'forward', 'inquiry', id, `${inq.refNo} → ${inq.seller.companyName}`);
-    return ok({ ok: true });
+    try {
+      const delivered = await forwardInquiry(id, sellerIds, text || undefined);
+      await audit(who, 'forward', 'inquiry', id, delivered.join(', '));
+      return ok({ ok: true, delivered });
+    } catch (e) {
+      return fail((e as Error).message);
+    }
   }
 
   const q = await prisma.quote.findUnique({ where: { id }, include: { seller: { select: { companyName: true } } } });

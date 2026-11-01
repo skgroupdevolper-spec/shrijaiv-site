@@ -48,6 +48,9 @@ export default function ResourceManager({ config }: { config: ResourceConfig }) 
   useEffect(() => {
     try {
       const u = new URL(window.location.href);
+      // ?q=… (e.g. from a notification) pre-fills the search
+      const pre = u.searchParams.get('q');
+      if (pre) setQ(pre);
       if (canCreate && u.searchParams.get('new') === '1') {
         setEditing({ ...(config.defaults || {}) });
         u.searchParams.delete('new');

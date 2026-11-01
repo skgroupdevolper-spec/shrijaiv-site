@@ -6,6 +6,8 @@ import Thread from '@/components/dashboard/Thread';
 import { formatDateTime } from '@/lib/utils';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import InquiryChatControls from '@/components/admin/InquiryChatControls';
+import ForwardMore from '@/components/admin/ForwardMore';
+import { suggestSellers } from '@/lib/marketplace/forward';
 
 export default async function AdminInquiry({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,6 +15,10 @@ export default async function AdminInquiry({ params }: { params: Promise<{ id: s
   if (!q) notFound();
   await prisma.inquiry.update({ where: { id }, data: { seenByAdmin: true } });
   const mp = await getMarketplace();
+  // the same request sent to other sellers (copies made by Forward inquiry)
+  const origRef = /copy of (\S+)/.exec(q.adminNote || '')?.[1] || q.refNo;
+  const family = await prisma.inquiry.findMany({ where: { OR: [{ refNo: origRef }, { adminNote: { contains: `copy of ${origRef}` } }] }, select: { id: true, refNo: true, seller: { select: { id: true, companyName: true } } } });
+  const suggest = q.status === 'review' ? [] : (await suggestSellers(q)).filter((x) => !family.some((f) => f.seller.id === x.id));
   let img = '';
   try {
     img = (JSON.parse(q.product?.images || '[]') as string[])[0] || '';
@@ -23,7 +29,7 @@ export default async function AdminInquiry({ params }: { params: Promise<{ id: s
       {q.status === 'review' && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
           <span><b>Waiting for your review.</b> The seller cannot see this inquiry until you forward it.</span>
-          <Link href="/admin/review" className="rounded-xl bg-amber-500 px-4 py-2 font-bold text-white">Open review queue</Link>
+          <Link href="/admin/review" className="rounded-xl bg-amber-500 px-4 py-2 font-bold text-white">Open Forward inquiry</Link>
         </div>
       )}
       <div className="mb-4 rounded-2xl bg-white p-5 ring-1 ring-gray-200/70">
@@ -57,6 +63,22 @@ export default async function AdminInquiry({ params }: { params: Promise<{ id: s
           <p className="mt-3 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500">General inquiry (sent from the seller page, no product)</p>
         )}
       </div>
+      {q.status !== 'review' && q.status !== 'rejected' && (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {family.length > 1 && (
+            <p className="text-xs text-gray-500">
+              Sent to {family.length} sellers:{' '}
+              {family.map((f, i) => (
+                <span key={f.id}>
+                  {i > 0 && ', '}
+                  <Link href={`/admin/inquiries/${f.id}`} className={f.id === q.id ? 'font-bold text-gray-900' : 'font-semibold text-gold-deep'}>{f.seller.companyName}</Link>
+                </span>
+              ))}
+            </p>
+          )}
+          <ForwardMore id={family.find((f) => f.refNo === origRef)?.id || q.id} suggestions={suggest} already={family.map((f) => f.seller.companyName)} />
+        </div>
+      )}
       <InquiryChatControls id={q.id} directChat={q.directChat} contactUnlocked={q.contactUnlocked} approvalOn={!!mp.approval.messages} pending={JSON.parse(JSON.stringify(q.messages.filter((m) => m.status === 'pending')))} />
       <div className="flex h-[65vh] flex-col overflow-hidden rounded-2xl bg-[#f7fbf8] ring-1 ring-gray-200/70">
         <Thread messages={JSON.parse(JSON.stringify(q.messages))} me="admin" postUrl={`/api/admin/inquiries/${q.id}/messages`} placeholder="Write as the SHRIJAIV team (both sides see this)…" />

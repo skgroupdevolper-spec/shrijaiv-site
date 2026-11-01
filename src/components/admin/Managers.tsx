@@ -210,8 +210,8 @@ export function UsersManager() {
     <ResourceManager
       config={{
         resource: 'users',
-        title: 'Admin users & roles',
-        subtitle: 'Administrators can do everything. Editors can manage content, leads and applications but not settings or users.',
+        title: 'Users & passwords',
+        subtitle: 'Every login (admins, editors, sellers, buyers). Open a user to set a new password when someone forgot theirs. Administrators can do everything; editors manage content but not settings or users.',
         singular: 'User',
         defaults: { role: 'EDITOR', active: true },
         filters: [
@@ -222,6 +222,8 @@ export function UsersManager() {
               { value: 'ADMIN', label: 'Admin' },
               { value: 'EDITOR', label: 'Editor' },
               { value: 'CUSTOMER', label: 'Customer' },
+              { value: 'SELLER', label: 'Seller' },
+              { value: 'BUYER', label: 'Buyer' },
             ],
           },
         ],
@@ -238,6 +240,8 @@ export function UsersManager() {
               { value: 'ADMIN', label: 'Administrator (full access)' },
               { value: 'EDITOR', label: 'Editor (content & CRM)' },
               { value: 'CUSTOMER', label: 'Customer (client portal only)' },
+              { value: 'SELLER', label: 'Seller (seller dashboard)' },
+              { value: 'BUYER', label: 'Buyer (buyer dashboard)' },
             ],
           },
           { name: 'password', label: 'Password (min 8 characters; leave empty to keep current when editing)', type: 'text' },

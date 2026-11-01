@@ -157,6 +157,34 @@ async function runUpgrades() {
     await mark('header-sellers-buyers');
     console.log('✔ Upgrade: header menu shows Sellers / Buyers and a Register button');
   }
+  if (!done.has('main-categories-v1')) {
+    // The 8 main categories asked for by the client, shown first. Existing categories with the same meaning are
+    // moved to the top level (their products stay linked); missing ones are created.
+    const MAIN = [
+      ['Cereals', 'grains-cereals', 'wheat'],
+      ['Pulses', 'pulses', 'bean'],
+      ['Spices', 'spices-herbs', 'leaf'],
+      ['Vegetables', 'vegetables', 'carrot'],
+      ['Fruits', 'fruit', 'apple'],
+      ['Dairy Products', 'dairy-products', 'milk'],
+      ['Seeds', 'seeds-saplings', 'sprout'],
+      ['Beauty Products', 'organic-beauty', 'sparkles'],
+    ];
+    for (const [i, [name, slug, icon]] of MAIN.entries()) {
+      const found = await prisma.category.findUnique({ where: { slug } });
+      if (found) await prisma.category.update({ where: { slug }, data: { name, parentId: null, featured: true, active: true, order: i, icon: found.icon || icon } });
+      else await prisma.category.create({ data: { name, slug, icon, featured: true, order: i } });
+    }
+    // the hero list shows exactly these 8 (other categories stay, just not highlighted)
+    await prisma.category.updateMany({ where: { slug: { notIn: MAIN.map((m) => m[1]) } }, data: { featured: false } });
+    // the other main categories follow after them
+    const others = await prisma.category.findMany({ where: { parentId: null, slug: { notIn: MAIN.map((m) => m[1]) } }, orderBy: { order: 'asc' } });
+    for (const [j, c] of others.entries()) await prisma.category.update({ where: { id: c.id }, data: { order: MAIN.length + j } });
+    // their translations are re-made from the new names
+    await prisma.translation.deleteMany({ where: { entity: 'category', entityId: { in: (await prisma.category.findMany({ where: { slug: { in: MAIN.map((m) => m[1]) } }, select: { id: true } })).map((c) => c.id) } } }).catch(() => null);
+    await mark('main-categories-v1');
+    console.log('✔ Upgrade: main categories Cereals, Pulses, Spices, Vegetables, Fruits, Dairy Products, Seeds, Beauty Products');
+  }
   if (!done.has('remove-app')) {
     // the install-app bar and the app welcome screen were removed
     await edit('app', (a) => ({ ...a, enabled: false, installBar: false, splash: false }));

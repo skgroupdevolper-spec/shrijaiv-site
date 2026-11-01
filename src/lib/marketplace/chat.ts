@@ -1,5 +1,5 @@
 // Buyer ⇄ seller chat on an inquiry. With "Chat messages go to admin first" switched on (default), every
-// message waits in Admin → Review queue until the admin approves it — unless the admin allowed direct chat
+// message waits in Admin → Forward inquiry until the admin approves it — unless the admin allowed direct chat
 // for that conversation. Contact details inside messages stay masked while contacts are private.
 import { prisma } from '@/lib/db';
 import { sendMail } from '@/lib/mail';
