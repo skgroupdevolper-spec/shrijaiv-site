@@ -202,6 +202,7 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
     { name: 'priceMax', label: 'Price to (₹)', type: 'number', half: true },
     { name: 'priceUnit', label: 'Unit', type: 'text', half: true },
     { name: 'moq', label: 'MOQ', type: 'text', half: true },
+    { name: 'availableQty', label: 'Quantity available', type: 'text', half: true },
     { name: 'images', label: 'Photos (first one is the main photo)', type: 'list', itemLabel: 'Photo', fields: [{ name: 'url', label: 'Photo', type: 'image' }] },
     { name: 'stock', label: 'Availability', type: 'select', options: opts(['in stock', 'made to order', 'limited']), half: true },
     { name: 'origin', label: 'Origin (state / region)', type: 'text', half: true },
@@ -222,7 +223,7 @@ export function ProductsManager({ initialStatus }: { initialStatus?: string }) {
         initialFilters: initialStatus ? { status: initialStatus } : undefined,
         filters: [{ key: 'status', label: 'Status', options: opts(['pending', 'approved', 'rejected', 'hidden', 'draft']) }, { key: 'categoryId', label: 'Categories', options: cats }],
         columns: [
-          { key: 'name', label: 'Product', render: (r) => { let img = ''; try { img = JSON.parse(r.images || '[]')[0] || ''; } catch {} return <div className="flex items-center gap-3">{img ? <img src={img} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="h-10 w-10 rounded-lg bg-gray-100" />}<div><p className="font-semibold text-gray-900">{r.name}{!r.seen && r.status === 'pending' && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.seller?.companyName}{r.seller?.verified ? ' ✓' : ''} · {r.category?.name || 'no category'}</p></div></div>; } },
+          { key: 'name', label: 'Product', render: (r) => { let img = ''; try { img = JSON.parse(r.images || '[]')[0] || ''; } catch {} return <div className="flex items-center gap-3">{img ? <img src={img} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="h-10 w-10 rounded-lg bg-gray-100" />}<div><p className="font-semibold text-gray-900">{r.name}{!r.seen && r.status === 'pending' && <span className="ml-1 rounded-full bg-red-500 px-1.5 text-[0.55rem] font-bold text-white">NEW</span>}</p><p className="text-xs text-gray-400">{r.seller?.companyName}{r.seller?.verified ? ' ✓' : ''} · {r.category?.name || 'no category'}{r.masterId ? <span className="ml-1 rounded-full bg-sky-50 px-1.5 font-bold text-sky-700">seller offer</span> : r._count?.offers ? <span className="ml-1 rounded-full bg-emerald-50 px-1.5 font-bold text-emerald-700">{r._count.offers + 1} sellers</span> : null}</p></div></div>; } },
           { key: 'priceMin', label: 'Price', className: 'hidden md:table-cell', render: (r) => <span className="text-gray-700">{r.priceMin != null ? `${inr(r.priceMin)}${r.priceMax != null && r.priceMax !== r.priceMin ? ` – ${inr(r.priceMax)}` : ''} ${r.priceUnit || ''}` : '—'}</span> },
           { key: 'views', label: 'Views / inq.', className: 'hidden lg:table-cell', render: (r) => <span className="text-xs text-gray-500">{r.views} / {r.inquiryCount > 0 ? <Link href={`/admin/inquiries?product=${r.id}`} className="font-bold text-emerald-700 underline-offset-2 hover:underline" title="See the inquiries for this product">{r.inquiryCount} inquiries</Link> : 0}</span> },
           { key: 'featured', label: '★', render: (r) => (r.featured ? <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> : <span className="text-gray-300">—</span>) },
@@ -284,6 +285,7 @@ export function InquiriesManager({ products = [], product = '', intro }: { produ
   const fields: Field[] = [
     { name: 'status', label: 'Status', type: 'select', options: opts(['new', 'replied', 'quoted', 'closed', 'spam']), half: true },
     { name: 'contactUnlocked', label: 'Buyer contact visible to the seller', type: 'boolean', half: true },
+    { name: 'directChat', label: 'Direct chat (messages skip the review queue)', type: 'boolean', half: true },
     { name: 'adminNote', label: 'Internal note', type: 'textarea' },
   ];
   return (

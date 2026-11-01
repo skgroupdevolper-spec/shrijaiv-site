@@ -6,7 +6,7 @@ export type ProductInput = Partial<{
   name: string; summary: string; description: string; images: string[]; video: string; catalogFile: string;
   priceMin: number | null; priceMax: number | null; priceUnit: string; moq: string; stock: string;
   specs: { label: string; value: string }[]; certifications: string[]; tags: string; origin: string; brand: string;
-  packaging: string; shelfLife: string; leadTime: string; categoryId: string | null; metaTitle: string; metaDescription: string; status: string;
+  packaging: string; shelfLife: string; leadTime: string; availableQty: string; categoryId: string | null; metaTitle: string; metaDescription: string; status: string;
 }>;
 
 const str = (v: any, max = 200) => (v == null ? null : String(v).trim().slice(0, max) || null);
@@ -45,6 +45,7 @@ export async function normalizeProduct(b: ProductInput, opts: { maxImages: numbe
     packaging: str(b.packaging, 200),
     shelfLife: str(b.shelfLife, 80),
     leadTime: str(b.leadTime, 80),
+    availableQty: str(b.availableQty, 80),
     categoryId,
     metaTitle: str(b.metaTitle, 120),
     metaDescription: str(b.metaDescription, 200),

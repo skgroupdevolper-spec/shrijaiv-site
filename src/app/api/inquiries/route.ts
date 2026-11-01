@@ -43,17 +43,20 @@ export async function POST(req: Request) {
   if (!phone || phone.replace(/\D/g, '').length < 10) return fail('Please enter a valid mobile number');
   if (savePhoneFor) prisma.user.update({ where: { id: savePhoneFor }, data: { phone: phone.slice(0, 30) } }).catch(() => null);
 
-  // seller plan: buyer contact unlocked?
-  const e = await entitlements(seller.id);
+  // buyer contact details stay private until the seller unlocks them (free allowance / paid / admin)
   let contactUnlocked = true;
-  if (e.paidPlans && e.maxInquiries >= 0) {
-    const since = new Date();
-    since.setDate(1);
-    since.setHours(0, 0, 0, 0);
-    const used = await prisma.inquiry.count({ where: { sellerId: seller.id, contactUnlocked: true, createdAt: { gte: since } } });
-    contactUnlocked = used < e.maxInquiries;
+  if (mp.leads.enabled) contactUnlocked = false;
+  else {
+    const e = await entitlements(seller.id);
+    if (e.paidPlans && e.maxInquiries >= 0) {
+      const since = new Date();
+      since.setDate(1);
+      since.setHours(0, 0, 0, 0);
+      const used = await prisma.inquiry.count({ where: { sellerId: seller.id, contactUnlocked: true, createdAt: { gte: since } } });
+      contactUnlocked = used < e.maxInquiries;
+    }
+    if (!mp.showBuyerContactToSeller && e.paidPlans && e.status !== 'active' && e.status !== 'trial') contactUnlocked = false;
   }
-  if (!mp.showBuyerContactToSeller && e.paidPlans && e.status !== 'active' && e.status !== 'trial') contactUnlocked = false;
 
   const held = !!mp.approval?.inquiries;
   const inq = await prisma.inquiry.create({

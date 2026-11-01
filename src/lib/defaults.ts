@@ -23,12 +23,12 @@ export type AppSettings = {
   skipLabel: string;
 };
 export const defaultApp: AppSettings = {
-  installBar: true,
+  installBar: false,
   installTitle: 'Install SHRIJAIV app',
   installText: 'Faster, full screen, works like an app.',
   installButton: 'Install',
   iosHint: 'Tap Share, then “Add to Home Screen”.',
-  splashEnabled: true,
+  splashEnabled: false,
   splashLogo: '',
   splashTitle: 'Welcome to SHRIJAIV Organic',
   splashText: "India's organic B2B marketplace — verified sellers, buy leads and direct deals.",
@@ -185,13 +185,13 @@ export const defaultHeader: HeaderSettings = {
   menu: [
     { label: 'Home', href: '/' },
     { label: 'Shop', href: '/products' },
-    { label: 'Become a Seller', href: '/become-a-seller' },
-    { label: 'Become a Buyer', href: '/become-a-buyer' },
+    { label: 'Sellers', href: '/sellers' },
+    { label: 'Buyers', href: '/buyers' },
     { label: 'Buy leads', href: '/requirements' },
     { label: 'Contact', href: '/contact' },
     { label: 'Blog', href: '/blog' },
   ],
-  cta: { label: 'Post requirement', href: '/post-requirement' },
+  cta: { label: 'Register', href: '/register' },
   showLogin: true,
   mega: {
     enabled: true,

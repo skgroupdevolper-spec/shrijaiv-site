@@ -5,6 +5,7 @@ import { deliverInquiry } from '@/lib/marketplace/notify';
 import { deliverQuote } from '@/lib/marketplace/quotes';
 import { audit } from '@/lib/marketplace/admin-hooks';
 import { sendMail } from '@/lib/mail';
+import { deliverMessage } from '@/lib/marketplace/chat';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,11 +13,12 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const s = await requireStaff();
   if (!s) return fail('Unauthorized', 401);
-  const [inquiries, quotes] = await Promise.all([
+  const [inquiries, quotes, messages] = await Promise.all([
     prisma.inquiry.findMany({ where: { status: 'review' }, orderBy: { createdAt: 'asc' }, take: 200, include: { seller: { select: { id: true, companyName: true, slug: true } }, product: { select: { name: true, slug: true } } } }),
     prisma.quote.findMany({ where: { status: 'review' }, orderBy: { createdAt: 'asc' }, take: 200, include: { seller: { select: { id: true, companyName: true, slug: true } }, requirement: { select: { id: true, title: true, buyer: { select: { companyName: true, user: { select: { name: true } } } } } } } }),
+    prisma.inquiryMessage.findMany({ where: { status: 'pending' }, orderBy: { createdAt: 'asc' }, take: 300, include: { inquiry: { select: { id: true, refNo: true, name: true, seller: { select: { id: true, companyName: true } }, product: { select: { name: true } } } } } }),
   ]);
-  return ok({ inquiries, quotes });
+  return ok({ inquiries, quotes, messages });
 }
 
 /** Forward (optionally with an edited message) or reject one item */
@@ -24,11 +26,26 @@ export async function POST(req: Request) {
   const s = await requireStaff();
   if (!s) return fail('Unauthorized', 401);
   const b = await req.json().catch(() => ({}));
-  const kind = b.kind === 'quote' ? 'quote' : 'inquiry';
+  const kind = b.kind === 'quote' ? 'quote' : b.kind === 'message' ? 'message' : 'inquiry';
   const action = b.action === 'reject' ? 'reject' : 'forward';
   const id = String(b.id || '');
   const text = typeof b.message === 'string' ? b.message.trim().slice(0, 4000) : '';
   const who = { id: s.sub, name: s.name };
+
+  if (kind === 'message') {
+    const m = await prisma.inquiryMessage.findUnique({ where: { id }, include: { inquiry: { select: { refNo: true } } } });
+    if (!m) return fail('Message not found', 404);
+    if (m.status !== 'pending') return fail('This message was already handled');
+    if (action === 'reject') {
+      await prisma.inquiryMessage.update({ where: { id }, data: { status: 'rejected' } });
+      await audit(who, 'reject', 'message', id, m.inquiry.refNo);
+      return ok({ ok: true });
+    }
+    await prisma.inquiryMessage.update({ where: { id }, data: { status: 'approved', ...(text ? { body: text } : {}) } });
+    await deliverMessage(id);
+    await audit(who, 'approve', 'message', id, m.inquiry.refNo);
+    return ok({ ok: true });
+  }
 
   if (kind === 'inquiry') {
     const inq = await prisma.inquiry.findUnique({ where: { id }, include: { seller: { select: { userId: true, companyName: true, email: true } }, product: { select: { name: true } }, messages: { orderBy: { createdAt: 'asc' }, take: 1 } } });

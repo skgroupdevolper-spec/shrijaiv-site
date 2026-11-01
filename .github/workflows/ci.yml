@@ -132,7 +132,31 @@ jobs:
           code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt "http://localhost:3000/admin/inquiries/${IQ%% *}"); [ "$code" = "200" ]; curl -sf -b cookies.txt "http://localhost:3000/api/admin/inquiries?productId=${IQ##* }" | grep -q "${IQ##* }"
           echo "admin forwarded the inquiries"
           IID=$(curl -sf -b seller.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))")
-          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/inquiries/$IID/messages -H 'Content-Type: application/json' -d '{"body":"Yes, we ship all India."}' | grep -q '"item"'
+          curl -sf -b seller.txt -X POST http://localhost:3000/api/seller/inquiries/$IID/messages -H 'Content-Type: application/json' -d '{"body":"Yes, we ship all India. Call 9876543210"}' | grep -q '"held":true'
+          echo "seller message held for the admin"
+          MID=$(curl -sf -b cookies.txt http://localhost:3000/api/admin/review | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).messages[0].id))"); [ -n "$MID" ]
+          curl -sf -b cookies.txt -X POST http://localhost:3000/api/admin/review -H 'Content-Type: application/json' -d "{\"kind\":\"message\",\"id\":\"$MID\",\"action\":\"forward\"}" | grep -q '"ok":true'
+          echo "admin approved the chat message"
+          # private contacts: free unlocks for sellers (buyer contact) and buyers (seller contact)
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:3000/api/unlock -H 'Content-Type: application/json' -d "{\"kind\":\"seller\",\"id\":\"$SID\"}"); echo "unlock anonymous -> $code"; [ "$code" = "401" ]
+          curl -sf -b seller.txt "http://localhost:3000/api/unlock?kind=inquiry&id=$IID" | grep -q '"left":3'
+          curl -sf -b seller.txt -X POST http://localhost:3000/api/unlock -H 'Content-Type: application/json' -d "{\"kind\":\"inquiry\",\"id\":\"$IID\"}" | grep -q '"unlocked":true'
+          curl -sf -b seller.txt "http://localhost:3000/api/seller/inquiries/$IID" | grep -q '"contactUnlocked":true'
+          curl -sf -b buyer.txt -X POST http://localhost:3000/api/unlock -H 'Content-Type: application/json' -d "{\"kind\":\"seller\",\"id\":\"$SID\"}" | grep -q '"unlocked":true'
+          echo "contacts unlocked"
+          # one product, many sellers: a second seller adds an own offer to the same catalogue product
+          curl -sf -c seller2.txt -X POST http://localhost:3000/api/auth/register -H 'Content-Type: application/json' -d '{"role":"seller","name":"Asha Seller","company":"Hill Organics","email":"seller2@example.com","phone":"9876512345","password":"SellerPass123","state":"Kerala","city":"Kochi","agree":"1"}' | grep -q '"redirect":"/seller"'
+          S2=$(curl -sf -b cookies.txt "http://localhost:3000/api/admin/sellers?q=Hill" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items[0].id))")
+          curl -sf -b cookies.txt -X PUT http://localhost:3000/api/admin/sellers/$S2 -H 'Content-Type: application/json' -d '{"status":"approved"}' >/dev/null
+          code=$(curl -s -o /dev/null -w "%{http_code}" -b seller2.txt "http://localhost:3000/seller/products/new?q=turmeric"); echo "/seller/products/new -> $code"; [ "$code" = "200" ]
+          curl -s -b seller2.txt "http://localhost:3000/seller/products/new?q=turmeric" | grep -q "I sell this"
+          OSLUG=$(curl -sf -b seller2.txt -X POST http://localhost:3000/api/seller/products -H 'Content-Type: application/json' -d "{\"masterId\":\"$PID\",\"name\":\"x\",\"priceMin\":170,\"priceUnit\":\"per kg\",\"moq\":\"50 kg\",\"availableQty\":\"2 ton\"}" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const i=JSON.parse(d).item;if(i.masterId!==process.argv[1]||i.name!=='Organic Turmeric Powder')process.exit(1);console.log(i.slug)})" "$PID")
+          echo "offer $OSLUG"
+          curl -s "http://localhost:3000/products/$SLUG" | grep -q "Hill Organics" || { echo "::error title=Check failed::second seller on the product page"; exit 1; }; echo "2 sellers on one product"
+          check "/products/$OSLUG" 200
+          if curl -s "http://localhost:3000/products?q=turmeric" | grep -q "href=\"/products/$OSLUG\""; then echo "::error title=Check failed::offer listed as its own card"; exit 1; fi; echo "one card per catalogue product"
+          check /buyers 200
+          code=$(curl -s -o /dev/null -w "%{http_code}" -b cookies.txt http://localhost:3000/admin/google); echo "/admin/google -> $code"; [ "$code" = "200" ]
           code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000/seller/inquiries/$IID); echo "/seller/inquiries/ID -> $code"; [ "$code" = "200" ]
           for pth in /seller/products /seller/inquiries /seller/leads /seller/reviews /seller/profile /seller/membership /seller/analytics /seller/ai /seller/settings /seller/report "/report?type=overview"; do code=$(curl -s -o /dev/null -w "%{http_code}" -b seller.txt http://localhost:3000$pth); echo "$pth -> $code"; [ "$code" = "200" ]; done
           for pth in /buyer/requirements /buyer/requirements/new "/buyer/requirements/$RID" /buyer/inquiries /buyer/quotes /buyer/favourites /buyer/reviews /buyer/profile /buyer/settings /buyer/report /buyer/become-seller; do code=$(curl -s -o /dev/null -w "%{http_code}" -b buyer.txt "http://localhost:3000$pth"); echo "$pth -> $code"; [ "$code" = "200" ]; done

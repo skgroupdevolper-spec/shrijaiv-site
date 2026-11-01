@@ -36,11 +36,21 @@ export async function PUT(req: Request, { params }: P) {
     return fail((err as Error).message);
   }
   const mp = await getMarketplace();
+  // an offer of a catalogue product keeps the catalogue name and category
+  if (r.item.masterId) {
+    const m = await prisma.product.findUnique({ where: { id: r.item.masterId }, select: { name: true, categoryId: true, images: true } });
+    if (m) {
+      data.name = m.name;
+      data.categoryId = m.categoryId;
+      if (data.images === '[]') data.images = m.images;
+    }
+  }
+  const approvalOn = r.item.masterId ? mp.approval.offers : mp.approval.products;
   // status handling: a seller can set draft / hidden / (re)submit; approval resets when content changes and approval is on
   let status = r.item.status;
   if (b.status === 'draft' || b.status === 'hidden') status = b.status;
-  else if (['draft', 'hidden', 'rejected'].includes(r.item.status) || mp.approval.products === false) status = mp.approval.products ? 'pending' : 'approved';
-  else if (mp.approval.products && r.item.status === 'approved' && (data.name !== r.item.name || data.description !== r.item.description || data.images !== r.item.images)) status = 'pending';
+  else if (['draft', 'hidden', 'rejected'].includes(r.item.status) || approvalOn === false) status = approvalOn ? 'pending' : 'approved';
+  else if (approvalOn && r.item.status === 'approved' && (data.name !== r.item.name || data.description !== r.item.description || data.images !== r.item.images)) status = 'pending';
   const item = await prisma.product.update({ where: { id }, data: { ...data, status, seen: status === 'pending' ? false : r.item.seen } });
   translateLater('product', item.id);
   if (status === 'pending' && r.item.status !== 'pending') await notifyAdmins({ type: 'product', title: `Product to approve: ${item.name}`, body: r.ctx.seller.companyName, href: `/admin/products/${item.id}` });

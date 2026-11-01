@@ -1,21 +1,23 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, MapPin, Package, Wallet, Calendar, BadgeCheck, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, MapPin, Package, Wallet, Calendar, BadgeCheck } from 'lucide-react';
+import PrivateContact from '@/components/market/PrivateContact';
+import { isUnlocked } from '@/lib/marketplace/unlocks';
 import { prisma } from '@/lib/db';
 import { requireSeller } from '@/lib/auth';
 import { inr } from '@/lib/marketplace/data';
 import { getMarketplace } from '@/lib/marketplace/settings';
-import { formatDate, waLink } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import QuoteForm from '@/components/seller/QuoteForm';
 import { StatusPill } from '@/components/dashboard/fields';
 
 export default async function SellerLead({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { seller } = (await requireSeller())!;
+  const { seller, session } = (await requireSeller())!;
   const [r, mp] = await Promise.all([prisma.requirement.findFirst({ where: { id }, include: { category: { select: { name: true } }, buyer: { include: { user: { select: { name: true, email: true, phone: true } } } }, quotes: { where: { sellerId: seller.id } } } }), getMarketplace()]);
   if (!r) notFound();
   const mine = r.quotes[0] || null;
-  const showContact = !!mine; // buyer contact after quoting
+  const showContact = await isUnlocked(session.sub, 'requirement', r.id);
   return (
     <div className="mx-auto max-w-5xl">
       <Link href="/seller/leads" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-gray-900"><ArrowLeft className="h-4 w-4" /> Buy leads</Link>
@@ -50,17 +52,9 @@ export default async function SellerLead({ params }: { params: Promise<{ id: str
           </div>
           <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200/70">
             <p className="text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-gray-400">Buyer</p>
-            <p className="mt-1 flex items-center gap-1 font-bold text-gray-900">{r.buyer.companyName || r.buyer.user.name} {r.buyer.verified && <BadgeCheck className="h-4 w-4 text-emerald-600" />}</p>
+            <p className="mt-1 flex items-center gap-1 font-bold text-gray-900">{showContact ? r.buyer.companyName || r.buyer.user.name : r.buyer.companyName || 'Verified buyer'} {r.buyer.verified && <BadgeCheck className="h-4 w-4 text-emerald-600" />}</p>
             <p className="text-sm text-gray-600">{r.buyer.buyerType || 'Buyer'}{r.buyer.city || r.buyer.state ? ` · ${[r.buyer.city, r.buyer.state].filter(Boolean).join(', ')}` : ''}</p>
-            {showContact && mp.showBuyerContactToSeller ? (
-              <div className="mt-3 flex flex-wrap gap-2 text-sm">
-                {r.buyer.user.email && <a href={`mailto:${r.buyer.user.email}`} className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 font-semibold text-gray-700"><Mail className="h-4 w-4" /> {r.buyer.user.email}</a>}
-                {(r.buyer.phone || r.buyer.user.phone) && <a href={`tel:${r.buyer.phone || r.buyer.user.phone}`} className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 font-semibold text-gray-700"><Phone className="h-4 w-4" /> {r.buyer.phone || r.buyer.user.phone}</a>}
-                {(r.buyer.whatsapp || r.buyer.phone) && <a href={waLink(r.buyer.whatsapp || r.buyer.phone || '', `Hello, this is ${seller.companyName} from SHRIJAIV about your requirement "${r.title}".`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">WhatsApp</a>}
-              </div>
-            ) : (
-              <p className="mt-2 text-xs text-gray-500">Buyer contact details appear after you send a quote.</p>
-            )}
+            <PrivateContact unlocked={showContact} contact={{ email: r.buyer.user.email, phone: r.buyer.phone || r.buyer.user.phone, whatsapp: r.buyer.whatsapp }} kind="requirement" id={r.id} waText={`Hello, this is ${seller.companyName} from SHRIJAIV about your requirement "${r.title}".`} />
           </div>
         </div>
         <div className="lg:sticky lg:top-24 lg:self-start">

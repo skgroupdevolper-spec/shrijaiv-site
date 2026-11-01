@@ -37,8 +37,8 @@ export async function deliverInquiry(inq: InqLite, seller: SellerLite, productNa
   await notifyUser(seller.userId, { type: 'inquiry', title: `New inquiry from ${inq.name}${productName ? ` · ${productName}` : ''}`, body: inq.message.slice(0, 140), href: `/seller/inquiries/${inq.id}` });
   const sellerUser = await prisma.user.findUnique({ where: { id: seller.userId }, select: { email: true } });
   const to = seller.email || sellerUser?.email;
-  if (to) sendMail({ to, subject: `New inquiry ${inq.refNo}${productName ? ` for ${productName}` : ''}`, html: await emailHtml('You have a new inquiry', `${inq.name} is interested in your products. Reply quickly — buyers usually choose the first good answer.`, rows, { label: 'Reply in your dashboard', href: `/seller/inquiries/${inq.id}` }), replyTo: inq.email || undefined }).catch(() => null);
-  if (inq.email) sendMail({ to: inq.email, subject: `Your inquiry ${inq.refNo} was sent to ${seller.companyName}`, html: await emailHtml('Inquiry sent', `We delivered your inquiry to ${seller.companyName}. They will reply by email, WhatsApp or in your SHRIJAIV dashboard.`, rows) }).catch(() => null);
+  if (to) sendMail({ to, subject: `New inquiry ${inq.refNo}${productName ? ` for ${productName}` : ''}`, html: await emailHtml('You have a new inquiry', `${inq.name} is interested in your products. Reply quickly — buyers usually choose the first good answer.`, rows, { label: 'Reply in your dashboard', href: `/seller/inquiries/${inq.id}` }) }).catch(() => null);
+  if (inq.email) sendMail({ to: inq.email, subject: `Your inquiry ${inq.refNo} was sent to ${seller.companyName}`, html: await emailHtml('Inquiry sent', `We delivered your inquiry to ${seller.companyName}. Their reply reaches you through SHRIJAIV — by email and in your dashboard.`, rows) }).catch(() => null);
 }
 
 /** New inquiry: admins always hear about it; the seller only when it is not held for review */

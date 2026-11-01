@@ -6,6 +6,7 @@ import { requireBuyer } from '@/lib/auth';
 import { inr } from '@/lib/marketplace/data';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { formatDate, waLink } from '@/lib/utils';
+import { unlockedIds, maskContacts } from '@/lib/marketplace/unlocks';
 import { StatusPill } from '@/components/dashboard/fields';
 import { Rating } from '@/components/market/Rating';
 import QuoteActions from '@/components/buyer/QuoteActions';
@@ -15,10 +16,11 @@ import RequirementForm from '@/components/buyer/RequirementForm';
 export default async function BuyerRequirement({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ edit?: string }> }) {
   const { id } = await params;
   const { edit } = await searchParams;
-  const { buyer } = (await requireBuyer())!;
+  const { buyer, session } = (await requireBuyer())!;
   const r = await prisma.requirement.findFirst({ where: { id, buyerId: buyer.id }, include: { category: { select: { name: true } }, quotes: { where: { status: { notIn: ['review', 'rejected'] } }, orderBy: [{ status: 'asc' }, { createdAt: 'desc' }], include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, ratingAvg: true, ratingCount: true, logo: true, phone: true, whatsapp: true, email: true, user: { select: { email: true } } } } } } } });
   if (!r) notFound();
   await prisma.quote.updateMany({ where: { requirementId: id, seenByBuyer: false }, data: { seenByBuyer: true } });
+  const unlockedSellers = await unlockedIds(session.sub, 'seller', r.quotes.map((q) => q.sellerId));
   if (edit === '1') {
     const [cats, mp] = await Promise.all([prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }], select: { id: true, name: true, parentId: true } }), getMarketplace()]);
     return (
@@ -61,7 +63,9 @@ export default async function BuyerRequirement({ params, searchParams }: { param
                     <Link href={`/sellers/${q.seller.slug}`} target="_blank" className="flex items-center gap-1 font-semibold text-gray-900 hover:text-gold-deep">{q.seller.companyName} {q.seller.verified && <BadgeCheck className="h-4 w-4 text-emerald-600" />}</Link>
                     <p className="text-xs text-gray-500">{[q.seller.city, q.seller.state].filter(Boolean).join(', ')}</p>
                     <Rating value={q.seller.ratingAvg} count={q.seller.ratingCount} />
-                    {(q.status === 'accepted' || q.status === 'shortlisted') && (
+                    {!unlockedSellers.has(q.sellerId) ? (
+                      <Link href={`/sellers/${q.seller.slug}#inquiry`} target="_blank" className="mt-1 inline-flex rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">Show contact details</Link>
+                    ) : (
                       <div className="mt-1 flex flex-wrap gap-1 text-xs">
                         {(q.seller.email || q.seller.user.email) && <a href={`mailto:${q.seller.email || q.seller.user.email}`} className="rounded bg-gray-100 px-2 py-0.5 font-semibold">Email</a>}
                         {q.seller.phone && <a href={`tel:${q.seller.phone}`} className="rounded bg-gray-100 px-2 py-0.5 font-semibold">{q.seller.phone}</a>}
@@ -72,7 +76,7 @@ export default async function BuyerRequirement({ params, searchParams }: { param
                   <td className="px-3 py-3 align-top font-bold text-gray-900">{q.price != null ? `${inr(q.price)} ${q.priceUnit || ''}` : 'On request'}</td>
                   <td className="px-3 py-3 align-top">{q.quantity || '—'}</td>
                   <td className="px-3 py-3 align-top">{q.deliveryTime || '—'}</td>
-                  <td className="max-w-[260px] px-3 py-3 align-top text-gray-600"><p className="line-clamp-4 whitespace-pre-line">{q.message || '—'}</p>{(() => { try { const a = JSON.parse(q.attachments || '[]'); return a[0] ? <a href={a[0]} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-gold-deep">Attachment</a> : null; } catch { return null; } })()}<p className="mt-1 text-[0.65rem] text-gray-400">{formatDate(q.createdAt)}</p></td>
+                  <td className="max-w-[260px] px-3 py-3 align-top text-gray-600"><p className="line-clamp-4 whitespace-pre-line">{unlockedSellers.has(q.sellerId) ? q.message || '—' : maskContacts(q.message || '—')}</p>{(() => { try { const a = JSON.parse(q.attachments || '[]'); return a[0] ? <a href={a[0]} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-gold-deep">Attachment</a> : null; } catch { return null; } })()}<p className="mt-1 text-[0.65rem] text-gray-400">{formatDate(q.createdAt)}</p></td>
                   <td className="px-4 py-3 text-right align-top"><QuoteActions id={q.id} status={q.status} disabled={!!accepted && q.status !== 'accepted'} /></td>
                 </tr>
               ))}

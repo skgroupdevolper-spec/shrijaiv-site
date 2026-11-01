@@ -27,10 +27,10 @@ export default async function SellersPage({ searchParams }: { searchParams: SP }
   const res = await listSellers({ q: sp.q, categoryIds: cat?.ids, state: sp.state, verified: sp.verified === '1', businessType: sp.type, page: Number(sp.page) || 1 });
   return (
     <>
-      <ListingHeader crumbs={[{ label: t('Sellers') }]} eyebrow={t('Marketplace')} title={sp.q ? `${t('Sellers for')} “${sp.q}”` : t('Organic sellers')} lead={t('Farmers, FPOs, manufacturers, wholesalers and exporters — verified by our team. Visit a showroom and contact the seller directly.')} right={<SmartLink href="/register?as=seller" className="btn btn-gold">{t('Become a seller')}</SmartLink>} />
+      <ListingHeader crumbs={[{ label: t('Sellers') }]} eyebrow={t('Marketplace')} title={sp.q ? `${t('Sellers for')} “${sp.q}”` : t('All sellers')} lead={t('Farmers, FPOs, manufacturers, wholesalers and exporters — verified by our team. Visit a showroom and send an inquiry — SHRIJAIV connects you.')} right={<SmartLink href="/register?as=seller" className="btn btn-gold">{t('Become a seller')}</SmartLink>} />
       <section className="section theme-sand !pt-8">
         <div className="container-x">
-          <ListingSwitch active="supplier" supplierLabel={t('Supplier')} buyerLabel={t('Buyer')} />
+          <ListingSwitch active="supplier" supplierLabel={t('Sellers')} buyerLabel={t('Buyers')} supplierHref="/sellers" buyerHref="/buyers" />
           <QuickChips
             base="/sellers"
             params={sp}

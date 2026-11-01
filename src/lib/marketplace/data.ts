@@ -5,13 +5,16 @@ import { localizeMany, localizeOne } from '@/lib/i18n/overlay';
 
 export const LIVE_SELLER = { status: 'approved' } as const;
 export const LIVE_PRODUCT = { status: 'approved', seller: { status: 'approved' } } as const;
+/** One card per catalogue product: other sellers' offers of the same product are listed on its page.
+ *  (An offer whose catalogue product is no longer live shows on its own.) */
+export const CATALOGUE_ONLY = { OR: [{ masterId: null }, { master: { is: { OR: [{ status: { not: 'approved' } }, { seller: { status: { not: 'approved' } } }] } } }] };
 
 export type CategoryNode = { id: string; slug: string; name: string; icon: string | null; image: string | null; description: string | null; featured: boolean; order: number; parentId: string | null; children: CategoryNode[]; count?: number };
 
 /** Whole category tree (active only), with live product counts */
 export const getCategoryTree = cache(async (): Promise<CategoryNode[]> => {
   const rows = await localizeMany('category', await prisma.category.findMany({ where: { active: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }] }));
-  const live = await prisma.product.findMany({ where: LIVE_PRODUCT, select: { categoryId: true } }).catch(() => [] as { categoryId: string | null }[]);
+  const live = await prisma.product.findMany({ where: { ...LIVE_PRODUCT, ...CATALOGUE_ONLY }, select: { categoryId: true } }).catch(() => [] as { categoryId: string | null }[]);
   const cmap = new Map<string | null, number>();
   for (const p of live) cmap.set(p.categoryId, (cmap.get(p.categoryId) || 0) + 1);
   const nodes = new Map<string, CategoryNode>();
@@ -57,9 +60,10 @@ export type ProductFilters = { q?: string; categoryIds?: string[]; state?: strin
 export async function listProducts(f: ProductFilters = {}) {
   const take = Math.min(60, Math.max(1, f.take || 24));
   const page = Math.max(1, f.page || 1);
-  const where: any = { ...LIVE_PRODUCT };
+  const where: any = { ...LIVE_PRODUCT, AND: [] as any[] };
   if (f.categoryIds?.length) where.categoryId = { in: f.categoryIds };
   if (f.sellerId) where.sellerId = f.sellerId;
+  else where.AND.push(CATALOGUE_ONLY);
   if (f.featured) where.featured = true;
   if (f.verified) where.seller = { ...where.seller, verified: true };
   if (f.state) where.seller = { ...where.seller, state: f.state };
@@ -67,15 +71,52 @@ export async function listProducts(f: ProductFilters = {}) {
   if (f.maxPrice != null) where.priceMax = { lte: f.maxPrice };
   if (f.q) {
     const q = f.q.trim();
-    where.OR = [{ name: { contains: q } }, { summary: { contains: q } }, { tags: { contains: q } }, { brand: { contains: q } }, { seller: { companyName: { contains: q } } }];
+    where.AND.push({ OR: [{ name: { contains: q } }, { summary: { contains: q } }, { tags: { contains: q } }, { brand: { contains: q } }, { seller: { companyName: { contains: q } } }, { offers: { some: { ...LIVE_PRODUCT, seller: { status: 'approved', companyName: { contains: q } } } } }] });
   }
+  if (!where.AND.length) delete where.AND;
   const orderBy: any[] =
     f.sort === 'price_asc' ? [{ priceMin: 'asc' }] : f.sort === 'price_desc' ? [{ priceMax: 'desc' }] : f.sort === 'rating' ? [{ ratingAvg: 'desc' }, { ratingCount: 'desc' }] : f.sort === 'popular' ? [{ views: 'desc' }] : [{ featured: 'desc' }, { createdAt: 'desc' }];
   const [items, total] = await Promise.all([
-    prisma.product.findMany({ where, orderBy, take, skip: (page - 1) * take, include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, logo: true } }, category: { select: { slug: true, name: true } } } }),
+    prisma.product.findMany({ where, orderBy, take, skip: (page - 1) * take, include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, logo: true } }, category: { select: { slug: true, name: true } }, offers: { where: LIVE_PRODUCT, select: { priceMin: true } } } }),
     prisma.product.count({ where }),
   ]);
   return { items: await localizeMany('product', items), total, page, pages: Math.max(1, Math.ceil(total / take)), take };
+}
+
+/** Every live seller offer of one catalogue product (the catalogue product itself first) */
+export async function productSellers(p: { id: string; masterId: string | null }) {
+  const root = p.masterId || p.id;
+  const rows = await prisma.product.findMany({
+    where: { ...LIVE_PRODUCT, OR: [{ id: root }, { masterId: root }] },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, slug: true, priceMin: true, priceMax: true, priceUnit: true, currency: true, moq: true, stock: true, availableQty: true, leadTime: true, masterId: true, seller: { select: { id: true, slug: true, companyName: true, verified: true, city: true, state: true, ratingAvg: true, ratingCount: true, logo: true } } },
+  });
+  // cheapest first, "price on request" last
+  return rows.sort((a, b) => (a.priceMin ?? Infinity) - (b.priceMin ?? Infinity));
+}
+
+export type BuyerFilters = { q?: string; state?: string; type?: string; verified?: boolean; page?: number; take?: number };
+
+/** Public list of buyers — company, type and place only (contact details stay private) */
+export async function listBuyers(f: BuyerFilters = {}) {
+  const take = Math.min(60, Math.max(1, f.take || 24));
+  const page = Math.max(1, f.page || 1);
+  const where: any = { status: 'approved', user: { active: true } };
+  if (f.state) where.state = f.state;
+  if (f.type) where.buyerType = f.type;
+  if (f.verified) where.verified = true;
+  if (f.q) where.OR = [{ companyName: { contains: f.q } }, { city: { contains: f.q } }, { requirements: { some: { title: { contains: f.q }, status: 'open' } } }];
+  const [items, total] = await Promise.all([
+    prisma.buyerProfile.findMany({
+      where,
+      orderBy: [{ verified: 'desc' }, { createdAt: 'desc' }],
+      take,
+      skip: (page - 1) * take,
+      select: { id: true, companyName: true, buyerType: true, city: true, state: true, verified: true, createdAt: true, interests: true, requirements: { where: { status: 'open' }, orderBy: { createdAt: 'desc' }, take: 3, select: { id: true, title: true, quantity: true, unit: true } }, _count: { select: { requirements: true } } },
+    }),
+    prisma.buyerProfile.count({ where }),
+  ]);
+  return { items, total, page, pages: Math.max(1, Math.ceil(total / take)), take };
 }
 
 export async function getProduct(slug: string) {

@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays, ChevronLeft, MessageCircle, Send, ChevronRight } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
-import { getProduct, listProducts, images, priceLabel } from '@/lib/marketplace/data';
+import { getProduct, listProducts, productSellers, images, priceLabel } from '@/lib/marketplace/data';
+import { sellerContactAccess } from '@/lib/marketplace/unlocks';
+import { Store, Plus } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getMarketplace } from '@/lib/marketplace/settings';
@@ -53,6 +55,13 @@ export default async function ProductPage({ params }: Props) {
   const related = (await listProducts({ categoryIds: p.categoryId ? [p.categoryId] : undefined, take: 5 })).items.filter((x) => x.id !== p.id).slice(0, 4);
   const more = (await listProducts({ sellerId: p.sellerId, take: 5 })).items.filter((x) => x.id !== p.id).slice(0, 4);
   const s = p.seller;
+  const access = await sellerContactAccess(user, s.id, `/products/${p.slug}`);
+  const sellers = await productSellers(p);
+  const rootId = p.masterId || p.id;
+  // a seller who does not offer this product yet can add their own price / quantity for it
+  const mySeller = user?.role === 'SELLER' ? await prisma.sellerProfile.findUnique({ where: { userId: user.id }, select: { id: true } }) : null;
+  const iSell = mySeller ? !!(await prisma.product.findFirst({ where: { sellerId: mySeller.id, OR: [{ id: rootId }, { masterId: rootId }] }, select: { id: true } })) : false;
+  const prices = sellers.map((x) => x.priceMin).filter((x): x is number => x != null);
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -60,7 +69,7 @@ export default async function ProductPage({ params }: Props) {
     image: imgs.map((i) => absUrl(i)),
     description: p.summary || undefined,
     brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
-    offers: p.priceMin != null ? { '@type': 'AggregateOffer', priceCurrency: 'INR', lowPrice: p.priceMin, highPrice: p.priceMax ?? p.priceMin, offerCount: 1, seller: { '@type': 'Organization', name: s.companyName } } : undefined,
+    offers: prices.length ? { '@type': 'AggregateOffer', priceCurrency: 'INR', lowPrice: Math.min(...prices), highPrice: Math.max(...sellers.map((x) => x.priceMax ?? x.priceMin ?? 0)), offerCount: sellers.length } : undefined,
     aggregateRating: p.ratingCount ? { '@type': 'AggregateRating', ratingValue: p.ratingAvg.toFixed(1), reviewCount: p.ratingCount } : undefined,
   };
   return (
@@ -130,6 +139,7 @@ export default async function ProductPage({ params }: Props) {
             <dl className="pdp-in mt-5 grid grid-cols-2 gap-2 text-sm sm:gap-3" style={{ ['--d' as any]: '.28s' }}>
               {[
                 [Package, t('MOQ'), p.moq],
+                [Package, t('Available quantity'), p.availableQty],
                 [Tag, t('Brand'), p.brand],
                 [MapPin, t('Origin'), p.origin || s.state],
                 [Truck, t('Lead time'), p.leadTime],
@@ -149,11 +159,50 @@ export default async function ProductPage({ params }: Props) {
                 ))}
             </dl>
 
+            {(sellers.length > 1 || (mySeller && !iSell)) && (
+              <div className="pdp-in card mt-6 overflow-hidden" id="sellers" style={{ ['--d' as any]: '.32s' }}>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/5 px-5 py-4">
+                  <p className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+                    <Store className="h-5 w-5 text-gold-deep" /> {sellers.length} {sellers.length === 1 ? t('seller') : t('sellers')} {t('for this product')}
+                  </p>
+                  {mySeller && !iSell && (
+                    <SmartLink href={`/seller/products/new?master=${rootId}`} className="inline-flex items-center gap-1 rounded-full bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold-deep ring-1 ring-gold/25 hover:bg-gold hover:text-white">
+                      <Plus className="h-3.5 w-3.5" /> {t('I sell this too')}
+                    </SmartLink>
+                  )}
+                </div>
+                <ul className="divide-y divide-ink/5">
+                  {sellers.map((o) => (
+                    <li key={o.id} className={`flex flex-wrap items-center gap-3 px-5 py-3.5 ${o.id === p.id ? 'bg-gold/5' : ''}`}>
+                      <div className="min-w-0 flex-1">
+                        <p className="flex items-center gap-1 text-sm font-semibold text-ink">
+                          <span className="truncate">{o.seller.companyName}</span>
+                          {o.seller.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-emerald-600" />}
+                          {o.id === p.id && <span className="ml-1 rounded-full bg-gold/15 px-2 py-0.5 text-[0.6rem] font-bold text-gold-deep">{t('Viewing')}</span>}
+                        </p>
+                        <p className="text-xs text-ink/55">
+                          {[o.seller.city, o.seller.state].filter(Boolean).join(', ') || t('India')}
+                          {o.moq ? ` · ${t('MOQ')} ${o.moq}` : ''}
+                          {o.availableQty ? ` · ${t('Available')} ${o.availableQty}` : o.stock ? ` · ${o.stock}` : ''}
+                        </p>
+                        {o.seller.ratingCount > 0 && <Rating value={o.seller.ratingAvg} count={o.seller.ratingCount} className="mt-0.5" />}
+                      </div>
+                      <p className="text-sm font-bold text-gold-deep">{priceLabel(o)}</p>
+                      <div className="flex gap-1.5">
+                        {o.id !== p.id && <SmartLink href={`/products/${o.slug}`} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink/70 ring-1 ring-ink/10 hover:ring-gold">{t('Details')}</SmartLink>}
+                        <SmartLink href={o.id === p.id ? '#inquiry' : `/inquire?product=${o.slug}`} className="rounded-full bg-gold px-3 py-1.5 text-xs font-bold text-white hover:bg-gold-deep">{t('Get price')}</SmartLink>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div id="inquiry" className="pdp-in card mt-6 scroll-mt-28 p-5 md:mt-8 md:p-6" style={{ ['--d' as any]: '.36s' }}>
               <p className="font-display text-xl font-semibold text-ink">{t('Get the best price')}</p>
               <p className="mb-4 mt-1 text-sm text-ink/60">{(await getMarketplace()).approval?.inquiries ? `${t('Our team verifies your inquiry and forwards it to')} ${s.companyName}.` : `${t('Your inquiry goes straight to')} ${s.companyName}.`}</p>
               <InquiryForm sellerId={s.id} sellerName={s.companyName} productId={p.id} productName={p.name} user={user ? { name: user.name, email: user.email, phone: user.phone } : null} compact />
-              {s.whatsapp && (
+              {access.open && s.whatsapp && (
                 <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I saw "${p.name}" on SHRIJAIV and would like a quote.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline mt-3 w-full">
                   {t('Chat on WhatsApp')}
                 </a>
@@ -307,7 +356,7 @@ export default async function ProductPage({ params }: Props) {
           <p className="truncate text-[0.95rem] font-bold text-gold-deep">{priceLabel(p)}</p>
           <p className="truncate text-[0.68rem] text-ink/55">{p.moq ? `${t('MOQ')}: ${p.moq}` : s.companyName}</p>
         </div>
-        {s.whatsapp && (
+        {access.open && s.whatsapp && (
           <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I saw "${p.name}" on SHRIJAIV and would like a quote.`)} target="_blank" rel="noopener noreferrer" className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#25D366] text-white shadow" aria-label={t('Chat on WhatsApp')}>
             <MessageCircle className="h-5 w-5" />
           </a>

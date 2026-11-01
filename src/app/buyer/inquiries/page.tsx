@@ -8,7 +8,7 @@ import { formatDate } from '@/lib/utils';
 
 export default async function BuyerInquiries() {
   const { buyer } = (await requireBuyer())!;
-  const items = await prisma.inquiry.findMany({ where: { buyerId: buyer.id }, orderBy: { lastMessageAt: 'desc' }, include: { seller: { select: { companyName: true, verified: true } }, product: { select: { name: true } }, messages: { where: { senderRole: { in: ['seller', 'admin'] }, read: false }, select: { id: true } } } });
+  const items = await prisma.inquiry.findMany({ where: { buyerId: buyer.id }, orderBy: { lastMessageAt: 'desc' }, include: { seller: { select: { companyName: true, verified: true } }, product: { select: { name: true } }, messages: { where: { senderRole: { in: ['seller', 'admin'] }, read: false, status: 'approved' }, select: { id: true } } } });
   return (
     <>
       <PageTitle title="My inquiries" subtitle="Conversations with sellers. Replies also arrive by email." actions={<Link href="/products" className="btn btn-outline btn-sm">Browse products</Link>} />

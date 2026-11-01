@@ -16,7 +16,7 @@ import { resolveHref } from '@/components/ui/href';
 type Me = { name: string; role: string } | null;
 export const MENU_EVENT = 'open-site-menu';
 export const CATS_EVENT = 'open-site-categories';
-const MENU_ICONS: Record<string, string> = { '/': 'store', '/products': 'shopping-bag', '/become-a-seller': 'factory', '/become-a-buyer': 'users', '/requirements': 'megaphone', '/contact': 'phone', '/blog': 'file', '/about': 'building', '/pricing': 'crown', '/sellers': 'verified', '/how-it-works': 'sprout' };
+const MENU_ICONS: Record<string, string> = { '/': 'store', '/products': 'shopping-bag', '/become-a-seller': 'factory', '/become-a-buyer': 'users', '/buyers': 'users', '/register': 'user-plus', '/requirements': 'megaphone', '/contact': 'phone', '/blog': 'file', '/about': 'building', '/pricing': 'crown', '/sellers': 'verified', '/how-it-works': 'sprout' };
 /** Category tree for the Shop menu and the mobile Categories sheet (from Admin → Categories) */
 export type NavCategory = { slug: string; name: string; icon: string | null; image: string | null; count?: number; children: NavCategory[] };
 
@@ -154,6 +154,8 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
   const isMega = (href: string) => (hasCats ? href === shopHref : !!mega && href === mega.attachTo);
   const isActive = (href: string) => (href === '/' ? pathname === '/' : !!pathname?.startsWith(href));
   const accountHref = me ? (me.role === 'SELLER' ? '/seller' : me.role === 'BUYER' ? '/buyer' : me.role === 'CUSTOMER' ? '/account' : '/admin') : L('/login');
+  // signed in: the "Register" button becomes the way back to the dashboard
+  const cta = me && /^\/(register|login)/.test(header.cta.href || '') ? { label: t('My dashboard'), href: accountHref } : header.cta;
   const accountLabel = me ? (me.role === 'SELLER' ? t('Seller dashboard') : me.role === 'BUYER' ? t('Buyer dashboard') : me.role === 'CUSTOMER' ? t('My account') : t('Admin')) : t('Login');
   const enter = (i: number | null) => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current);
@@ -221,9 +223,9 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
                 <User className="h-[18px] w-[18px]" />
               </Link>
             )}
-            {header.cta.label && (
-              <SmartLink href={header.cta.href} className="btn btn-dark btn-sm ms-1 hidden sm:inline-flex">
-                {header.cta.label}
+            {cta.label && (
+              <SmartLink href={cta.href} className="btn btn-dark btn-sm ms-1 hidden sm:inline-flex">
+                {cta.label}
               </SmartLink>
             )}
             <button onClick={() => setOpen(true)} className="hdr-burger grid h-10 w-10 place-items-center rounded-xl text-[#1d1d1f] transition hover:bg-black/[0.045] lg:hidden" aria-label={t('Menu')} aria-expanded={open}>
@@ -423,9 +425,11 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
                 <LanguageSwitcher variant="sheet" />
               </div>
               <div className="mt-5 grid gap-2.5 pb-2">
-                <SmartLink href={header.cta.href} className="btn btn-dark w-full">
-                  {header.cta.label}
-                </SmartLink>
+                {cta.label && (
+                  <SmartLink href={cta.href} className="btn btn-dark w-full">
+                    {cta.label}
+                  </SmartLink>
+                )}
                 <a href={`tel:${site.phone}`} className="btn btn-outline w-full">
                   <Phone className="h-4 w-4" /> <span className="ltr">{site.phoneDisplay}</span>
                 </a>

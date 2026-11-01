@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db';
 import { ok, fail } from '@/lib/api';
 import { requireSeller } from '@/lib/auth';
 import { SELLER_VISIBLE } from '@/lib/marketplace/moderation';
+import { getMarketplace } from '@/lib/marketplace/settings';
+import { visibleTo } from '@/lib/marketplace/chat';
 
 type P = { params: Promise<{ id: string }> };
 
@@ -13,7 +15,9 @@ export async function GET(_: Request, { params }: P) {
   if (!item) return fail('Not found', 404);
   if (!item.seenBySeller) await prisma.inquiry.update({ where: { id }, data: { seenBySeller: true } });
   await prisma.inquiryMessage.updateMany({ where: { inquiryId: id, senderRole: { in: ['buyer', 'admin'] }, read: false }, data: { read: true } });
-  const safe = item.contactUnlocked ? item : { ...item, email: null, phone: null };
+  const mp = await getMarketplace();
+  const open = !mp.leads.enabled || item.contactUnlocked;
+  const safe = { ...item, ...(open ? {} : { email: null, phone: null }), messages: visibleTo(item.messages, 'seller', open) };
   return ok({ item: safe });
 }
 

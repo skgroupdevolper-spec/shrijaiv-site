@@ -113,7 +113,7 @@ export async function ProductRow({ data }: P) {
     if (c) categoryIds = [c.id, ...tree.filter((r) => r.id === c.id).flatMap((r) => r.children.map((x) => x.id))];
   }
   const { items } = await listProducts({ take, categoryIds, sort: data.sort || 'new', featured: data.onlyFeatured ? true : undefined });
-  if (items.length) cards = items.map((p) => ({ href: `/products/${p.slug}`, image: imgs(p.images)[0] || '', name: p.name, rating: p.ratingAvg || 0, count: p.ratingCount, sub: priceLabel(p), moq: p.moq || undefined, verified: p.seller?.verified, seller: p.seller?.companyName, place: p.seller?.city || p.seller?.state || undefined, featured: p.featured }));
+  if (items.length) cards = items.map((p) => ({ href: `/products/${p.slug}`, image: imgs(p.images)[0] || '', name: p.name, rating: p.ratingAvg || 0, count: p.ratingCount, sub: priceLabel(p), moq: p.moq || undefined, verified: p.seller?.verified, seller: (p as any).offers?.length ? `${(p as any).offers.length + 1} ${t('sellers')}` : p.seller?.companyName, place: p.seller?.city || p.seller?.state || undefined, featured: p.featured }));
   else if (data.samples !== false) {
     const sample = (Array.isArray(data.items) ? data.items : []).filter((x: any) => x?.image || x?.title);
     cards = sample.map((s: any) => ({ href: s.link?.href || '/products', image: s.image || '', name: s.title || 'Product', rating: Number(s.rating) || 5, sub: s.meta, verified: true }));

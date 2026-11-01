@@ -22,7 +22,7 @@ export async function GET() {
     prisma.inquiry.count({ where: { seenByAdmin: false } }),
     prisma.review.count({ where: { status: 'pending' } }),
     prisma.notification.findMany({ where: { userId: null }, orderBy: { createdAt: 'desc' }, take: 12 }),
-    Promise.all([prisma.inquiry.count({ where: { status: 'review' } }), prisma.quote.count({ where: { status: 'review' } })]).then(([a, b]) => a + b),
+    Promise.all([prisma.inquiry.count({ where: { status: 'review' } }), prisma.quote.count({ where: { status: 'review' } }), prisma.inquiryMessage.count({ where: { status: 'pending' } })]).then(([a, b, c]) => a + b + c),
   ]);
   const unreadNotes = latest.filter((n) => !n.read).length;
   return ok({ newLeads, newApps, unreadMsgs, latestLeads, latestApps, latestMsgs, pendingSellers, pendingProducts, newInquiries, pendingReviews, toReview, latest, unreadNotes, at: Date.now() });

@@ -8,9 +8,9 @@ import { toast } from '@/components/admin/ui';
 import { uploadToDashboard } from '@/components/dashboard/fields';
 import { formatDateTime, cn } from '@/lib/utils';
 
-type Msg = { id: string; senderRole: string; body: string; attachments?: string; createdAt: string };
+type Msg = { id: string; senderRole: string; body: string; attachments?: string; createdAt: string; status?: string };
 
-export default function Thread({ messages, me, postUrl, placeholder = 'Write a reply…', disabled, refreshSeconds = 15, uploadUrl }: { messages: Msg[]; me: 'seller' | 'buyer' | 'admin'; postUrl: string; placeholder?: string; disabled?: boolean; refreshSeconds?: number; uploadUrl?: string }) {
+export default function Thread({ messages, me, postUrl, placeholder = 'Write a reply…', disabled, refreshSeconds = 15, uploadUrl, note }: { messages: Msg[]; me: 'seller' | 'buyer' | 'admin'; postUrl: string; placeholder?: string; disabled?: boolean; refreshSeconds?: number; uploadUrl?: string; note?: string }) {
   const router = useRouter();
   const [text, setText] = useState('');
   const [files, setFiles] = useState<string[]>([]);
@@ -29,7 +29,8 @@ export default function Thread({ messages, me, postUrl, placeholder = 'Write a r
     if (!text.trim() && !files.length) return;
     setBusy(true);
     try {
-      await dapi(postUrl, 'POST', { body: text.trim() || (files.length ? 'Attachment' : ''), attachments: files });
+      const d = await dapi<{ held?: boolean }>(postUrl, 'POST', { body: text.trim() || (files.length ? 'Attachment' : ''), attachments: files });
+      if (d?.held) toast('Sent to the SHRIJAIV team — it is delivered after a quick check');
       setText('');
       setFiles([]);
       router.refresh();
@@ -76,13 +77,18 @@ export default function Thread({ messages, me, postUrl, placeholder = 'Write a r
                     ))}
                   </div>
                 )}
-                <p className={cn('mt-1 text-[0.62rem]', mine ? 'text-white/70' : 'text-gray-400')}>{formatDateTime(m.createdAt)}</p>
+                <p className={cn('mt-1 text-[0.62rem]', mine ? 'text-white/70' : 'text-gray-400')}>
+                  {formatDateTime(m.createdAt)}
+                  {m.status === 'pending' && <span className={cn('ml-1.5 rounded-full px-1.5 py-0.5 font-bold', mine ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800')}>{me === 'admin' ? 'waiting for approval' : 'waiting for SHRIJAIV approval'}</span>}
+                  {m.status === 'rejected' && <span className="ml-1.5 rounded-full bg-red-100 px-1.5 py-0.5 font-bold text-red-700">not delivered</span>}
+                </p>
               </div>
             </div>
           );
         })}
         <div ref={end} />
       </div>
+      {note && !disabled && <p className="border-t border-gray-100 bg-amber-50/60 px-4 py-1.5 text-[0.7rem] text-amber-900">{note}</p>}
       {!disabled && (
         <form onSubmit={send} className="border-t border-gray-100 p-3">
           {files.length > 0 && (

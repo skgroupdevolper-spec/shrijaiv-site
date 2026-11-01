@@ -46,8 +46,8 @@ const nextConfig = {
       ['/policy', '/privacy'], ['/privacy-policy', '/privacy'], ['/signup', '/register'], ['/sign-up', '/register'],
       ['/membership', '/pricing'], ['/plans', '/pricing'], ['/shop', '/products'], ['/inquire-now', '/inquire'],
       ['/about-us', '/about'], ['/contact-us', '/contact'], ['/support', '/customer-support'], ['/account-login', '/login'],
-      ['/suppliers', '/sellers'], ['/buyers', '/requirements'], ['/buy-leads', '/requirements'],
-      ['/advertise', '/pricing'], ['/advertise-with-us', '/pricing'], ['/all-categories', '/categories'], ['/category', '/categories'],
+      ['/suppliers', '/sellers'], ['/buy-leads', '/requirements'], ['/all-buyers', '/buyers'],
+      ['/advertise', '/pricing'], ['/advertise-with-us', '/pricing'], ['/all-categories', '/categories'], ['/admin/app', '/admin/google'], ['/category', '/categories'],
     ].map(([source, destination]) => ({ source, destination, permanent: true }));
   },
   async rewrites() {

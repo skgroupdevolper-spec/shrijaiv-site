@@ -20,16 +20,17 @@ function parse<T>(json: any, fb: T): T {
   }
 }
 
-export default function ProductEditor({ initial, categories, units, maxImages, aiTools, slugBase }: { initial: any | null; categories: Cat[]; units: string[]; maxImages: number; aiTools: boolean; slugBase?: string }) {
+export default function ProductEditor({ initial, categories, units, maxImages, aiTools, slugBase, master }: { initial: any | null; categories: Cat[]; units: string[]; maxImages: number; aiTools: boolean; slugBase?: string; master?: { id: string; name: string; image?: string; categoryId: string | null } | null }) {
   const router = useRouter();
   const [p, setP] = useState<any>(() => {
-    const base: any = { name: '', summary: '', description: '', video: '', catalogFile: '', priceUnit: units[0] ? `per ${units[0]}` : '', moq: '', stock: 'In stock', tags: '', origin: '', brand: '', packaging: '', shelfLife: '', leadTime: '', metaTitle: '', metaDescription: '', ...(initial || {}) };
+    const base: any = { name: master?.name || '', availableQty: '', summary: '', description: '', video: '', catalogFile: '', priceUnit: units[0] ? `per ${units[0]}` : '', moq: '', stock: 'In stock', tags: '', origin: '', brand: '', packaging: '', shelfLife: '', leadTime: '', metaTitle: '', metaDescription: '', ...(initial || {}) };
     base.images = parse<string[]>(initial?.images, []);
     base.specs = parse<{ label: string; value: string }[]>(initial?.specs, []);
     base.certifications = parse<string[]>(initial?.certifications, []);
     base.priceMin = initial?.priceMin ?? '';
     base.priceMax = initial?.priceMax ?? '';
-    base.categoryId = initial?.categoryId || '';
+    base.categoryId = initial?.categoryId || master?.categoryId || '';
+    base.masterId = initial?.masterId || master?.id || null;
     return base;
   });
   const [saving, setSaving] = useState(false);
@@ -39,7 +40,7 @@ export default function ProductEditor({ initial, categories, units, maxImages, a
 
   async function save(status?: 'draft' | 'hidden') {
     if (!p.name.trim()) return toast('Please enter the product name', 'error');
-    if (!p.images.length && status !== 'draft') return toast('Please add at least one photo', 'error');
+    if (!p.images.length && status !== 'draft' && !p.masterId) return toast('Please add at least one photo', 'error');
     setSaving(true);
     try {
       const body = { ...p, status };
@@ -99,12 +100,18 @@ export default function ProductEditor({ initial, categories, units, maxImages, a
       {tab === 'basic' && (
         <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="space-y-5 rounded-2xl bg-white p-5 ring-1 ring-gray-200/70">
+            {p.masterId && (
+              <div className="flex items-center gap-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 ring-1 ring-emerald-100">
+                {master?.image && <img src={master.image} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />}
+                <p>You are adding <b>your own offer</b> for a product that is already in the SHRIJAIV catalogue. Buyers see it in the list of sellers for this product. Set your own price, quantity, MOQ, photos and details — the name and category stay the same for every seller.</p>
+              </div>
+            )}
             <Field label="Product name" required>
-              <input value={p.name} onChange={(e) => set('name', e.target.value)} className="admin-input" placeholder="e.g. Organic Turmeric Powder (Lakadong), 5% curcumin" />
+              <input value={p.name} onChange={(e) => set('name', e.target.value)} readOnly={!!p.masterId} className={`admin-input ${p.masterId ? 'bg-gray-50 text-gray-500' : ''}`} placeholder="e.g. Organic Turmeric Powder (Lakadong), 5% curcumin" />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Category" required>
-                <select value={p.categoryId} onChange={(e) => set('categoryId', e.target.value)} className="admin-input">
+                <select value={p.categoryId} onChange={(e) => set('categoryId', e.target.value)} disabled={!!p.masterId} className="admin-input">
                   <option value="">Choose…</option>
                   {roots.map((r) => (
                     <optgroup key={r.id} label={r.name}>
@@ -120,7 +127,7 @@ export default function ProductEditor({ initial, categories, units, maxImages, a
                 <input value={p.brand || ''} onChange={(e) => set('brand', e.target.value)} className="admin-input" />
               </Field>
             </div>
-            <Field label="Photos" required>
+            <Field label="Photos" required={!p.masterId} hint={p.masterId ? 'optional — without photos the catalogue photos are shown' : undefined}>
               <ImagesInput value={p.images} onChange={(v) => set('images', v)} max={maxImages < 0 ? 15 : Math.max(1, Math.min(15, maxImages))} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-4">
@@ -156,6 +163,9 @@ export default function ProductEditor({ initial, categories, units, maxImages, a
                 <select value={p.stock || ''} onChange={(e) => set('stock', e.target.value)} className="admin-input">
                   {['In stock', 'Made to order', 'Limited stock', 'Seasonal', 'Pre-order'].map((s) => <option key={s}>{s}</option>)}
                 </select>
+              </Field>
+              <Field label="Quantity available" className="mt-4" hint="what you have ready to sell, e.g. 2 ton">
+                <input value={p.availableQty || ''} onChange={(e) => set('availableQty', e.target.value)} className="admin-input" placeholder="2 ton" />
               </Field>
               <Field label="Certifications" className="mt-4" hint="press Enter after each">
                 <ChipsInput value={p.certifications} onChange={(v) => set('certifications', v)} suggestions={CERT_SUGGEST} placeholder="NPOP, FSSAI…" />

@@ -44,7 +44,7 @@ import {
   BadgePercent,
   SlidersHorizontal,
   ScrollText,
-  Smartphone,
+  KeyRound,
   ListChecks,
   FileBarChart,
 } from 'lucide-react';
@@ -109,7 +109,7 @@ const NAV = [
       { href: '/admin/languages', label: 'Languages', icon: Languages },
       { href: '/admin/redirects', label: 'Redirects', icon: ExternalLink, adminOnly: true },
       { href: '/admin/settings', label: 'Site settings & SEO', icon: Settings, adminOnly: true },
-      { href: '/admin/app', label: 'App & splash screen', icon: Smartphone, adminOnly: true },
+      { href: '/admin/google', label: 'Google sign-in', icon: KeyRound, adminOnly: true },
       { href: '/admin/backup', label: 'Backup & move', icon: DatabaseBackup, adminOnly: true },
     ],
   },

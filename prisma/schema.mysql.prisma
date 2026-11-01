@@ -32,6 +32,7 @@ model User {
   seller       SellerProfile?
   buyer        BuyerProfile?
   inquiryMessages InquiryMessage[]
+  unlocks      Unlock[]
 }
 
 model Setting {
@@ -411,12 +412,18 @@ model Product {
   inquiries     Inquiry[]
   reviews       Review[]
   favourites    Favourite[]
+  // one catalogue product, many sellers: a seller's own offer of an existing product points to it
+  masterId      String?
+  master        Product?  @relation("ProductOffers", fields: [masterId], references: [id], onDelete: SetNull)
+  offers        Product[] @relation("ProductOffers")
+  availableQty  String?   // quantity this seller has ready, e.g. "2 ton"
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   @@index([sellerId])
   @@index([categoryId])
   @@index([status])
+  @@index([masterId])
 }
 
 // A buyer's posted requirement (Buy Lead / RFQ) at /requirements/[id]
@@ -499,6 +506,7 @@ model Inquiry {
   seenByAdmin  Boolean  @default(false)
   adminNote   String?   @db.Text
   messages    InquiryMessage[]
+  directChat  Boolean   @default(false) // admin lets both sides chat without approving every message
   lastMessageAt DateTime @default(now())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -518,9 +526,11 @@ model InquiryMessage {
   body       String   @db.Text
   attachments String  @default("[]")
   read       Boolean  @default(false)
+  status     String   @default("approved") // approved | pending (waiting for the admin) | rejected
   createdAt  DateTime @default(now())
 
   @@index([inquiryId])
+  @@index([status])
 }
 
 // Ratings & reviews by buyers for a seller (optionally about one product)
@@ -723,4 +733,21 @@ model SearchLog {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// Contact details a seller (buyer contact on an inquiry / buy lead) or a buyer (seller contact) has unlocked:
+// a few for free each month, more after paying (or granted by the admin).
+model Unlock {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String   // inquiry | requirement | seller
+  targetId  String
+  source    String   @default("free") // free | paid | plan | admin
+  amount    Float    @default(0)
+  paymentId String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, kind, targetId])
+  @@index([userId, createdAt])
 }

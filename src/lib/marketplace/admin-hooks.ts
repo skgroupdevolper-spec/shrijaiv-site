@@ -61,4 +61,26 @@ export async function afterAdminUpdate(resource: string, id: string, before: any
     const sub = await prisma.subscription.findUnique({ where: { id }, include: { seller: { select: { userId: true } }, plan: { select: { name: true } } } });
     if (sub) await notifyUser(sub.seller.userId, { type: 'plan', title: `${sub.plan.name} plan is now ${data.status}`, href: '/seller/membership' });
   }
+
+  // a manual (bank transfer) payment for a contact unlock marked as paid → unlock it
+  if (resource === 'payments' && data.status === 'paid' && before?.status !== 'paid') {
+    const pay = await prisma.payment.findUnique({ where: { id } });
+    const m = /^unlock:(inquiry|requirement|seller):([^:]+):([^:]+)$/.exec(pay?.notes || '');
+    if (pay && m) {
+      const { grantUnlock } = await import('./unlocks');
+      const { nextInvoiceNo } = await import('./payments');
+      await grantUnlock(m[3], m[1] as any, m[2], 'paid', pay.amount, pay.id);
+      await prisma.payment.update({ where: { id }, data: { paidAt: pay.paidAt || new Date(), invoiceNo: pay.invoiceNo || (await nextInvoiceNo()) } });
+      await notifyUser(m[3], { type: 'payment', title: 'Payment received — contact unlocked', href: m[1] === 'seller' ? '/buyer' : m[1] === 'inquiry' ? `/seller/inquiries/${m[2]}` : `/seller/leads/${m[2]}` });
+    }
+  }
+
+  // the admin switched "buyer contact visible to the seller" on for an inquiry → record it as an admin unlock
+  if (resource === 'inquiries' && data.contactUnlocked === true && !before?.contactUnlocked) {
+    const q = await prisma.inquiry.findUnique({ where: { id }, include: { seller: { select: { userId: true } } } });
+    if (q) {
+      await prisma.unlock.upsert({ where: { userId_kind_targetId: { userId: q.seller.userId, kind: 'inquiry', targetId: id } }, update: {}, create: { userId: q.seller.userId, kind: 'inquiry', targetId: id, source: 'admin' } });
+      await notifyUser(q.seller.userId, { type: 'inquiry', title: `Buyer contact unlocked for ${q.refNo}`, href: `/seller/inquiries/${id}` });
+    }
+  }
 }

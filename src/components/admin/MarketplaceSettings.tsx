@@ -83,10 +83,23 @@ export default function MarketplaceSettings() {
             <Row label="Buyer requirements need approval"><Toggle checked={m.approval.requirements} onChange={(v) => setM({ ...m, approval: { ...m.approval, requirements: v } })} /></Row>
             <Row label="Inquiries go to admin first" hint="new buyer inquiries wait in Review queue; you forward them to the seller"><Toggle checked={m.approval.inquiries} onChange={(v) => setM({ ...m, approval: { ...m.approval, inquiries: v } })} /></Row>
             <Row label="Quotes go to admin first" hint="seller quotes on buy leads wait in Review queue; you forward them to the buyer"><Toggle checked={m.approval.quotes} onChange={(v) => setM({ ...m, approval: { ...m.approval, quotes: v } })} /></Row>
+            <Row label="Chat messages go to admin first" hint="every message between a buyer and a seller waits in Review queue until you approve it (you can allow direct chat for one conversation)"><Toggle checked={m.approval.messages} onChange={(v) => setM({ ...m, approval: { ...m.approval, messages: v } })} /></Row>
+            <Row label="Seller offers on existing products need approval" hint="a seller adding a product that is already in the catalogue (own price, quantity, details). New products always follow the product switch above."><Toggle checked={m.approval.offers} onChange={(v) => setM({ ...m, approval: { ...m.approval, offers: v } })} /></Row>
             <Row label="Reviews need approval"><Toggle checked={m.approval.reviews} onChange={(v) => setM({ ...m, approval: { ...m.approval, reviews: v } })} /></Row>
             <Row label="Guests can send inquiries" hint="without an account (name, email, mobile)"><Toggle checked={m.allowGuestInquiry} onChange={(v) => setM({ ...m, allowGuestInquiry: v })} /></Row>
             <Row label="Visitors can rate & review" hint="with name and email, no account needed (reviews still follow the approval switch above)"><Toggle checked={m.allowGuestReview} onChange={(v) => setM({ ...m, allowGuestReview: v })} /></Row>
-            <Row label="Show buyer contact to sellers without a plan" hint="only matters when paid plans are on"><Toggle checked={m.showBuyerContactToSeller} onChange={(v) => setM({ ...m, showBuyerContactToSeller: v })} /></Row>
+          </Card>
+          <Card title="Private contacts & paid leads" className="mb-5">
+            <p className="px-5 pt-4 text-sm text-gray-500">Sellers never see a buyer's mobile / email, and buyers never see a seller's mobile / email / address, until they unlock it. Each gets a few free unlocks; after that they pay per contact (or you unlock it for them from the inquiry).</p>
+            <Row label="Keep contact details private" hint="off = everyone sees all contact details"><Toggle checked={m.leads.enabled} onChange={(v) => setM({ ...m, leads: { ...m.leads, enabled: v } })} /></Row>
+            <Row label="Free allowance" hint="per calendar month, or once in total">
+              <select value={m.leads.period} onChange={(e) => setM({ ...m, leads: { ...m.leads, period: e.target.value as any } })} className="admin-input"><option value="month">Every month</option><option value="total">One time (in total)</option></select>
+            </Row>
+            <Row label="Seller: free buyer contacts" hint="inquiries and buy leads a seller may unlock for free"><input type="number" min={0} value={m.leads.sellerFree} onChange={(e) => setM({ ...m, leads: { ...m.leads, sellerFree: num(e.target.value) } })} className="admin-input" /></Row>
+            <Row label="Seller: price per extra buyer contact (₹)" hint="0 = sellers cannot buy more, only you can unlock"><input type="number" min={0} value={m.leads.sellerPrice} onChange={(e) => setM({ ...m, leads: { ...m.leads, sellerPrice: num(e.target.value) } })} className="admin-input" /></Row>
+            <Row label="Buyer: free seller contacts"><input type="number" min={0} value={m.leads.buyerFree} onChange={(e) => setM({ ...m, leads: { ...m.leads, buyerFree: num(e.target.value) } })} className="admin-input" /></Row>
+            <Row label="Buyer: price per extra seller contact (₹)" hint="0 = buyers cannot buy more, only you can unlock"><input type="number" min={0} value={m.leads.buyerPrice} onChange={(e) => setM({ ...m, leads: { ...m.leads, buyerPrice: num(e.target.value) } })} className="admin-input" /></Row>
+            <Row label="Note next to the unlock button"><input value={m.leads.note} onChange={(e) => setM({ ...m, leads: { ...m.leads, note: e.target.value } })} className="admin-input" /></Row>
           </Card>
           <Card title="Lists" className="mb-5">
             {(['sellerTypes', 'buyerTypes', 'units'] as const).map((k) => (

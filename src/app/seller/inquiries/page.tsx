@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Inbox, Lock } from 'lucide-react';
+import { maskContacts } from '@/lib/marketplace/unlocks';
 import { prisma } from '@/lib/db';
 import { requireSeller } from '@/lib/auth';
 import { PageTitle } from '@/components/admin/ui';
@@ -11,10 +12,10 @@ const TABS = [['', 'All'], ['new', 'New'], ['replied', 'Replied'], ['quoted', 'Q
 export default async function SellerInquiries({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const { seller } = (await requireSeller())!;
   const { status } = await searchParams;
-  const items = await prisma.inquiry.findMany({ where: { sellerId: seller.id, ...(status && !['review', 'rejected'].includes(status) ? { status } : { status: { notIn: ['spam', 'review', 'rejected'] } }) }, orderBy: { lastMessageAt: 'desc' }, include: { product: { select: { name: true } }, messages: { where: { senderRole: { in: ['buyer', 'admin'] }, read: false }, select: { id: true } } }, take: 300 });
+  const items = await prisma.inquiry.findMany({ where: { sellerId: seller.id, ...(status && !['review', 'rejected'].includes(status) ? { status } : { status: { notIn: ['spam', 'review', 'rejected'] } }) }, orderBy: { lastMessageAt: 'desc' }, include: { product: { select: { name: true } }, messages: { where: { senderRole: { in: ['buyer', 'admin'] }, read: false, status: 'approved' }, select: { id: true } } }, take: 300 });
   return (
     <>
-      <PageTitle title="Inquiries" subtitle="Every inquiry also reaches your email and WhatsApp. Reply here to keep the conversation in one place." />
+      <PageTitle title="Inquiries" subtitle="Every inquiry also reaches your email. Reply here — buyer contact details stay private until you unlock them." />
       <div className="rounded-2xl bg-white ring-1 ring-gray-200/70">
         <div className="flex gap-1 overflow-x-auto border-b border-gray-100 p-3">
           {TABS.map(([v, l]) => (
@@ -38,7 +39,7 @@ export default async function SellerInquiries({ searchParams }: { searchParams: 
                       {q.company && <span className="text-xs font-normal text-gray-500">· {q.company}</span>}
                       {!q.contactUnlocked && <Lock className="h-3.5 w-3.5 text-amber-500" />}
                     </p>
-                    <p className="truncate text-xs text-gray-500">{q.product?.name ? `${q.product.name} · ` : ''}{q.message}</p>
+                    <p className="truncate text-xs text-gray-500">{q.product?.name ? `${q.product.name} · ` : ''}{q.contactUnlocked ? q.message : maskContacts(q.message)}</p>
                   </div>
                   {q.messages.length > 0 && <span className="rounded-full bg-red-500 px-2 py-0.5 text-[0.65rem] font-extrabold text-white">{q.messages.length}</span>}
                   <StatusPill status={q.status} />

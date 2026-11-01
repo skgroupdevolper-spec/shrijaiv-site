@@ -32,7 +32,7 @@ export default function ProductCard({ p, priority, compact }: { p: any; priority
         <p className="mt-1.5 text-[0.8rem] font-bold text-gold-deep sm:mt-2 sm:text-sm sm:text-ink">{priceLabel(p)}</p>
         {p.moq && <p className="truncate text-[0.7rem] text-ink/55 sm:text-xs">MOQ: {p.moq}</p>}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2 text-[0.68rem] text-ink/60 sm:pt-3 sm:text-xs">
-          <span className="truncate">{p.seller?.companyName}</span>
+          <span className="truncate">{p.offers?.length ? <b className="font-bold text-emerald-700">{p.offers.length + 1} sellers</b> : p.seller?.companyName}</span>
           {p.seller?.state && (
             <span className="hidden shrink-0 items-center gap-1 sm:inline-flex">
               <MapPin className="h-3 w-3" /> {p.seller.city || p.seller.state}

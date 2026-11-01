@@ -14,6 +14,8 @@ import ProductCard from '@/components/market/ProductCard';
 import { Rating } from '@/components/market/Rating';
 import FavButton from '@/components/market/FavButton';
 import { formatDate, waLink } from '@/lib/utils';
+import { sellerContactAccess } from '@/lib/marketplace/unlocks';
+import PrivateContact from '@/components/market/PrivateContact';
 import { safeArticleHtml } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
@@ -35,6 +37,7 @@ export default async function SellerPage({ params }: Props) {
   prisma.sellerProfile.update({ where: { id: s.id }, data: { views: { increment: 1 } } }).catch(() => null);
   const user = await getCurrentUser();
   const buyer = user?.role === 'BUYER' ? await prisma.buyerProfile.findUnique({ where: { userId: user.id }, select: { id: true } }) : null;
+  const access = await sellerContactAccess(user, s.id, `/sellers/${s.slug}`);
   const fav = buyer ? !!(await prisma.favourite.findFirst({ where: { buyerId: buyer.id, sellerId: s.id } })) : false;
   const certs: { name: string; number?: string }[] = (() => {
     try {
@@ -84,7 +87,7 @@ export default async function SellerPage({ params }: Props) {
                   {s.yearEstablished && <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4 text-gold-deep" /> {t('Since')} {s.yearEstablished}</span>}
                   {s.employees && <span className="inline-flex items-center gap-1"><Users className="h-4 w-4 text-gold-deep" /> {s.employees} {t('employees')}</span>}
                   <span className="inline-flex items-center gap-1"><Package className="h-4 w-4 text-gold-deep" /> {s.products.length} {t('products')}</span>
-                  {s.website && (
+                  {access.open && s.website && (
                     <a href={s.website} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 hover:text-gold-deep"><Globe className="h-4 w-4 text-gold-deep" /> {t('Website')}</a>
                   )}
                 </div>
@@ -93,7 +96,7 @@ export default async function SellerPage({ params }: Props) {
               <div className="flex flex-wrap gap-2">
                 <FavButton sellerId={s.id} initial={fav} canSave={!!buyer} className="self-center" />
                 <a href="#inquiry" className="btn btn-gold">{t('Send inquiry')}</a>
-                {s.whatsapp && (
+                {access.open && s.whatsapp && (
                   <a href={waLink(s.whatsapp, `Hello ${s.companyName}, I found you on SHRIJAIV.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline">WhatsApp</a>
                 )}
               </div>
@@ -164,6 +167,10 @@ export default async function SellerPage({ params }: Props) {
               </div>
             </div>
             <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+              <div className="card p-5 md:p-6">
+                <p className="font-display text-lg font-semibold text-ink">{t('Contact details')}</p>
+                <PrivateContact unlocked={access.open} contact={{ phone: s.phone, whatsapp: s.whatsapp, email: s.email, website: s.website, address: [s.address, s.city, s.state, s.pincode].filter(Boolean).join(', ') || null }} kind="seller" id={s.id} signIn={access.signIn} waText={`Hello ${s.companyName}, I found you on SHRIJAIV.`} />
+              </div>
               <div className="card p-5 md:p-6" id="inquiry">
                 <p className="font-display text-xl font-semibold text-ink">{t('Contact')} {s.companyName}</p>
                 <p className="mb-4 mt-1 text-sm text-ink/60">{t('Ask for a catalogue, prices or samples.')}</p>

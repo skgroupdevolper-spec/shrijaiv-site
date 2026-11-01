@@ -52,6 +52,9 @@ async function main() {
   // 3b) Demo sellers / products / buy leads (only while the marketplace is empty; skip with DEMO_DATA=0)
   if (process.env.DEMO_DATA !== '0') await seedDemo(prisma);
 
+  // 3c) One-time upgrades of saved settings
+  await runUpgrades();
+
   // 4) Website content — only into an empty database (or with --force)
   const pageCount = await prisma.page.count();
   if (pageCount > 0 && !force) {
@@ -127,3 +130,36 @@ main()
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());
+
+/** One-time changes to settings the admin already saved (each runs once, remembered in Setting "upgrades") */
+async function runUpgrades() {
+  const row = await prisma.setting.findUnique({ where: { key: 'upgrades' } }).catch(() => null);
+  const done = new Set(row ? JSON.parse(row.value) : []);
+  const mark = async (k) => {
+    done.add(k);
+    await prisma.setting.upsert({ where: { key: 'upgrades' }, update: { value: JSON.stringify([...done]) }, create: { key: 'upgrades', value: JSON.stringify([...done]) } });
+  };
+  const edit = async (key, fn) => {
+    const r = await prisma.setting.findUnique({ where: { key } });
+    if (!r) return;
+    const v = JSON.parse(r.value);
+    const next = fn(v) ?? v;
+    await prisma.setting.update({ where: { key }, data: { value: JSON.stringify(next) } });
+  };
+  if (!done.has('header-sellers-buyers')) {
+    // "Become a Seller / Buyer" → the lists of all sellers and buyers; the header button becomes "Register"
+    await edit('header', (h) => {
+      if (Array.isArray(h.menu))
+        h.menu = h.menu.map((m) => (m?.href === '/become-a-seller' ? { ...m, label: 'Sellers', href: '/sellers' } : m?.href === '/become-a-buyer' ? { ...m, label: 'Buyers', href: '/buyers' } : m));
+      if (!h.cta || h.cta.href === '/post-requirement') h.cta = { label: 'Register', href: '/register' };
+      return h;
+    });
+    await mark('header-sellers-buyers');
+    console.log('✔ Upgrade: header menu shows Sellers / Buyers and a Register button');
+  }
+  if (!done.has('remove-app')) {
+    // the install-app bar and the app welcome screen were removed
+    await edit('app', (a) => ({ ...a, enabled: false, installBar: false, splash: false }));
+    await mark('remove-app');
+  }
+}

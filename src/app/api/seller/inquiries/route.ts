@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { ok, fail } from '@/lib/api';
 import { requireSeller } from '@/lib/auth';
+import { maskContacts } from '@/lib/marketplace/unlocks';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,5 +16,5 @@ export async function GET(req: Request) {
   if (q) where.OR = [{ name: { contains: q } }, { message: { contains: q } }, { refNo: { contains: q } }, { product: { name: { contains: q } } }];
   const items = await prisma.inquiry.findMany({ where, orderBy: { lastMessageAt: 'desc' }, take: 300, include: { product: { select: { name: true, slug: true } }, _count: { select: { messages: true } } } });
   const counts = await prisma.inquiry.groupBy({ by: ['status'], where: { sellerId: ctx.seller.id, status: { notIn: ['review', 'rejected'] } }, _count: { _all: true } });
-  return ok({ items: items.map((i) => (i.contactUnlocked ? i : { ...i, email: null, phone: null })), counts: Object.fromEntries(counts.map((c) => [c.status, c._count._all])) });
+  return ok({ items: items.map((i) => (i.contactUnlocked ? i : { ...i, email: null, phone: null, message: maskContacts(i.message) })), counts: Object.fromEntries(counts.map((c) => [c.status, c._count._all])) });
 }

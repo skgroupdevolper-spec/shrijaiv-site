@@ -6,7 +6,17 @@ export type MarketplaceSettings = {
   paidPlans: boolean;
   /** What a seller may do without an active plan when paidPlans is on */
   freeTier: { maxProducts: number; maxInquiries: number; maxQuotes: number };
-  approval: { sellers: boolean; products: boolean; requirements: boolean; reviews: boolean; inquiries: boolean; quotes: boolean }; // true = admin approves first (inquiries / quotes: admin forwards them)
+  approval: { sellers: boolean; products: boolean; requirements: boolean; reviews: boolean; inquiries: boolean; quotes: boolean; messages: boolean; offers: boolean }; // true = admin approves first (inquiries / quotes: admin forwards them; messages: every chat message; offers: a seller adding an existing catalogue product)
+  /** Contact details are private: a seller unlocks a buyer's contact (inquiry / buy lead), a buyer unlocks a seller's contact. */
+  leads: {
+    enabled: boolean; // false = everyone sees every contact (old behaviour)
+    period: 'month' | 'total'; // free allowance resets every month, or is a one-time allowance
+    sellerFree: number; // buyer contacts a seller may unlock for free
+    sellerPrice: number; // ₹ per extra buyer contact (0 = more are not sold, only the admin can grant)
+    buyerFree: number; // seller contacts a buyer may unlock for free
+    buyerPrice: number; // ₹ per extra seller contact
+    note: string; // short text shown next to the unlock button
+  };
   allowGuestInquiry: boolean; // visitors can send an inquiry without an account
   allowGuestRequirement: boolean; // visitors can post a requirement (creates a buyer account)
   allowGuestReview: boolean; // visitors can rate and review with their name and email (no account)
@@ -23,7 +33,8 @@ export type MarketplaceSettings = {
 export const defaultMarketplace: MarketplaceSettings = {
   paidPlans: false,
   freeTier: { maxProducts: 3, maxInquiries: 5, maxQuotes: 5 },
-  approval: { sellers: true, products: true, requirements: false, reviews: true, inquiries: true, quotes: true },
+  approval: { sellers: true, products: true, requirements: false, reviews: true, inquiries: true, quotes: true, messages: true, offers: false },
+  leads: { enabled: true, period: 'month', sellerFree: 3, sellerPrice: 99, buyerFree: 5, buyerPrice: 49, note: 'Contact details are shared only through SHRIJAIV.' },
   allowGuestInquiry: true,
   allowGuestRequirement: true,
   allowGuestReview: true,

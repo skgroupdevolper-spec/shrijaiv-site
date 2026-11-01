@@ -4,19 +4,26 @@ import { ArrowLeft, BadgeCheck, MapPin } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { requireBuyer } from '@/lib/auth';
 import { images } from '@/lib/marketplace/data';
-import { formatDateTime, waLink } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
+import { getMarketplace } from '@/lib/marketplace/settings';
+import { visibleTo } from '@/lib/marketplace/chat';
+import { isUnlocked } from '@/lib/marketplace/unlocks';
+import PrivateContact from '@/components/market/PrivateContact';
 import Thread from '@/components/dashboard/Thread';
 import { StatusPill } from '@/components/dashboard/fields';
 import { Rating } from '@/components/market/Rating';
 
 export default async function BuyerInquiry({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { buyer } = (await requireBuyer())!;
-  const q = await prisma.inquiry.findFirst({ where: { id, buyerId: buyer.id }, include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, logo: true, ratingAvg: true, ratingCount: true, whatsapp: true, phone: true } }, product: { select: { name: true, slug: true, images: true } }, messages: { orderBy: { createdAt: 'asc' } } } });
+  const { buyer, session } = (await requireBuyer())!;
+  const q = await prisma.inquiry.findFirst({ where: { id, buyerId: buyer.id }, include: { seller: { select: { slug: true, companyName: true, verified: true, city: true, state: true, logo: true, ratingAvg: true, ratingCount: true, whatsapp: true, phone: true, email: true, address: true, website: true, id: true } }, product: { select: { name: true, slug: true, images: true } }, messages: { orderBy: { createdAt: 'asc' } } } });
   if (!q) notFound();
   await prisma.inquiry.update({ where: { id }, data: { seenByBuyer: true } });
   await prisma.inquiryMessage.updateMany({ where: { inquiryId: id, senderRole: { in: ['seller', 'admin'] }, read: false }, data: { read: true } });
   const img = q.product ? images(q.product.images)[0] : null;
+  const mp = await getMarketplace();
+  const open = await isUnlocked(session.sub, 'seller', q.seller.id);
+  const msgs = visibleTo(q.messages, 'buyer', open);
   return (
     <div className="mx-auto max-w-6xl">
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -26,7 +33,7 @@ export default async function BuyerInquiry({ params }: { params: Promise<{ id: s
       </div>
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <div className="flex h-[70vh] min-h-[480px] flex-col overflow-hidden rounded-2xl bg-[#f7fbf8] ring-1 ring-gray-200/70">
-          <Thread messages={JSON.parse(JSON.stringify(q.messages))} me="buyer" postUrl={`/api/buyer/inquiries/${q.id}/messages`} disabled={q.status === 'closed' || q.status === 'spam'} />
+          <Thread messages={JSON.parse(JSON.stringify(msgs))} me="buyer" note={mp.approval.messages && !q.directChat ? 'Messages are checked by the SHRIJAIV team before the seller sees them.' : undefined} postUrl={`/api/buyer/inquiries/${q.id}/messages`} disabled={q.status === 'closed' || q.status === 'spam'} />
         </div>
         <div className="space-y-4">
           <Link href={`/sellers/${q.seller.slug}`} target="_blank" className="block rounded-2xl bg-white p-5 ring-1 ring-gray-200/70 hover:bg-gray-50">
@@ -35,7 +42,10 @@ export default async function BuyerInquiry({ params }: { params: Promise<{ id: s
             {(q.seller.city || q.seller.state) && <p className="inline-flex items-center gap-1 text-xs text-gray-500"><MapPin className="h-3 w-3" /> {[q.seller.city, q.seller.state].filter(Boolean).join(', ')}</p>}
             <Rating value={q.seller.ratingAvg} count={q.seller.ratingCount} className="mt-1" />
           </Link>
-          {(q.seller.whatsapp || q.seller.phone) && <a href={waLink(q.seller.whatsapp || q.seller.phone || '', `Hello ${q.seller.companyName}, about my inquiry ${q.refNo} on SHRIJAIV.`)} target="_blank" rel="noopener noreferrer" className="btn btn-outline w-full">WhatsApp the seller</a>}
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-gray-200/70">
+            <p className="text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-gray-400">Seller contact</p>
+            <PrivateContact unlocked={open} contact={{ email: q.seller.email, phone: q.seller.phone, whatsapp: q.seller.whatsapp, address: q.seller.address, website: q.seller.website }} kind="seller" id={q.seller.id} waText={`Hello ${q.seller.companyName}, about my inquiry ${q.refNo} on SHRIJAIV.`} />
+          </div>
           {q.product && (
             <Link href={`/products/${q.product.slug}`} target="_blank" className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-gray-200/70 hover:bg-gray-50">
               <span className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-gray-100">{img && <img src={img} alt="" className="h-full w-full object-cover" />}</span>

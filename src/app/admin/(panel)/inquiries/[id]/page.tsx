@@ -4,12 +4,15 @@ import { ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import Thread from '@/components/dashboard/Thread';
 import { formatDateTime } from '@/lib/utils';
+import { getMarketplace } from '@/lib/marketplace/settings';
+import InquiryChatControls from '@/components/admin/InquiryChatControls';
 
 export default async function AdminInquiry({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const q = await prisma.inquiry.findUnique({ where: { id }, include: { seller: { select: { id: true, companyName: true, slug: true } }, product: { select: { id: true, name: true, slug: true, images: true, priceMin: true, priceMax: true, priceUnit: true, moq: true, inquiryCount: true } }, messages: { orderBy: { createdAt: 'asc' } } } });
   if (!q) notFound();
   await prisma.inquiry.update({ where: { id }, data: { seenByAdmin: true } });
+  const mp = await getMarketplace();
   let img = '';
   try {
     img = (JSON.parse(q.product?.images || '[]') as string[])[0] || '';
@@ -54,6 +57,7 @@ export default async function AdminInquiry({ params }: { params: Promise<{ id: s
           <p className="mt-3 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500">General inquiry (sent from the seller page, no product)</p>
         )}
       </div>
+      <InquiryChatControls id={q.id} directChat={q.directChat} contactUnlocked={q.contactUnlocked} approvalOn={!!mp.approval.messages} pending={JSON.parse(JSON.stringify(q.messages.filter((m) => m.status === 'pending')))} />
       <div className="flex h-[65vh] flex-col overflow-hidden rounded-2xl bg-[#f7fbf8] ring-1 ring-gray-200/70">
         <Thread messages={JSON.parse(JSON.stringify(q.messages))} me="admin" postUrl={`/api/admin/inquiries/${q.id}/messages`} placeholder="Write as the SHRIJAIV team (both sides see this)…" />
       </div>

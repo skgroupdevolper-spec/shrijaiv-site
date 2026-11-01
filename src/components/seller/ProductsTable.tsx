@@ -55,7 +55,8 @@ export default function ProductsTable({ items, status }: { items: any[]; status:
                 </Link>
                 <div className="min-w-0 flex-1">
                   <Link href={`/seller/products/${p.id}`} className="block truncate font-semibold text-gray-900 hover:text-gold-deep">{p.name}</Link>
-                  <p className="truncate text-xs text-gray-500">{p.category?.name || 'No category'} · {priceLabel(p)}{p.moq ? ` · MOQ ${p.moq}` : ''}</p>
+                  <p className="truncate text-xs text-gray-500">{p.category?.name || 'No category'} · {priceLabel(p)}{p.moq ? ` · MOQ ${p.moq}` : ''}{p.availableQty ? ` · ${p.availableQty} available` : ''}</p>
+                  {p.masterId && <p className="text-[0.65rem] font-bold text-emerald-700">Your offer on a catalogue product</p>}
                 </div>
                 <div className="hidden text-right text-xs text-gray-500 sm:block">
                   <p>{p.views} views · {p.inquiryCount} inquiries</p>
