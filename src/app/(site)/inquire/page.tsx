@@ -73,8 +73,8 @@ export default async function InquirePage({ searchParams }: { searchParams: Prom
           <aside className="space-y-4 lg:sticky lg:top-28">
             {[
               [BadgeCheck, t('Verified sellers only'), t('GST, FSSAI and organic certificates checked by our team.')],
-              [Clock, t('Reply within 24 hours'), t('By email, phone or WhatsApp — whatever suits you.')],
-              [ShieldCheck, t('No commission'), t('Deal directly with the seller. Your details are never sold.')],
+              [Clock, t('Reply within 24 hours'), t('Quotes reach you by email and in your dashboard.')],
+              [ShieldCheck, t('Safe & private'), t('Our team forwards your request to the right sellers. Your details are never sold.')],
               [Languages, t('Your language'), t('Write in any of 12 Indian languages.')],
             ].map(([I, h, p]: any) => (
               <div key={h} className="card flex items-start gap-4 p-5">
