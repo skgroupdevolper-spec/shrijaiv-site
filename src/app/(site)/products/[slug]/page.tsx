@@ -322,12 +322,15 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </div>
           </div>
-          <div className="space-y-10">
+          <div className="space-y-8 lg:sticky lg:top-28 lg:self-start">
             {more.length > 0 && (
               <div>
-                <h2 className="font-display text-xl font-semibold text-ink">{t('More from')} {s.companyName}</h2>
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 xl:grid-cols-2">
-                  {more.map((x) => (
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="min-w-0 truncate font-display text-xl font-semibold text-ink">{t('More from')} {s.companyName}</h2>
+                  <SmartLink href={`/sellers/${s.slug}`} className="shrink-0 text-sm font-bold text-gold-deep hover:underline">{t('View all')} →</SmartLink>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+                  {more.slice(0, 2).map((x) => (
                     <ProductCard key={x.id} p={x} compact />
                   ))}
                 </div>
@@ -335,9 +338,12 @@ export default async function ProductPage({ params }: Props) {
             )}
             {related.length > 0 && (
               <div>
-                <h2 className="font-display text-xl font-semibold text-ink">{t('Similar products')}</h2>
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 xl:grid-cols-2">
-                  {related.map((x) => (
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="font-display text-xl font-semibold text-ink">{t('Similar products')}</h2>
+                  <SmartLink href={p.category ? `/category/${p.category.slug}` : '/products'} className="shrink-0 text-sm font-bold text-gold-deep hover:underline">{t('View all')} →</SmartLink>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+                  {related.slice(0, 2).map((x) => (
                     <ProductCard key={x.id} p={x} compact />
                   ))}
                 </div>
