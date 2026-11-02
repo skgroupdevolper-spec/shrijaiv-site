@@ -254,11 +254,11 @@ export async function TrustLogos({ data }: P) {
   const card = (l: { src: string; name: string; url: string }, i: number, hidden: boolean) => {
     const inner = l.src ? (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={l.src} alt={l.name} loading="lazy" className="max-h-[58px] max-w-[130px] object-contain opacity-80 grayscale transition duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0" />
+      <img src={l.src} alt={l.name} loading="lazy" className="max-h-[78px] max-w-[150px] object-contain transition duration-300 group-hover/logo:scale-110 sm:max-h-[88px]" />
     ) : (
       <span className="text-sm font-bold text-ink/60">{l.name}</span>
     );
-    const cls = 'group/logo grid h-[92px] w-[176px] shrink-0 place-items-center rounded-2xl bg-white px-4 ring-1 ring-ink/[0.06] shadow-[0_8px_24px_-16px_rgba(0,60,20,.35)] transition duration-300 hover:-translate-y-1 hover:ring-gold/50 hover:shadow-[0_16px_32px_-18px_rgba(0,90,30,.45)] sm:h-[104px] sm:w-[200px]';
+    const cls = 'group/logo grid h-[100px] w-[180px] shrink-0 place-items-center rounded-2xl bg-white px-4 ring-1 ring-ink/[0.06] shadow-[0_8px_24px_-16px_rgba(0,60,20,.35)] transition duration-300 hover:-translate-y-1 hover:ring-gold/50 hover:shadow-[0_16px_32px_-18px_rgba(0,90,30,.45)] sm:h-[112px] sm:w-[210px]';
     return l.url && !hidden ? (
       <a key={i} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={cls} title={l.name}>{inner}</a>
     ) : (
