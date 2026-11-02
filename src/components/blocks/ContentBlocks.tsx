@@ -8,7 +8,6 @@ import { getI18n } from '@/lib/i18n/server';
 import { cn } from '@/lib/utils';
 import { Btn, Head, Section, gridCols, hasLink, lines, ltrDir, WhatsAppIcon } from './parts';
 import { CalcButton } from './Interactive';
-import { Coin } from '@/components/site/Logo';
 import Slider3D from '@/components/ui/Slider3D';
 
 type P = { data: any; site: SiteSettings };
@@ -703,20 +702,19 @@ export function Cta({ data }: P) {
     <section id={data.anchor || undefined} className="theme-light px-2.5 py-3 sm:px-4 sm:py-5">
       <div className="ink-panel theme-dark mx-auto max-w-[1440px] px-4 py-16 text-center sm:py-24">
         <div className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[44rem] -translate-x-1/2 rounded-full bg-gold/25 blur-[100px]" />
-        <div className="cta-coin [perspective:900px]" aria-hidden>
-          <div className="coin3d !w-full">
-            <span className="coin3d-face coin3d-img">
-              <Coin className="h-full w-full !drop-shadow-none" />
-            </span>
-          </div>
-        </div>
-        <div className="cta-coin left [perspective:900px]" aria-hidden>
-          <div className="coin3d !w-full" style={{ animationDelay: '-4s' }}>
-            <span className="coin3d-face coin3d-img">
-              <Coin className="h-full w-full !drop-shadow-none" />
-            </span>
-          </div>
-        </div>
+        {/* floating organic icons (leaf, sprout, wheat, apple, carrot) */}
+        {[
+          ['leaf', 'cta-bub left-[6%] top-[22%] h-20 w-20', '0s'],
+          ['sprout', 'cta-bub left-[13%] bottom-[16%] h-14 w-14', '-2s'],
+          ['wheat', 'cta-bub right-[6%] top-[18%] h-24 w-24', '-1s'],
+          ['apple', 'cta-bub right-[14%] bottom-[14%] h-16 w-16', '-3s'],
+          ['carrot', 'cta-bub left-[24%] top-[10%] h-11 w-11 opacity-70', '-4s'],
+          ['flower', 'cta-bub right-[25%] top-[8%] h-11 w-11 opacity-70', '-5s'],
+        ].map(([icon, cls, delay]) => (
+          <span key={icon} aria-hidden className={cls} style={{ animationDelay: delay }}>
+            <Icon name={icon} className="h-1/2 w-1/2" />
+          </span>
+        ))}
         <div className="reveal relative mx-auto max-w-3xl">
           <h2 className="h-section !text-[clamp(1.9rem,1.2rem+2.8vw,3.6rem)]">
             {D(data.heading)} {data.accent && <em className="accent">{D(data.accent)}</em>}
