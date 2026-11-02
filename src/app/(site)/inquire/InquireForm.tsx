@@ -1,14 +1,31 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Send, CircleCheck, LoaderCircle } from 'lucide-react';
+import { Send, CircleCheck, LoaderCircle, Check, Search } from 'lucide-react';
+import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/SiteProvider';
 import SmartLink from '@/components/ui/SmartLink';
 
 /** "Inquire Now" (original Inquire Now.html): name, email, phone, country, state, requirement, terms */
-export default function InquireForm({ states, categories, defaultCategory }: { states: string[]; categories: string[]; defaultCategory?: string }) {
+type Cat = { id: string; slug: string; name: string; icon: string | null; ids: string[]; children: { slug: string; name: string }[] };
+type Prod = { id: string; slug: string; name: string; image: string; price: string; moq: string; categoryId: string | null };
+
+export default function InquireForm({ states, categories, products, preset = [] }: { states: string[]; categories: Cat[]; products: Prod[]; preset?: string[] }) {
   const t = useT();
   const path = usePathname();
+  const [cats, setCats] = useState<string[]>(preset);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [q, setQ] = useState('');
+  // products of the chosen categories (sub-categories included), filtered by the search box
+  const shown = useMemo(() => {
+    const ids = new Set(categories.filter((c) => cats.includes(c.id)).flatMap((c) => c.ids));
+    const k = q.trim().toLowerCase();
+    return products.filter((p) => (ids.size ? p.categoryId && ids.has(p.categoryId) : false) || picked.includes(p.id)).filter((p) => !k || p.name.toLowerCase().includes(k) || picked.includes(p.id));
+  }, [cats, q, picked, categories, products]);
+  const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  const catNames = categories.filter((c) => cats.includes(c.id)).map((c) => c.name);
+  const prodNames = products.filter((p) => picked.includes(p.id)).map((p) => p.name);
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle');
   const [error, setError] = useState('');
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -25,8 +42,8 @@ export default function InquireForm({ states, categories, defaultCategory }: { s
           email: f.email,
           phone: f.phone,
           nationality: [f.state, f.country].filter(Boolean).join(', '),
-          service: f.category ? `Inquiry — ${f.category}` : 'General inquiry',
-          message: [f.message, f.quantity ? `Quantity: ${f.quantity}` : '', f.iam ? `I am a: ${f.iam}` : ''].filter(Boolean).join('\n'),
+          service: catNames.length ? `Inquiry — ${catNames.join(', ')}` : 'General inquiry',
+          message: [f.message, prodNames.length ? `Products: ${prodNames.join(', ')}` : '', catNames.length ? `Categories: ${catNames.join(', ')}` : '', f.quantity ? `Quantity: ${f.quantity}` : '', f.iam ? `I am a: ${f.iam}` : ''].filter(Boolean).join('\n'),
           source: path,
           website: f.website,
         }),
@@ -74,19 +91,55 @@ export default function InquireForm({ states, categories, defaultCategory }: { s
           ))}
         </select>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <select name="state" required className="field" defaultValue="">
-          <option value="">{t('Select state')} *</option>
-          {states.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-        <select name="category" className="field" defaultValue={defaultCategory || ''}>
-          <option value="">{t('Category')}</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
+      <select name="state" required className="field" defaultValue="">
+        <option value="">{t('Select state')} *</option>
+        {states.map((s) => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+      <div className="rounded-2xl bg-white p-4 ring-1 ring-ink/10">
+        <p className="text-sm font-bold text-ink">{t('What do you need?')} <span className="font-normal text-ink/50">— {t('choose one or more categories')}</span></p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {categories.map((c) => {
+            const on = cats.includes(c.id);
+            return (
+              <button key={c.id} type="button" onClick={() => setCats(toggle(cats, c.id))} aria-pressed={on} className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.82rem] font-semibold ring-1 transition', on ? 'bg-gold text-white ring-gold' : 'bg-white text-ink/75 ring-ink/10 hover:ring-gold/50')}>
+                {on ? <Check className="h-3.5 w-3.5" /> : <Icon name={c.icon || 'leaf'} className="h-3.5 w-3.5 text-gold-deep" />} {c.name}
+              </button>
+            );
+          })}
+        </div>
+        {(cats.length > 0 || picked.length > 0) && (
+          <div className="mt-4 border-t border-ink/5 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-bold text-ink">{t('Products')} <span className="font-normal text-ink/50">— {t('tick the ones you want')} {picked.length ? `(${picked.length})` : ''}</span></p>
+              <label className="relative">
+                <Search className="pointer-events-none absolute start-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink/40" />
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Search')} className="field !h-9 !w-44 !rounded-full !py-1 !ps-8 text-sm" />
+              </label>
+            </div>
+            {shown.length === 0 ? (
+              <p className="mt-3 rounded-xl bg-ink/5 px-3 py-3 text-sm text-ink/60">{t('No listed products here yet — describe what you need below and our team finds sellers for you.')}</p>
+            ) : (
+              <div className="thin-scroll mt-3 grid max-h-[340px] gap-2 overflow-y-auto pe-1 sm:grid-cols-2">
+                {shown.map((p) => {
+                  const on = picked.includes(p.id);
+                  return (
+                    <button key={p.id} type="button" onClick={() => setPicked(toggle(picked, p.id))} aria-pressed={on} className={cn('flex items-center gap-3 rounded-xl p-2 text-start ring-1 transition', on ? 'bg-gold/10 ring-gold' : 'bg-white ring-ink/10 hover:ring-gold/50')}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      {p.image ? <img src={p.image} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" /> : <span className="h-12 w-12 shrink-0 rounded-lg bg-ink/5" />}
+                      <span className="min-w-0 flex-1">
+                        <span className="line-clamp-2 text-[0.84rem] font-semibold leading-tight text-ink">{p.name}</span>
+                        <span className="block truncate text-[0.72rem] text-ink/55">{p.price}{p.moq ? ` · MOQ ${p.moq}` : ''}</span>
+                      </span>
+                      <span className={cn('grid h-5 w-5 shrink-0 place-items-center rounded-md ring-1', on ? 'bg-gold text-white ring-gold' : 'ring-ink/20')}>{on && <Check className="h-3.5 w-3.5" />}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <input name="quantity" placeholder={t('Quantity (e.g. 500 kg / month)')} className="field" />
       <textarea name="message" required rows={5} placeholder={t('Message for requirement') + ' *'} className="field" />

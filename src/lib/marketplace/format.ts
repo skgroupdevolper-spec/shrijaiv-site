@@ -31,3 +31,10 @@ export function priceLabel(p: { priceMin?: number | null; priceMax?: number | nu
   if (p.priceMin != null && p.priceMax != null && p.priceMax !== p.priceMin) return `${inr(p.priceMin)} – ${inr(p.priceMax)}${unit}`;
   return `${inr(p.priceMin ?? p.priceMax)}${unit}`;
 }
+
+/** Picture for a category card: the admin's own image, else the built-in artwork for the standard categories */
+const CAT_PICS = ['grains-cereals', 'pulses', 'spices-herbs', 'vegetables', 'fruit', 'dairy-products', 'seeds-saplings', 'organic-beauty', 'organic-agriculture', 'organic-processed-food'];
+export function categoryPicture(c: { slug: string; image?: string | null }) {
+  if (c.image && !/\/images\/site\/category\d+\.png$/.test(c.image)) return c.image;
+  return CAT_PICS.includes(c.slug) ? `/images/categories/${c.slug}.webp` : null;
+}

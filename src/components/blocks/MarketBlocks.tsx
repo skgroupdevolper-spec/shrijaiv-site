@@ -1,5 +1,6 @@
 // Marketplace sections for the page builder: hero with search, category grid, featured products,
 // featured sellers, latest buy leads, membership plans and live counters.
+import { categoryPicture } from '@/lib/marketplace/format';
 import { ArrowRight, BadgeCheck, Store, ShoppingBag, Megaphone, Users, Check, Leaf } from 'lucide-react';
 import type { SiteSettings } from '@/lib/defaults';
 import SmartLink from '@/components/ui/SmartLink';
@@ -103,9 +104,14 @@ export async function Categories({ data }: P) {
           {roots.map((c) => (
             <div key={c.id} className="card card-lift tilt reveal flex h-full flex-col overflow-hidden">
               <SmartLink href={`/category/${c.slug}`} className="group block">
-                {c.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.image} alt={c.name} loading="lazy" className="aspect-[16/9] w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                {categoryPicture(c) ? (
+                  <span className="relative block overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={categoryPicture(c)!} alt={c.name} loading="lazy" className="aspect-[16/9] w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]" />
+                    <span className="absolute start-3 top-3 grid h-10 w-10 place-items-center rounded-2xl bg-white/90 text-gold-deep shadow-sm backdrop-blur">
+                      <Icon name={c.icon || 'leaf'} className="h-5 w-5" />
+                    </span>
+                  </span>
                 ) : (
                   <div className="grid aspect-[16/9] place-items-center bg-[linear-gradient(135deg,#f0faf2,#cdeed6)]">
                     <span className="grid h-16 w-16 place-items-center rounded-3xl bg-white text-gold-deep shadow-md transition-transform duration-500 group-hover:scale-110">
@@ -118,7 +124,7 @@ export async function Categories({ data }: P) {
                 <SmartLink href={`/category/${c.slug}`} className="font-display text-xl font-semibold text-ink hover:text-gold-deep">
                   {c.name}
                 </SmartLink>
-                <p className="mt-0.5 text-xs text-ink/50">{c.count} products</p>
+                <p className="mt-0.5 text-xs text-ink/50">{c.count ? `${c.count} products` : "New sellers welcome"}</p>
                 {showSub && c.children.length > 0 && (
                   <ul className="mt-3 flex flex-wrap gap-1.5">
                     {c.children.slice(0, 6).map((s) => (

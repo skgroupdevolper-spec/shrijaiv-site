@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
 import { getCategoryTree } from '@/lib/marketplace/data';
+import { categoryPicture } from '@/lib/marketplace/format';
 import ListingHeader from '@/components/market/ListingHeader';
 import SmartLink from '@/components/ui/SmartLink';
 import { Icon } from '@/components/ui/Icon';
@@ -31,7 +32,13 @@ export default async function CategoriesPage() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {tree.map((c) => (
-                <div key={c.id} className="card card-lift reveal flex flex-col p-5">
+                <div key={c.id} className="card card-lift reveal flex flex-col overflow-hidden p-5">
+                  {categoryPicture(c) && (
+                    <SmartLink href={`/category/${c.slug}`} className="group -mx-5 -mt-5 mb-4 block overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={categoryPicture(c)!} alt={c.name} loading="lazy" className="aspect-[16/9] w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]" />
+                    </SmartLink>
+                  )}
                   <SmartLink href={`/category/${c.slug}`} className="group flex items-center gap-3">
                     <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] text-gold-deep shadow-sm ring-2 ring-white transition group-hover:scale-110">
                       <Icon name={c.icon || 'leaf'} className="h-6 w-6" />

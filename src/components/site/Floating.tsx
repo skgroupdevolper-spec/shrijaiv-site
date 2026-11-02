@@ -50,7 +50,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
   return (
     <>
       {/* "Post a requirement" tab on the side (desktop) */}
-      <SmartLink href="/post-requirement" className="glass fixed end-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 rounded-s-2xl px-2.5 py-4 text-[0.72rem] font-medium text-[#1d1d1f] transition hover:pe-4 lg:flex" ariaLabel={t('Post a requirement')}>
+      <SmartLink href="/inquire" className="glass fixed end-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 rounded-s-2xl px-2.5 py-4 text-[0.72rem] font-medium text-[#1d1d1f] transition hover:pe-4 lg:flex" ariaLabel={t('Post a requirement')}>
         <span className="grid h-9 w-9 place-items-center rounded-xl text-white" style={{ background: 'var(--gold-grad)' }}>
           <Megaphone className="h-4 w-4" />
         </span>
@@ -99,7 +99,7 @@ export default function Floating({ site }: { site: SiteSettings }) {
             <LayoutGrid className="h-[21px] w-[21px]" />
             <span>{t('Categories')}</span>
           </button>
-          <SmartLink href="/post-requirement" className="mnav-cta" ariaLabel={t('Post a requirement')}>
+          <SmartLink href="/inquire" className="mnav-cta" ariaLabel={t('Post a requirement')}>
             <i>
               <Megaphone className="h-5 w-5" />
             </i>

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { BadgeCheck, Clock, Languages, ShieldCheck } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
-import { getCategoryTree, INDIAN_STATES, getProduct, images, priceLabel } from '@/lib/marketplace/data';
+import { getCategoryTree, INDIAN_STATES, getProduct, images, priceLabel, LIVE_PRODUCT, CATALOGUE_ONLY } from '@/lib/marketplace/data';
+import { prisma } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import InquiryForm from '@/components/market/InquiryForm';
 import { Rating } from '@/components/market/Rating';
@@ -56,14 +57,18 @@ export default async function InquirePage({ searchParams }: { searchParams: Prom
     );
   }
   const tree = await getCategoryTree().catch(() => []);
-  const cats = tree.flatMap((c) => [c.name, ...c.children.map((x) => x.name)]);
+  const cats = tree.map((c) => ({ id: c.id, slug: c.slug, name: c.name, icon: c.icon, ids: [c.id, ...c.children.map((x) => x.id)], children: c.children.map((x) => ({ slug: x.slug, name: x.name })) }));
+  // one entry per catalogue product (other sellers' offers are reached through it)
+  const rows = await prisma.product.findMany({ where: { ...LIVE_PRODUCT, ...CATALOGUE_ONLY }, orderBy: [{ featured: 'desc' }, { inquiryCount: 'desc' }], take: 400, select: { id: true, slug: true, name: true, images: true, priceMin: true, priceMax: true, priceUnit: true, categoryId: true, moq: true } });
+  const products = rows.map((r) => ({ id: r.id, slug: r.slug, name: r.name, image: images(r.images)[0] || '', price: priceLabel(r), moq: r.moq || '', categoryId: r.categoryId }));
+  const preset = cat ? cats.filter((c) => c.slug === cat || c.children.some((x) => x.slug === cat)).map((c) => c.id) : [];
   return (
     <>
       <ListingHeader compact crumbs={[{ label: t('Inquire Now') }]} eyebrow={t('Free for buyers')} title={t('Inquire Now')} lead={t('Tell us what you need — our team connects you with verified organic sellers and replies within 24 hours.')} />
       <section className="section theme-sand !pt-6">
         <div className="container-x grid items-start gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div className="card p-6 sm:p-8">
-            <InquireForm states={[...INDIAN_STATES]} categories={cats} defaultCategory={cats.find((c) => c.toLowerCase().replace(/[^a-z]+/g, '-') === cat)} />
+            <InquireForm states={[...INDIAN_STATES]} categories={cats} products={products} preset={preset} />
           </div>
           <aside className="space-y-4 lg:sticky lg:top-28">
             {[
