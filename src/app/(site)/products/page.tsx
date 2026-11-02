@@ -89,15 +89,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: SP 
               <Pagination page={res.page} pages={res.pages} base="/products" params={sp} />
             </Filters>
           </Suspense>
-          {/* "All your need please inquire here" + offer banner (original Buyer page) */}
-          <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-[1.4fr_1fr]">
-            <div className="card p-6 sm:p-8">
-              <ContactAdminForm subject="Sourcing inquiry (Shop page)" title={t('All your needs — please inquire here')} />
-            </div>
-            <SmartLink href="/pricing" className="tilt group relative block overflow-hidden rounded-[24px] shadow-lg" data-tilt="4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/demo/ad-square-brand.webp" alt={t('Advertise on SHRIJAIV')} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-            </SmartLink>
+          {/* "All your need please inquire here" (original Buyer page) */}
+          <div className="card mt-12 p-6 sm:p-8">
+            <ContactAdminForm subject="Sourcing inquiry (Shop page)" title={t('All your needs — please inquire here')} />
           </div>
         </div>
       </section>

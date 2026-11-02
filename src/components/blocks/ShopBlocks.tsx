@@ -204,11 +204,11 @@ export function AdBanner({ data }: P) {
   if (!data.image) return null;
   const inner = (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={data.image} alt={data.alt || ''} loading="lazy" className="w-full rounded-2xl object-cover shadow-lg transition-transform duration-500 hover:scale-[1.01]" style={{ maxHeight: data.height ? `${data.height}px` : undefined }} />
+    <img src={data.image} alt={data.alt || ''} loading="lazy" className="block w-full rounded-[22px] object-cover shadow-lg transition-transform duration-500 hover:scale-[1.005]" style={{ maxHeight: data.height ? `${data.height}px` : undefined }} />
   );
   return (
     <section id={data.anchor || undefined} className="theme-light py-6">
-      <div className={cn('container-x reveal', data.narrow !== false && 'max-w-5xl')}>{hasLink(data.link) ? <SmartLink href={data.link.href}>{inner}</SmartLink> : inner}</div>
+      <div className="container-x reveal">{hasLink(data.link) ? <SmartLink href={data.link.href} className="block">{inner}</SmartLink> : inner}</div>
     </section>
   );
 }

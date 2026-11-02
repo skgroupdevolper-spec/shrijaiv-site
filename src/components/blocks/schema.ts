@@ -149,8 +149,8 @@ export const BLOCKS: BlockSchema[] = [
     label: 'Ad banner (image)',
     description: 'A wide promotional image with an optional link',
     group: 'Marketplace',
-    fields: [{ name: 'image', label: 'Image', type: 'image' }, { name: 'alt', label: 'Image description', type: 'text' }, link('link', 'Link'), { name: 'height', label: 'Max height (px)', type: 'number', half: true }, { name: 'narrow', label: 'Narrow (centered)', type: 'boolean', half: true }],
-    defaults: { narrow: true },
+    fields: [{ name: 'image', label: 'Image', type: 'image' }, { name: 'alt', label: 'Image description', type: 'text' }, link('link', 'Link'), { name: 'height', label: 'Max height (px)', type: 'number', half: true }],
+    defaults: {},
   },
   {
     type: 'regions',
