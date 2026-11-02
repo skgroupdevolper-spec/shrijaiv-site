@@ -1,0 +1,12 @@
+{
+ "swap": {
+  "/images/site/about-2024.png": "/images/demo/est-2024.webp",
+  "/images/site/do.png": "/images/demo/what-we-do.webp",
+  "/images/site/about-icon1.png": "/images/demo/icon-verified.webp",
+  "/images/site/about-icon2.png": "/images/demo/icon-inquiries.webp",
+  "/images/site/about-icon3.png": "/images/demo/icon-growth.webp",
+  "Direct buyer–seller contact": "Safe buyer–seller contact",
+  "Inquiries, quotes and chat go straight between you — no middlemen, no commission.": "Our team forwards every inquiry and quote, and contact details are shared safely — no commission.",
+  "Inquiries, quotes and chat go directly between you.": "Our team forwards inquiries and quotes; chat safely in your dashboard."
+ }
+}

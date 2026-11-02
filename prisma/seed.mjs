@@ -234,6 +234,20 @@ async function runUpgrades() {
     await mark('clear-images-v2');
     console.log('✔ Upgrade: sharp icons, illustrations and showroom banners');
   }
+  if (!done.has('clear-images-v3')) {
+    // About / How it works: sharp icons and pictures, and wording that matches the admin-first flow
+    const { swap: MAP } = JSON.parse(readFileSync(path.join(__dirname, 'image-upgrade-3.json'), 'utf8'));
+    const swap = (t) => Object.entries(MAP).reduce((acc, [a, b]) => acc.split(a).join(b), t || '');
+    for (const pg of await prisma.page.findMany({ select: { id: true, blocks: true } })) {
+      const b = swap(pg.blocks);
+      if (b !== pg.blocks) await prisma.page.update({ where: { id: pg.id }, data: { blocks: b } });
+    }
+    for (const tr of await prisma.translation.findMany({ where: { entity: 'page' }, select: { id: true, data: true, status: true } })) {
+      const d = swap(tr.data);
+      if (d !== tr.data) await prisma.translation.update({ where: { id: tr.id }, data: { data: d, status: tr.status === 'edited' ? tr.status : 'outdated' } });
+    }
+    await mark('clear-images-v3');
+  }
   if (!done.has('remove-app')) {
     // the install-app bar and the app welcome screen were removed
     await edit('app', (a) => ({ ...a, enabled: false, installBar: false, splash: false }));
