@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays, ChevronLeft, MessageCircle, Send, ChevronRight } from 'lucide-react';
+import { BadgeCheck, MapPin, Package, Truck, ShieldCheck, Clock, Tag, Building2, FileCheck2, Users, CalendarDays, MessageCircle, Send, ChevronRight } from 'lucide-react';
 import { getI18n } from '@/lib/i18n/server';
 import { getProduct, listProducts, productSellers, images, priceLabel } from '@/lib/marketplace/data';
 import { sellerContactAccess } from '@/lib/marketplace/unlocks';
@@ -10,6 +10,7 @@ import { prisma } from '@/lib/db';
 import { getMarketplace } from '@/lib/marketplace/settings';
 import { absUrl } from '@/lib/seo';
 import Gallery from '@/components/market/Gallery';
+import Breadcrumbs from '@/components/market/Breadcrumbs';
 import InquiryForm from '@/components/market/InquiryForm';
 import ReviewForm from '@/components/market/ReviewForm';
 import ProductCard from '@/components/market/ProductCard';
@@ -76,23 +77,8 @@ export default async function ProductPage({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* slim breadcrumb (all screens) — the product itself starts right below the header */}
-      <div className="pdp-top container-x pb-3 pt-[6.6rem] sm:pt-[7.4rem]">
-        <SmartLink href={p.category ? `/category/${p.category.slug}` : '/products'} className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[0.8rem] font-semibold text-ink shadow-sm ring-1 ring-ink/5 sm:hidden">
-          <ChevronLeft className="h-4 w-4" /> {p.category?.name || t('Products')}
-        </SmartLink>
-        <nav aria-label="Breadcrumb" className="hidden flex-wrap items-center gap-1.5 text-[0.82rem] text-ink/55 sm:flex">
-          <SmartLink href="/" className="hover:text-ink">{t('Home')}</SmartLink>
-          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-          <SmartLink href="/products" className="hover:text-ink">{t('Products')}</SmartLink>
-          {p.category && (
-            <>
-              <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-              <SmartLink href={`/category/${p.category.slug}`} className="hover:text-ink">{p.category.name}</SmartLink>
-            </>
-          )}
-          <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-          <span className="line-clamp-1 text-ink">{p.name}</span>
-        </nav>
+      <div className="pdp-top container-x pb-3 pt-[7.4rem] sm:pt-[8.2rem]">
+        <Breadcrumbs crumbs={[{ label: t('Products'), href: '/products' }, ...(p.category ? [{ label: p.category.name, href: `/category/${p.category.slug}` }] : []), { label: p.name }]} />
       </div>
       <section className="pdp theme-sand pb-28 pt-1 sm:pb-24 lg:pt-3">
         <div className="container-x grid items-start gap-6 sm:gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12 [&>*]:min-w-0">

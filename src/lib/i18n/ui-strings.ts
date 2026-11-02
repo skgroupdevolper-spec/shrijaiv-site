@@ -8,8 +8,6 @@ export const UI_STRINGS: string[] = [
   "Account",
   "Address",
   "Admin",
-  "Advertise on SHRIJAIV",
-  "Advertise your organic business on SHRIJAIV",
   "AI assistant · replies instantly",
   "All",
   "All buyers",

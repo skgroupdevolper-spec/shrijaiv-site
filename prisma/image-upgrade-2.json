@@ -1,0 +1,21 @@
+{
+ "swap": {
+  "/images/site/veryfy.png": "/images/demo/icon-verified.webp",
+  "/images/site/inquire.png": "/images/demo/icon-inquiries.webp",
+  "/images/site/verinty.png": "/images/demo/icon-payments.webp",
+  "/images/site/call-center-pana-1.png": "/images/demo/help-desk.webp",
+  "/images/site/group-chat-pana-2.png": "/images/demo/support-chat.webp",
+  "/images/site/telecommuting-pana-1.png": "/images/demo/sell-online.webp",
+  "/images/site/online-review-pana-2.png": "/images/demo/buyer-compare.webp"
+ },
+ "sellerBanners": {
+  "/images/site/banner-1.png": "/images/demo/seller-farm.webp",
+  "/images/site/banner-2.png": "/images/demo/seller-beauty.webp",
+  "/images/site/banner-3.png": "/images/demo/seller-foods.webp",
+  "/images/site/banner-4.png": "/images/demo/seller-spices.webp",
+  "/images/demo/box-vegetables.webp": "/images/demo/seller-farm.webp",
+  "/images/demo/box-grains.webp": "/images/demo/seller-beauty.webp",
+  "/images/demo/box-fruits.webp": "/images/demo/seller-foods.webp",
+  "/images/demo/box-dairy.webp": "/images/demo/seller-spices.webp"
+ }
+}

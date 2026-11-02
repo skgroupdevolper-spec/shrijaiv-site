@@ -59,7 +59,7 @@ export default async function SellerPage({ params }: Props) {
             <div className="h-44 bg-[linear-gradient(135deg,#0f6b2f,#009a35_60%,#8fdba6)] sm:h-56">
               {s.banner && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={s.banner} alt="" className="h-full w-full object-cover" />
+                <img src={s.banner} alt="" className="h-full w-full object-cover object-[72%_50%]" />
               )}
             </div>
             <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-end sm:p-7">

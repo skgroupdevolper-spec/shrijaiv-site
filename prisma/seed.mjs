@@ -213,6 +213,27 @@ async function runUpgrades() {
     await mark('clear-images-v1');
     console.log('✔ Upgrade: sharp product and banner images');
   }
+  if (!done.has('clear-images-v2')) {
+    // info-block illustrations, icons and seller showroom banners → sharp artwork
+    const { swap: MAP, sellerBanners } = JSON.parse(readFileSync(path.join(__dirname, 'image-upgrade-2.json'), 'utf8'));
+    const swap = (t) => Object.entries(MAP).reduce((acc, [a, b]) => acc.split(a).join(b), t || '');
+    for (const pg of await prisma.page.findMany({ select: { id: true, blocks: true } })) {
+      const b = swap(pg.blocks);
+      if (b !== pg.blocks) await prisma.page.update({ where: { id: pg.id }, data: { blocks: b } });
+    }
+    for (const st of await prisma.setting.findMany()) {
+      const v = swap(st.value);
+      if (v !== st.value) await prisma.setting.update({ where: { key: st.key }, data: { value: v } });
+    }
+    for (const tr of await prisma.translation.findMany({ where: { entity: { in: ['page', 'settings'] } }, select: { id: true, data: true } })) {
+      const d = swap(tr.data);
+      if (d !== tr.data) await prisma.translation.update({ where: { id: tr.id }, data: { data: d } });
+    }
+    for (const sp of await prisma.sellerProfile.findMany({ where: { banner: { in: Object.keys(sellerBanners) } }, select: { id: true, banner: true } }))
+      await prisma.sellerProfile.update({ where: { id: sp.id }, data: { banner: sellerBanners[sp.banner] } });
+    await mark('clear-images-v2');
+    console.log('✔ Upgrade: sharp icons, illustrations and showroom banners');
+  }
   if (!done.has('remove-app')) {
     // the install-app bar and the app welcome screen were removed
     await edit('app', (a) => ({ ...a, enabled: false, installBar: false, splash: false }));

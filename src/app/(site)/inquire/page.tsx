@@ -81,7 +81,7 @@ export default async function InquirePage({ searchParams }: { searchParams: Prom
               </div>
             ))}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/site/inquire.png" alt="" className="mx-auto w-full max-w-sm" loading="lazy" />
+            <img src="/images/demo/icon-inquiries.webp" alt="" className="mx-auto w-full max-w-sm" loading="lazy" />
           </aside>
         </div>
       </section>
