@@ -34,9 +34,9 @@ export const defaultApp: AppSettings = {
   splashText: "India's organic B2B marketplace — verified sellers, buy leads and direct deals.",
   splashBg: '#0B6B2C',
   splashSlides: [
-    { image: '/images/site/slider-01.webp', title: 'Buy organic in bulk', text: 'Verified sellers of agriculture, beauty and food.' },
-    { image: '/images/site/slider-02.webp', title: 'Sell to all of India', text: 'Free showroom, inquiries on WhatsApp and email.' },
-    { image: '/images/site/banner-6.webp', title: 'Post what you need', text: 'Sellers send quotes to your dashboard.' },
+    { image: '/images/demo/hero-seller.webp', title: 'Buy organic in bulk', text: 'Verified sellers of agriculture, beauty and food.' },
+    { image: '/images/demo/hero-buyer.webp', title: 'Sell to all of India', text: 'Free showroom, inquiries on WhatsApp and email.' },
+    { image: '/images/demo/wide-honey.webp', title: 'Post what you need', text: 'Sellers send quotes to your dashboard.' },
   ],
   splashSeconds: 4,
   showGoogle: true,

@@ -185,6 +185,34 @@ async function runUpgrades() {
     await mark('main-categories-v1');
     console.log('✔ Upgrade: main categories Cereals, Pulses, Spices, Vegetables, Fruits, Dairy Products, Seeds, Beauty Products');
   }
+  if (!done.has('clear-images-v1')) {
+    // the small, blurry images of the old site → new sharp 2× artwork (products, slider, buyer boxes, banners)
+    const MAP = JSON.parse(readFileSync(path.join(__dirname, 'image-upgrade.json'), 'utf8'));
+    const DROP = new Set(['/images/site/p1.png', '/images/site/p2.png', '/images/site/p3.png']);
+    const swap = (t) => Object.entries(MAP).reduce((acc, [a, b]) => acc.split(a).join(b), t);
+    const products = await prisma.product.findMany({ select: { id: true, images: true } });
+    for (const p of products) {
+      let list = [];
+      try { list = JSON.parse(p.images || '[]'); } catch {}
+      const next = [...new Set(list.filter((x) => !DROP.has(x)).map((x) => MAP[x] || x))];
+      if (JSON.stringify(next) !== JSON.stringify(list)) await prisma.product.update({ where: { id: p.id }, data: { images: JSON.stringify(next) } });
+    }
+    for (const pg of await prisma.page.findMany({ select: { id: true, blocks: true } })) {
+      const b = swap(pg.blocks);
+      if (b !== pg.blocks) await prisma.page.update({ where: { id: pg.id }, data: { blocks: b } });
+    }
+    for (const st of await prisma.setting.findMany()) {
+      const v = swap(st.value);
+      if (v !== st.value) await prisma.setting.update({ where: { key: st.key }, data: { value: v } });
+    }
+    // translated copies of pages hold the same image paths
+    for (const tr of await prisma.translation.findMany({ where: { entity: { in: ['page', 'settings'] } }, select: { id: true, data: true } })) {
+      const d = swap(tr.data);
+      if (d !== tr.data) await prisma.translation.update({ where: { id: tr.id }, data: { data: d } });
+    }
+    await mark('clear-images-v1');
+    console.log('✔ Upgrade: sharp product and banner images');
+  }
   if (!done.has('remove-app')) {
     // the install-app bar and the app welcome screen were removed
     await edit('app', (a) => ({ ...a, enabled: false, installBar: false, splash: false }));

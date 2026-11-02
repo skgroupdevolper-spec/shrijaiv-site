@@ -247,25 +247,42 @@ export async function TrustLogos({ data }: P) {
   const custom = lines(data.images);
   const logos = items.length ? items.map((p: any) => ({ src: p.logo, name: p.name, url: p.url })) : custom.map((src, i) => ({ src, name: `Partner ${i + 1}`, url: '' }));
   if (!logos.length) return null;
-  const loop = [...logos, ...logos];
+  // enough cards to fill wide screens, then doubled for a seamless loop
+  let base = [...logos];
+  while (base.length < 10) base = [...base, ...logos];
+  const loop = [...base, ...base];
+  const card = (l: { src: string; name: string; url: string }, i: number, hidden: boolean) => {
+    const inner = l.src ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={l.src} alt={l.name} loading="lazy" className="max-h-[58px] max-w-[130px] object-contain opacity-80 grayscale transition duration-300 group-hover/logo:opacity-100 group-hover/logo:grayscale-0" />
+    ) : (
+      <span className="text-sm font-bold text-ink/60">{l.name}</span>
+    );
+    const cls = 'group/logo grid h-[92px] w-[176px] shrink-0 place-items-center rounded-2xl bg-white px-4 ring-1 ring-ink/[0.06] shadow-[0_8px_24px_-16px_rgba(0,60,20,.35)] transition duration-300 hover:-translate-y-1 hover:ring-gold/50 hover:shadow-[0_16px_32px_-18px_rgba(0,90,30,.45)] sm:h-[104px] sm:w-[200px]';
+    return l.url && !hidden ? (
+      <a key={i} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={cls} title={l.name}>{inner}</a>
+    ) : (
+      <span key={i} aria-hidden={hidden || undefined} className={cls} title={l.name}>{inner}</span>
+    );
+  };
   return (
     <Section data={data} tight>
       <div className="container-x">
         <RowHead title={data.heading || '1.2 million businesses trust us'} href={data.cta?.href} label={data.cta?.label} />
       </div>
-      <div className="marquee-mask hover-pause relative overflow-hidden">
-        <div className="animate-marquee flex w-max gap-6 px-4">
-          {loop.map((l, i) => (
-            <span key={i} aria-hidden={i >= logos.length || undefined} className="tilt grid h-36 w-36 shrink-0 place-items-center rounded-full border border-ink/10 bg-white shadow-[0_10px_30px_-18px_rgba(0,0,0,.35)] transition hover:border-gold">
-              {l.src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={l.src} alt={l.name} loading="lazy" className="h-24 w-24 rounded-full object-contain" />
-              ) : (
-                <span className="text-sm font-bold text-ink/60">{l.name}</span>
-              )}
-            </span>
-          ))}
+      <div className="relative">
+        <div className="marquee-mask hover-pause relative overflow-hidden py-3">
+          <div className="animate-marquee flex w-max gap-4 px-2 sm:gap-5" style={{ animationDuration: `${Math.max(30, base.length * 4)}s` }}>
+            {loop.map((l, i) => card(l, i, i >= base.length))}
+          </div>
         </div>
+        {logos.length >= 4 && (
+          <div className="marquee-mask hover-pause relative hidden overflow-hidden py-3 md:block">
+            <div className="animate-marquee flex w-max gap-5 px-2" style={{ animationDuration: `${Math.max(36, base.length * 5)}s`, animationDirection: 'reverse' }}>
+              {[...loop].reverse().map((l, i) => card(l, 1000 + i, i < base.length))}
+            </div>
+          </div>
+        )}
       </div>
     </Section>
   );

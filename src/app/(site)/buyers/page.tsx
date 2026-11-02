@@ -16,7 +16,7 @@ import { WantedCards } from '@/components/blocks/ShopBlocks';
 import { Users, Store } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
-const BOX_IMAGES = ['/images/site/banner-3.png', '/images/site/banner-1.png', '/images/site/banner-2.png', '/images/site/banner-4.png', '/images/site/banner-5.png', '/images/site/banner-6.webp', '/images/site/banner-7.webp'];
+const BOX_IMAGES = ['/images/demo/box-fruits.webp', '/images/demo/box-vegetables.webp', '/images/demo/box-grains.webp', '/images/demo/box-dairy.webp', '/images/demo/wide-spices.webp', '/images/demo/wide-honey.webp', '/images/demo/wide-tea.webp'];
 type SP = Promise<Record<string, string | undefined>>;
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -141,12 +141,12 @@ export default async function BuyersPage({ searchParams }: { searchParams: SP })
           </Suspense>
         </div>
       </section>
-      <WantedCards data={{ theme: 'light', heading: t('Latest buy leads'), layout: 'wide', limit: 2, samples: false, cta: { label: t('View all'), href: '/requirements' }, images: '/images/site/banner-6.webp\n/images/site/banner-7.webp' }} site={undefined as any} />
+      <WantedCards data={{ theme: 'light', heading: t('Latest buy leads'), layout: 'wide', limit: 2, samples: false, cta: { label: t('View all'), href: '/requirements' }, images: '/images/demo/wide-honey.webp\n/images/demo/wide-tea.webp' }} site={undefined as any} />
       <section className="theme-light pb-14">
         <div className="container-x">
           <div className="relative overflow-hidden rounded-[26px] bg-[linear-gradient(120deg,#0f3d22,#1d6b3a)] p-7 text-white sm:p-10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/site/banner-4.png" alt="" className="pointer-events-none absolute -bottom-6 right-0 hidden h-[115%] w-auto object-contain opacity-90 md:block" />
+            <img src="/images/demo/cta-produce.webp" alt="" className="pointer-events-none absolute -bottom-4 right-4 hidden h-[110%] w-auto object-contain md:block" />
             <div className="relative max-w-xl">
               <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-amber-300">{t('For sellers')}</p>
               <p className="mt-2 font-display text-2xl font-semibold leading-tight sm:text-3xl">{t('Sell to these buyers')}</p>

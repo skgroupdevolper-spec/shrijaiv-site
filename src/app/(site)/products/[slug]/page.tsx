@@ -345,7 +345,7 @@ export default async function ProductPage({ params }: Props) {
             )}
             <SmartLink href="/pricing" className="tilt card card-lift block overflow-hidden" data-tilt="4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/site/ad-square.png" alt={t('Advertise your organic business on SHRIJAIV')} className="aspect-square w-full object-cover" />
+              <img src="/images/demo/ad-square-brand.webp" alt={t('Advertise your organic business on SHRIJAIV')} className="aspect-square w-full object-cover" />
             </SmartLink>
           </div>
         </div>

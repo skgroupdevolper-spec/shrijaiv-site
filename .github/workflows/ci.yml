@@ -156,6 +156,8 @@ jobs:
           check "/products/$OSLUG" 200
           if curl -s "http://localhost:3000/products?q=turmeric" | grep -q "href=\"/products/$OSLUG\""; then echo "::error title=Check failed::offer listed as its own card"; exit 1; fi; echo "one card per catalogue product"
           check /buyers 200
+          check /images/demo/hero-buyer.webp 200
+          if curl -s http://localhost:3000/ | grep -q '/images/site/product\|/images/site/banner-\|/images/site/slider-'; then echo "::error title=Check failed::old blurry images still on the home page"; exit 1; fi; echo "sharp images on the home page"
           # Forward inquiry: one inquiry to more than one seller (each gets an own copy)
           curl -sf -b cookies.txt -X POST http://localhost:3000/api/admin/review -H 'Content-Type: application/json' -d "{\"kind\":\"inquiry\",\"id\":\"${IQ%% *}\",\"action\":\"forward-more\",\"sellerIds\":[\"$S2\"]}" | grep -q 'Hill Organics'
           N2=$(curl -sf -b seller2.txt http://localhost:3000/api/seller/inquiries | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).items.length))"); echo "inquiries for the second seller: $N2"; [ "$N2" = "1" ]

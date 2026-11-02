@@ -39,6 +39,7 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
   const [cats, setCats] = useState(false);
   const [catOpen, setCatOpen] = useState<string | null>(null);
   const [drop, setDrop] = useState<number | null>(null);
+  const [megaCat, setMegaCat] = useState(0);
   const [me, setMe] = useState<Me>(null);
   const closeTimer = useRef<number | null>(null);
 
@@ -233,50 +234,86 @@ export default function Header({ site, header, categories = [] }: { site: SiteSe
             </button>
           </div>
 
-          {/* categories mega menu (from Admin → Categories) */}
-          {hasCats && drop !== null && isMega(header.menu[drop]?.href) && (
-            <div className="absolute inset-x-0 top-full hidden pt-3 lg:block" onMouseEnter={() => enter(drop)}>
-              <div className="glass-menu mega-panel rounded-[24px] p-5">
-                <div className={cn('grid gap-4', categories.length >= 3 ? 'grid-cols-3' : 'grid-cols-2')}>
-                  {categories.map((g) => (
-                    <div key={g.slug} className="min-w-0 rounded-2xl bg-[linear-gradient(160deg,#f6fbf7,#eef6f0)] p-4 ring-1 ring-black/[0.04]">
-                      <SmartLink href={`/category/${g.slug}`} onClick={() => setDrop(null)} className="group flex items-center gap-3">
-                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition group-hover:scale-105">
-                          <CatVisual c={g} className="h-7 w-7 text-gold-deep" />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block truncate font-display text-[1.02rem] font-semibold text-ink">{g.name}</span>
-                          <span className="block text-xs text-ink/50">{g.count ? `${g.count} ${t('products')}` : t('View category')}</span>
-                        </span>
-                      </SmartLink>
-                      <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-0.5">
-                        {g.children.slice(0, 10).map((c) => (
-                          <li key={c.slug}>
-                            <SmartLink href={`/category/${c.slug}`} onClick={() => setDrop(null)} className="group flex items-center gap-2 rounded-xl px-2 py-1.5 text-[0.84rem] text-ink/80 transition-colors hover:bg-white hover:text-gold-deep">
-                              <CatVisual c={c} className="h-4 w-4 shrink-0 text-gold-deep transition-transform group-hover:scale-110" />
-                              <span className="truncate">{c.name}</span>
-                            </SmartLink>
-                          </li>
-                        ))}
-                      </ul>
-                      {g.children.length > 10 && (
-                        <SmartLink href={`/category/${g.slug}`} onClick={() => setDrop(null)} className="mt-2 inline-flex items-center gap-1 px-2 text-xs font-bold text-gold-deep">
-                          {t('All')} {g.name} <ChevronRight className="h-3.5 w-3.5" />
+          {/* categories mega menu (from Admin → Categories): main categories on the left, the hovered one on the right */}
+          {hasCats && drop !== null && isMega(header.menu[drop]?.href) && (() => {
+            const cur = categories[Math.min(megaCat, categories.length - 1)];
+            return (
+              <div className="absolute inset-x-0 top-full hidden justify-center pt-3 lg:flex" onMouseEnter={() => enter(drop)}>
+                <div className="glass-menu mega-panel grid w-full max-w-[980px] grid-cols-[290px_1fr] overflow-hidden rounded-[24px] p-0">
+                  <ul className="thin-scroll max-h-[min(440px,calc(100vh-170px))] overflow-y-auto border-e border-black/[0.06] bg-white/60 p-2">
+                    {categories.map((g, i) => (
+                      <li key={g.slug} onMouseEnter={() => setMegaCat(i)} onFocus={() => setMegaCat(i)}>
+                        <SmartLink
+                          href={`/category/${g.slug}`}
+                          onClick={() => setDrop(null)}
+                          className={cn('group flex items-center gap-3 rounded-xl px-3 py-2 transition-colors', i === megaCat ? 'bg-[linear-gradient(135deg,#ecf8ef,#ddf1e2)] text-gold-deep' : 'text-ink/80 hover:bg-black/[0.03]')}
+                        >
+                          <span className={cn('grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 transition', i === megaCat ? 'bg-white ring-gold/30' : 'bg-white/80 ring-black/5')}>
+                            <CatVisual c={g} className="h-5 w-5 text-gold-deep" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[0.92rem] font-semibold">{g.name}</span>
+                            <span className="block text-[0.7rem] text-ink/45">{g.count ? `${g.count} ${t('products')}` : t('View category')}</span>
+                          </span>
+                          {g.children.length > 0 && <ChevronRight className={cn('h-4 w-4 shrink-0 transition', i === megaCat ? 'translate-x-0.5 opacity-80' : 'opacity-30')} />}
                         </SmartLink>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
-                  <p className="text-sm text-ink/60">{t('Verified GST, FSSAI & organic certificates · Direct contact, no commission')}</p>
-                  <div className="flex gap-2">
-                    <SmartLink href="/products" onClick={() => setDrop(null)} className="btn btn-dark btn-sm">{t('All products')} <ArrowRight className="h-4 w-4" /></SmartLink>
-                    <SmartLink href="/sellers" onClick={() => setDrop(null)} className="btn btn-outline btn-sm"><Store className="h-4 w-4" /> {t('All sellers')}</SmartLink>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex min-h-[300px] flex-col p-6">
+                    {cur && (
+                      <>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <span className="grid h-14 w-14 place-items-center rounded-2xl bg-[linear-gradient(135deg,#eaf7ee,#cdeed6)] ring-2 ring-white shadow-sm">
+                              <CatVisual c={cur} className="h-8 w-8 text-gold-deep" />
+                            </span>
+                            <div>
+                              <p className="font-display text-[1.35rem] font-semibold leading-tight text-ink">{cur.name}</p>
+                              <p className="text-sm text-ink/55">{cur.count ? `${cur.count} ${t('products')} · ${t('verified sellers')}` : t('Verified organic sellers across India')}</p>
+                            </div>
+                          </div>
+                          <SmartLink href={`/category/${cur.slug}`} onClick={() => setDrop(null)} className="btn btn-dark btn-sm shrink-0">
+                            {t('View all')} <ArrowRight className="h-4 w-4" />
+                          </SmartLink>
+                        </div>
+                        {cur.children.length > 0 ? (
+                          <div className="mt-5 grid grid-cols-2 gap-2 xl:grid-cols-3">
+                            {cur.children.slice(0, 12).map((c) => (
+                              <SmartLink key={c.slug} href={`/category/${c.slug}`} onClick={() => setDrop(null)} className="group flex items-center gap-2.5 rounded-xl bg-white/70 px-3 py-2.5 text-[0.88rem] font-medium text-ink/80 ring-1 ring-black/[0.05] transition hover:-translate-y-0.5 hover:bg-white hover:text-gold-deep hover:ring-gold/40">
+                                <CatVisual c={c} className="h-[18px] w-[18px] shrink-0 text-gold-deep transition-transform group-hover:scale-110" />
+                                <span className="truncate">{c.name}</span>
+                              </SmartLink>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="mt-5 grid grid-cols-2 gap-3">
+                            <SmartLink href={`/category/${cur.slug}`} onClick={() => setDrop(null)} className="rounded-2xl bg-white/70 p-4 ring-1 ring-black/[0.05] transition hover:ring-gold/40">
+                              <ShoppingBag className="h-5 w-5 text-gold-deep" />
+                              <p className="mt-2 font-semibold text-ink">{t('Browse products')}</p>
+                              <p className="text-xs text-ink/55">{t('Compare prices, MOQ and sellers')}</p>
+                            </SmartLink>
+                            <SmartLink href={`/post-requirement`} onClick={() => setDrop(null)} className="rounded-2xl bg-white/70 p-4 ring-1 ring-black/[0.05] transition hover:ring-gold/40">
+                              <Megaphone className="h-5 w-5 text-gold-deep" />
+                              <p className="mt-2 font-semibold text-ink">{t('Post a requirement')}</p>
+                              <p className="text-xs text-ink/55">{t('Sellers send you quotes')}</p>
+                            </SmartLink>
+                          </div>
+                        )}
+                        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-black/[0.06] pt-4">
+                          <p className="text-[0.8rem] text-ink/55">{t('Verified GST, FSSAI & organic certificates · Direct contact, no commission')}</p>
+                          <div className="flex gap-2">
+                            <SmartLink href="/categories" onClick={() => setDrop(null)} className="btn btn-outline btn-sm"><LayoutGrid className="h-4 w-4" /> {t('All categories')}</SmartLink>
+                            <SmartLink href="/sellers" onClick={() => setDrop(null)} className="btn btn-outline btn-sm"><Store className="h-4 w-4" /> {t('All sellers')}</SmartLink>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* services mega menu (settings) */}
           {!hasCats && mega && drop !== null && isMega(header.menu[drop]?.href) && (

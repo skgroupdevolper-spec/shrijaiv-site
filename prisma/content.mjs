@@ -15,14 +15,14 @@ const IMG = '/images/site';
 const sampleProducts = (names) => names.map((n, i) => ({ image: `${IMG}/product-${(i % 5) + 1}.png`, title: n, rating: 5 - (i % 3), meta: 'Price on request', link: { href: '/products' } }));
 const sampleProducts2 = (names) => names.map((n, i) => ({ image: `${IMG}/product${(i % 10) + 1}.png`, title: n, rating: 5 - (i % 2), meta: 'Price on request', link: { href: '/products' } }));
 const wantedSamples = [
-  { title: 'Organic Turmeric Powder', extra: 'Buyer From Rajasthan', body: 'Buyer is interested in receiving quotations for 500 kg monthly, NPOP certified, 5% curcumin.', meta: 'Jan 14, 2025', image: `${IMG}/banner-3.png`, link: { href: '/post-requirement' } },
-  { title: 'A2 Gir Cow Ghee', extra: 'Buyer From Maharashtra', body: 'Buyer is interested in receiving quotations for 1 litre jars, private label, 2,000 units.', meta: 'Jan 14, 2025', image: `${IMG}/banner-1.png`, link: { href: '/post-requirement' } },
-  { title: 'Cold-pressed Groundnut Oil', extra: 'Buyer From Gujarat', body: 'Buyer is interested in receiving quotations for 15 kg tins, wood-pressed, monthly supply.', meta: 'Jan 14, 2025', image: `${IMG}/banner-2.png`, link: { href: '/post-requirement' } },
-  { title: 'Organic Millets (Ragi, Jowar)', extra: 'Buyer From Karnataka', body: 'Buyer is interested in receiving quotations for 5 ton lots for a packaged-food brand.', meta: 'Jan 14, 2025', image: `${IMG}/banner-4.png`, link: { href: '/post-requirement' } },
+  { title: 'Organic Turmeric Powder', extra: 'Buyer From Rajasthan', body: 'Buyer is interested in receiving quotations for 500 kg monthly, NPOP certified, 5% curcumin.', meta: 'Jan 14, 2025', image: `/images/demo/box-fruits.webp`, link: { href: '/post-requirement' } },
+  { title: 'A2 Gir Cow Ghee', extra: 'Buyer From Maharashtra', body: 'Buyer is interested in receiving quotations for 1 litre jars, private label, 2,000 units.', meta: 'Jan 14, 2025', image: `/images/demo/box-vegetables.webp`, link: { href: '/post-requirement' } },
+  { title: 'Cold-pressed Groundnut Oil', extra: 'Buyer From Gujarat', body: 'Buyer is interested in receiving quotations for 15 kg tins, wood-pressed, monthly supply.', meta: 'Jan 14, 2025', image: `/images/demo/box-grains.webp`, link: { href: '/post-requirement' } },
+  { title: 'Organic Millets (Ragi, Jowar)', extra: 'Buyer From Karnataka', body: 'Buyer is interested in receiving quotations for 5 ton lots for a packaged-food brand.', meta: 'Jan 14, 2025', image: `/images/demo/box-dairy.webp`, link: { href: '/post-requirement' } },
 ];
 const wantedWide = [
-  { title: 'Herbal Face Wash (private label)', extra: 'Buyer From Delhi', body: 'Buyer is interested in receiving quotations for contract manufacturing, MOQ 1,000 units.', meta: 'Jan 14, 2025', image: `${IMG}/banner-6.webp`, link: { href: '/post-requirement' } },
-  { title: 'Organic Jaggery Powder', extra: 'Buyer From Uttar Pradesh', body: 'Buyer is interested in receiving quotations for 2 tons monthly for a beverage company.', meta: 'Jan 14, 2025', image: `${IMG}/banner-7.webp`, link: { href: '/post-requirement' } },
+  { title: 'Herbal Face Wash (private label)', extra: 'Buyer From Delhi', body: 'Buyer is interested in receiving quotations for contract manufacturing, MOQ 1,000 units.', meta: 'Jan 14, 2025', image: `/images/demo/wide-honey.webp`, link: { href: '/post-requirement' } },
+  { title: 'Organic Jaggery Powder', extra: 'Buyer From Uttar Pradesh', body: 'Buyer is interested in receiving quotations for 2 tons monthly for a beverage company.', meta: 'Jan 14, 2025', image: `/images/demo/wide-tea.webp`, link: { href: '/post-requirement' } },
 ];
 
 const home = {
@@ -39,19 +39,19 @@ const home = {
       buyerLabel: 'Find Buyer',
       interval: 6,
       slides: [
-        { image: `${IMG}/slider-02.webp`, badge: 'Buyer', title: 'Get the best quality products at the lowest prices', text: 'We have prepared special offers for you on organic products. Don\'t miss these opportunities…', link: { label: 'View More', href: '/products' } },
-        { image: `${IMG}/slider-01.webp`, badge: 'Seller', title: 'Sell organic. Reach all of India.', text: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — zero commission.', link: { label: 'Start selling', href: '/register?as=seller' } },
-        { image: `${IMG}/slider-02.webp`, badge: 'Buyer', title: 'Post what you need — sellers come to you', text: 'Describe the product, quantity and delivery location. Verified sellers send quotes to your dashboard.', link: { label: 'Post a requirement', href: '/post-requirement' } },
+        { image: `/images/demo/hero-buyer.webp`, badge: 'Buyer', title: 'Get the best quality products at the lowest prices', text: 'We have prepared special offers for you on organic products. Don\'t miss these opportunities…', link: { label: 'View More', href: '/products' } },
+        { image: `/images/demo/hero-seller.webp`, badge: 'Seller', title: 'Sell organic. Reach all of India.', text: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — zero commission.', link: { label: 'Start selling', href: '/register?as=seller' } },
+        { image: `/images/demo/hero-buyer.webp`, badge: 'Buyer', title: 'Post what you need — sellers come to you', text: 'Describe the product, quantity and delivery location. Verified sellers send quotes to your dashboard.', link: { label: 'Post a requirement', href: '/post-requirement' } },
       ],
     }),
     b('productRow', { theme: 'light', heading: 'Organic Agricultural Product Buyer', limit: 8, layout: 'row', samples: true, cta: { label: 'View all', href: '/products' }, items: sampleProducts(['Fresh Vegetables Basket', 'Baby Food Combo', 'Green Tea & Snacks', 'Fresh Fish', 'Organic Dry Fruits', 'Dairy Pack', 'Premium Oats', 'Herbal Tea']) }),
-    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'cards', limit: 4, samples: true, images: `${IMG}/banner-3.png\n${IMG}/banner-1.png\n${IMG}/banner-2.png\n${IMG}/banner-4.png`, cta: { label: 'View all', href: '/requirements' }, items: wantedSamples }),
-    b('adBanner', { image: `${IMG}/ad-wide.webp`, alt: 'SHRIJAIV Organic — grocery marketplace', link: { label: '', href: '/become-a-seller' }, narrow: true }),
+    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'cards', limit: 4, samples: true, images: `/images/demo/box-fruits.webp\n/images/demo/box-vegetables.webp\n/images/demo/box-grains.webp\n/images/demo/box-dairy.webp`, cta: { label: 'View all', href: '/requirements' }, items: wantedSamples }),
+    b('adBanner', { image: `/images/demo/ad-wide-sell.webp`, alt: 'SHRIJAIV Organic — grocery marketplace', link: { label: '', href: '/become-a-seller' }, narrow: true }),
     b('productRow', { theme: 'light', heading: 'Organic Agricultural Product Buyer', limit: 12, layout: 'grid', samples: true, cta: { label: 'View all', href: '/products' }, items: sampleProducts2(['Apple Juice', 'Mouthwash', 'Orange Juice', 'Muskmelon', 'Margherita Pizza', 'Herbal Rinse', 'Apple Juice', 'Pizza Base', 'Muskmelon', 'Simply Orange', 'Apple Juice', 'Fresh Melon']) }),
-    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'wide', limit: 2, samples: true, images: `${IMG}/banner-6.webp\n${IMG}/banner-7.webp\n${IMG}/banner-5.png`, cta: { label: 'View all', href: '/requirements' }, items: wantedWide }),
+    b('wantedCards', { theme: 'light', heading: 'Organic Agricultural Product Suppliers', layout: 'wide', limit: 2, samples: true, images: `/images/demo/wide-honey.webp\n/images/demo/wide-tea.webp\n/images/demo/wide-spices.webp`, cta: { label: 'View all', href: '/requirements' }, items: wantedWide }),
     b('regions', { theme: 'light', heading: 'Suppliers By Region', limit: 14, cta: { label: 'View all', href: '/sellers' } }),
     b('trustLogos', { theme: 'light', heading: '1.2 million businesses trust us', cta: { label: 'View all', href: '/sellers' }, images: `${IMG}/logo1.png\n${IMG}/logo2.png\n${IMG}/logo3.png\n${IMG}/logo4.png\n${IMG}/logo5.png\n${IMG}/logo6.png` }),
-    b('adBanner', { image: `${IMG}/ad-wide.webp`, alt: 'SHRIJAIV Organic', link: { label: '', href: '/become-a-buyer' }, narrow: true }),
+    b('adBanner', { image: `/images/demo/ad-wide-sell.webp`, alt: 'SHRIJAIV Organic', link: { label: '', href: '/become-a-buyer' }, narrow: true }),
     b('testimonials', { theme: 'light', heading: 'What our customers say', limit: 6 }),
     b('categories', { theme: 'sand', label: 'Browse', heading: 'Shop by', accent: 'category', showSub: true, cta: { label: 'All products', href: '/products' } }),
     b('howItWorks', {
@@ -118,7 +118,7 @@ const support = {
   metaTitle: 'Customer support — SHRIJAIV Organic',
   metaDescription: 'Help centre for buyers and sellers on SHRIJAIV: accounts, listings, inquiries, verification, membership plans and payments.',
   blocks: [
-    b('photoBanner', { image: `${IMG}/banner-6.webp`, eyebrow: 'Help centre', title: 'Customer Support', lead: 'Browse the help topics below, ask our AI assistant, or open a ticket — we reply within 24 hours.' }),
+    b('photoBanner', { image: `/images/demo/wide-honey.webp`, eyebrow: 'Help centre', title: 'Customer Support', lead: 'Browse the help topics below, ask our AI assistant, or open a ticket — we reply within 24 hours.' }),
     b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/group-chat-pana-2.png`, imageAlt: 'Support chat', heading: 'Support that speaks', accent: 'your language', lead: 'Buyers and sellers get help in 12 Indian languages — on WhatsApp, email, phone and inside the dashboard chat.', points: 'Account, listings & inquiries\nMembership plans, invoices & GST\nVerification documents\nReporting fake listings or spam', primary: { label: 'WhatsApp us', href: 'whatsapp' } }),
     b('cards', { theme: 'light', layout: 'compact', columns: '3', heading: 'Help topics', items: [
       { icon: 'store', title: 'Selling on SHRIJAIV', body: 'Showroom, products, inquiries, buy leads and the Verified badge.', link: { label: 'Seller guide', href: '/how-it-works' } },
@@ -139,7 +139,7 @@ const howItWorks = {
   metaTitle: 'How SHRIJAIV works — for buyers and sellers',
   metaDescription: 'Buyers search, post requirements and compare quotes. Sellers build a showroom, list products and answer inquiries. Free to join, no commission.',
   blocks: [
-    b('photoBanner', { image: `${IMG}/banner-7.webp`, eyebrow: 'Guide', title: 'How It Works', lead: 'A marketplace where buyers and verified organic sellers meet directly. Free to join, no commission on deals.' }),
+    b('photoBanner', { image: `/images/demo/wide-tea.webp`, eyebrow: 'Guide', title: 'How It Works', lead: 'A marketplace where buyers and verified organic sellers meet directly. Free to join, no commission on deals.' }),
     b('iconTrio', { theme: 'light', items: [
       { image: `${IMG}/about-icon1.png`, title: 'Register free', body: 'Sellers and buyers create an account in two minutes.' },
       { image: `${IMG}/about-icon2.png`, title: 'List or post', body: 'Sellers list products; buyers post what they want to buy.' },
@@ -163,7 +163,7 @@ const becomeSeller = {
   metaTitle: 'Sell organic products online in India — Become a SHRIJAIV seller',
   metaDescription: 'List your organic products free, reach buyers across India, receive inquiries on WhatsApp and email, and get the Verified badge. No commission.',
   blocks: [
-    b('photoBanner', { image: `${IMG}/banner-1.png`, eyebrow: 'For sellers', title: 'Become a Seller', lead: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — with zero commission.', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
+    b('photoBanner', { image: `/images/demo/box-vegetables.webp`, eyebrow: 'For sellers', title: 'Become a Seller', lead: 'A free showroom, buyer inquiries in your inbox and buy leads you can quote — with zero commission.', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
     b('blobSplit', { theme: 'light', image: `${IMG}/telecommuting-pana-1.png`, imageAlt: 'Sell online', heading: 'Sell organic.', accent: 'Reach all of India.', lead: 'List your organic products once and reach retailers, brands, restaurants and exporters across every state — in 12 Indian languages, automatically.', points: 'Free showroom with your own link\nInquiries on WhatsApp, email and dashboard\nQuote buyer requirements (WANTED leads)\nVerified badge after document check', primary: { label: 'Create seller account', href: '/register?as=seller' }, secondary: { label: 'See plans', href: '/pricing' } }),
     b('wantedCards', { theme: 'sand', layout: 'cards', heading: 'Buyers are looking for', limit: 4, samples: wantedSamples, cta: { label: 'See all buy leads', href: '/requirements' } }),
     b('cards', { theme: 'light', layout: 'icons', columns: '3', heading: 'Everything a seller needs', items: [
@@ -192,7 +192,7 @@ const becomeBuyer = {
   metaTitle: 'Source organic products in bulk — Become a SHRIJAIV buyer',
   metaDescription: 'Retailers, brands, restaurants and exporters: find verified organic sellers, post requirements and compare quotes. Free forever for buyers.',
   blocks: [
-    b('photoBanner', { image: `${IMG}/banner-2.png`, eyebrow: 'For buyers', title: 'Become a Buyer', lead: 'Verified sellers, direct prices and quotes that come to you. Free forever for buyers.', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Post a requirement', href: '/post-requirement' } }),
+    b('photoBanner', { image: `/images/demo/box-grains.webp`, eyebrow: 'For buyers', title: 'Become a Buyer', lead: 'Verified sellers, direct prices and quotes that come to you. Free forever for buyers.', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Post a requirement', href: '/post-requirement' } }),
     b('blobSplit', { theme: 'light', reverse: true, image: `${IMG}/online-review-pana-2.png`, imageAlt: 'Compare quotes', heading: 'Source organic', accent: 'with confidence.', lead: 'Post what you need once — verified organic sellers from across India send quotes to your dashboard. Compare price, MOQ, delivery and ratings side by side.', points: 'Verified GST / FSSAI / organic certificates\nPost requirements, receive quotes\nChat, email or WhatsApp with sellers\nReal reviews from real buyers', primary: { label: 'Create buyer account', href: '/register?as=buyer' }, secondary: { label: 'Post a requirement', href: '/post-requirement' } }),
     b('productRow', { theme: 'light', heading: 'Fresh from verified sellers', layout: 'row', limit: 5, items: sampleProducts2(['Organic Turmeric Powder', 'Cold-pressed Coconut Oil', 'Organic Basmati Rice', 'Herbal Face Pack', 'Organic Jaggery']), cta: { label: 'Browse all products', href: '/products' } }),
     b('cards', { theme: 'light', layout: 'icons', columns: '3', heading: 'Why buy on', accent: 'SHRIJAIV', items: [
@@ -228,7 +228,7 @@ const pricing = {
   metaTitle: 'Membership plans — SHRIJAIV Organic',
   metaDescription: 'Silver, Gold and Platinum membership plans for organic sellers. Start with the free plan and upgrade when you grow. Monthly, quarterly, yearly and lifetime options.',
   blocks: [
-    b('photoBanner', { image: `${IMG}/banner-5.png`, eyebrow: 'For sellers', title: 'Membership', lead: 'Start with the free plan. Upgrade to Silver, Gold or Platinum when you need more products, more buyer contacts or a Verified badge.' }),
+    b('photoBanner', { image: `/images/demo/wide-spices.webp`, eyebrow: 'For sellers', title: 'Membership', lead: 'Start with the free plan. Upgrade to Silver, Gold or Platinum when you need more products, more buyer contacts or a Verified badge.' }),
     b('plans', { theme: 'light', heading: 'Choose your', accent: 'plan', freeBanner: true }),
     b('iconTrio', { theme: 'sand', heading: 'Every plan includes', items: [
       { image: `${IMG}/veryfy.png`, title: 'Verification review', body: 'Documents checked by our team; Verified badge on your showroom.' },

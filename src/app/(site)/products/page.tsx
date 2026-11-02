@@ -96,7 +96,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: SP 
             </div>
             <SmartLink href="/pricing" className="tilt group relative block overflow-hidden rounded-[24px] shadow-lg" data-tilt="4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/site/ad-square.png" alt={t('Advertise on SHRIJAIV')} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+              <img src="/images/demo/ad-square-brand.webp" alt={t('Advertise on SHRIJAIV')} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
             </SmartLink>
           </div>
         </div>
